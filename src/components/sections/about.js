@@ -17,8 +17,8 @@ const StyledAboutSection = styled.section`
     letter-spacing: -0.02em;
     font-size: 19px;
     @media (max-width: 768px) {
-      display: block;
-      
+      display: block; 
+      letter-spacing: -0.05em;
     }
   }
 `;
