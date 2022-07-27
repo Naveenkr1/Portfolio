@@ -18,6 +18,7 @@ const StyledAboutSection = styled.section`
     font-size: 19px;
     @media (max-width: 768px) {
       display: block;
+      
     }
   }
 `;
@@ -44,7 +45,7 @@ const StyledText = styled.div`
         left: 0;
         color: var(--green);
         font-size: var(--fz-sm);
-        line-height: 12px;
+        line-height: 24px;
       }
     }
   }
