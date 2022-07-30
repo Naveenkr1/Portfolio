@@ -9,6 +9,7 @@ import { usePrefersReducedMotion } from '@hooks';
 
 const StyledProjectsGrid = styled.ul`
   ${({ theme }) => theme.mixins.resetList};
+    margin-top: 80px;
 
   a {
     position: relative;
@@ -18,59 +19,33 @@ const StyledProjectsGrid = styled.ul`
 
 const StyledProject = styled.li`
   position: relative;
-  display: grid;
-  grid-gap: 10px;
-  grid-template-columns: repeat(12, 1fr);
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 10px;
+  padding: 1rem;
+  border-radius: 5px;
   align-items: center;
+  border: solid 1px #45B09F;
 
   @media (max-width: 768px) {
     ${({ theme }) => theme.mixins.boxShadow};
+    border: none;
+    flex-direction: column-reverse;
+    padding: 0;
   }
 
-  &:not(:last-of-type) {
-    margin-bottom: 100px;
 
+    margin-bottom: 30px;
     @media (max-width: 768px) {
-      margin-bottom: 70px;
+      margin-bottom: 30px;
     }
 
     @media (max-width: 480px) {
       margin-bottom: 30px;
     }
-  }
+  
 
-  &:nth-of-type(odd) {
-    .project-content {
-      grid-column: 7 / -1;
-      text-align: right;
-
-      @media (max-width: 1080px) {
-        grid-column: 5 / -1;
-      }
-      @media (max-width: 768px) {
-        grid-column: 1 / -1;
-        padding: 40px 40px 30px;
-        text-align: left;
-      }
-      @media (max-width: 480px) {
-        padding: 25px 25px 20px;
-      }
-    }
-    .project-tech-list {
-      justify-content: flex-end;
-
-      @media (max-width: 768px) {
-        justify-content: flex-start;
-      }
-
-      li {
-        margin: 0 0 5px 20px;
-
-        @media (max-width: 768px) {
-          margin: 0 10px 5px 0;
-        }
-      }
-    }
+ 
     .project-links {
       justify-content: flex-end;
       margin-left: 0;
@@ -83,35 +58,26 @@ const StyledProject = styled.li`
       }
     }
     .project-image {
-      grid-column: 1 / 8;
 
       @media (max-width: 768px) {
-        grid-column: 1 / -1;
       }
     }
   }
 
   .project-content {
+    margin-left: 1.7rem;
     position: relative;
-    grid-column: 1 / 7;
-    grid-row: 1 / -1;
-
     @media (max-width: 1080px) {
-      grid-column: 1 / 9;
     }
-
+    
     @media (max-width: 768px) {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      height: 100%;
-      grid-column: 1 / -1;
-      padding: 40px 40px 30px;
+      width: 100%;
+      box-shadow: none;
+      display: flex; 
+      justify-content: space-between;
+      align-items: center;
+      margin-left: 0;
       z-index: 5;
-    }
-
-    @media (max-width: 480px) {
-      padding: 30px 25px 20px;
     }
   }
 
@@ -121,18 +87,25 @@ const StyledProject = styled.li`
     font-family: var(--font-mono);
     font-size: var(--fz-xs);
     font-weight: 400;
+
+    @media (max-width: 768px) {
+      display: none;
   }
+}
 
   .project-title {
     color: var(--lightest-slate);
     font-size: clamp(24px, 5vw, 28px);
 
     @media (min-width: 768px) {
-      margin: 0 0 20px;
+     
     }
 
     @media (max-width: 768px) {
       color: var(--white);
+      font-size: 20px;
+      margin-top: 10px;
+      margin-bottom: 10px;
 
       a {
         position: static;
@@ -151,17 +124,59 @@ const StyledProject = styled.li`
     }
   }
 
+  .project-type{
+    margin-top: -15px;
+    margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+      margin-top: 3px;
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+  }
+  .project-study {
+    margin-top: 20px;
+    color: var(--green);
+    background-color: transparent;
+    border: 1px solid var(--green);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    font-size: var(--fz-xs);
+    font-family: var(--font-mono);
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: var(--green-tint);
+      outline: none;
+    }
+    &:after {
+      display: none !important;
+    }
+    font-size: var(--fz-xs);
+
+    @media (max-width: 768px){
+      display: none;
+      margin-top: 0;
+      font-size: 12px !important;
+      padding: 0.5rem .9rem;
+      margin-left: 20px;
+    }
+  }
+
   .project-description {
     ${({ theme }) => theme.mixins.boxShadow};
     position: relative;
     z-index: 2;
-    padding: 25px;
-    border-radius: var(--border-radius);
-    background-color: var(--light-navy);
     color: var(--light-slate);
     font-size: var(--fz-lg);
+    padding-right: 20px;
 
     @media (max-width: 768px) {
+      display: none;
       padding: 20px 0;
       background-color: transparent;
       box-shadow: none;
@@ -250,7 +265,11 @@ const StyledProject = styled.li`
     @media (max-width: 768px) {
       grid-column: 1 / -1;
       height: 100%;
-      opacity: 0.25;
+      opacity: 1;
+      box-shadow: none;
+      border: 1px solid #45B09F;
+      padding: .6rem;
+      border-radius: 5px;;
     }
 
     a {
@@ -260,7 +279,13 @@ const StyledProject = styled.li`
       border-radius: var(--border-radius);
       vertical-align: middle;
 
-      &:hover,
+      @media (max-width: 768px) {
+        background-color: transparent;
+        border-radius: 5px;
+      }
+
+      @media (min-width: 768px) {
+        &:hover,
       &:focus {
         background: transparent;
         outline: 0;
@@ -286,9 +311,13 @@ const StyledProject = styled.li`
         background-color: var(--navy);
         mix-blend-mode: screen;
       }
+        
+      }
     }
 
     .img {
+      width: 30rem;
+      height: 20rem;
       border-radius: var(--border-radius);
       mix-blend-mode: multiply;
       filter: grayscale(100%) contrast(1) brightness(90%);
@@ -297,7 +326,8 @@ const StyledProject = styled.li`
         object-fit: cover;
         width: auto;
         height: 100%;
-        filter: grayscale(100%) contrast(1) brightness(50%);
+        filter: none;
+        mix-blend-mode: normal;
       }
     }
   }
@@ -368,37 +398,15 @@ const Featured = () => {
                       <a href={external}>{title}</a>
                     </h3>
 
+                    <p className="project-type">UI/UX Designer</p>
+
                     <div
                       className="project-description"
                       dangerouslySetInnerHTML={{ __html: html }}
                     />
-
-                    {tech.length && (
-                      <ul className="project-tech-list">
-                        {tech.map((tech, i) => (
-                          <li key={i}>{tech}</li>
-                        ))}
-                      </ul>
-                    )}
-
-                    <div className="project-links">
-                      {cta && (
-                        <a href={cta} aria-label="Course Link" className="cta">
-                          Learn More
-                        </a>
-                      )}
-                      {github && (
-                        <a href={github} aria-label="GitHub Link">
-                          <Icon name="GitHub" />
-                        </a>
-                      )}
-                      {external && !cta && (
-                        <a href={external} aria-label="External Link" className="external">
-                          <Icon name="External" />
-                        </a>
-                      )}
-                    </div>
                   </div>
+
+                  <button className='project-study'>View Case Study</button>
                 </div>
 
                 <div className="project-image">
