@@ -16,7 +16,7 @@ module.exports = {
       url: 'https://www.linkedin.com/in/naveeu/',
     },
     {
-      name: 'Codepen',
+      name: 'Codepenn',
       url: '#',
     },
   ],
