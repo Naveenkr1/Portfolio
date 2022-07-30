@@ -5,9 +5,9 @@ module.exports = {
     title: 'Naveen Kumar',
     description:
       'Naveen Kumar is a UI/UX Designer',
-    siteUrl: 'https://naveenkr.me', // No trailing slash allowed!
+    siteUrl: 'https://brittanychiang.com', // No trailing slash allowed!
     image: '/og.png', // Path to your image you placed in the 'static' foldesr
-    twitterUsername: '@naveeu',
+    twitterUsername: '@bchiang7',
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -22,8 +22,8 @@ module.exports = {
       // BrittanyChiang
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: 'Naveen Kumar',
-        short_name: 'Naveen Kumar',
+        name: 'BrittanyChiang',
+        short_name: 'BrittanyChiang',
         start_url: '/',
         background_color: config.colors.darkNavy,
         theme_color: config.colors.navy,
@@ -152,10 +152,10 @@ module.exports = {
       },
     },
     {
-      resolve: `gatsby-plugin-google-analytics`,
+       resolve: `gatsby-plugin-google-analytics`,
       options: {
       trackingId: 'UA-45666519-2',
-      },
+     },
     },
   ],
 };
