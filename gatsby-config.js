@@ -7,7 +7,7 @@ module.exports = {
       'Naveen Kumar is a UI/UX Designer',
     siteUrl: 'https://naveenkr.me', // No trailing slash allowed!
     image: '/og.png', // Path to your image you placed in the 'static' foldesr
-    twitterUsername: '@bchiang7',
+    twitterUsername: '@naveeu',
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
