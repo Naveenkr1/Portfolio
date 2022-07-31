@@ -28,14 +28,13 @@ const StyledProject = styled.li`
   border: solid 1px #45B09F;
 
   @media (max-width: 768px) {
-    ${({ theme }) => theme.mixins.boxShadow};
     border: none;
     flex-direction: column-reverse;
     padding: 0;
   }
 
 
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     @media (max-width: 768px) {
       margin-bottom: 30px;
     }
@@ -125,7 +124,7 @@ const StyledProject = styled.li`
   }
 
   .project-type{
-    margin-top: -15px;
+    margin-top: -5px;
     margin-bottom: 20px;
 
     @media (max-width: 768px) {
@@ -168,7 +167,6 @@ const StyledProject = styled.li`
   }
 
   .project-description {
-    ${({ theme }) => theme.mixins.boxShadow};
     position: relative;
     z-index: 2;
     color: var(--light-slate);
@@ -262,6 +260,8 @@ const StyledProject = styled.li`
     position: relative;
     z-index: 1;
 
+
+
     @media (max-width: 768px) {
       grid-column: 1 / -1;
       height: 100%;
@@ -321,6 +321,11 @@ const StyledProject = styled.li`
       border-radius: var(--border-radius);
       mix-blend-mode: multiply;
       filter: grayscale(100%) contrast(1) brightness(90%);
+
+      @media (max-width: 957px) {
+        width: 20rem;
+        height: 13rem;
+      }
 
       @media (max-width: 768px) {
         object-fit: cover;
