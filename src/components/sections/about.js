@@ -144,8 +144,8 @@ const About = () => {
             </p>
 
             <p>
-              I'm currently a UX designer intern at <a href='www.gaana.com'>Gaana </a>. My past experiences include working 
-              as an UI/UX Designer at <a href="https://akratech.com/">Akra Tech </a>, and as a freelance designer for 1 year.
+              I'm currently a UX designer intern at <a href='https://www.gaana.com'>Gaana </a>. My past experiences include working 
+              as an UI/UX Designer at <a href="https://akratech.com/">Akra Tech </a>, and as a freelance designer for 2 years.
             </p>
 
             <p>
