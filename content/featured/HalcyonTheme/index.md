@@ -2,8 +2,8 @@
 date: '1'
 title: 'Akra Tech'
 cover: './image 32.png'
-github: 'https://github.com/bchiang7/halcyon-site'
-external: 'https://halcyon-theme.netlify.com/'
+github: 'https://www.behance.net/naveenkumar76'
+external: 'https://www.behance.net/naveenkumar76/'
 tech:
   - VS Code
   - Sublime Text

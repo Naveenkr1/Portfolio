@@ -2,8 +2,8 @@
 date: '3'
 title: 'Build a Spotify Connected App'
 cover: './course-card.png'
-external: 'https://www.newline.co/courses/build-a-spotify-connected-app'
-cta: 'https://www.newline.co/courses/build-a-spotify-connected-app'
+external: 'https://www.behance.net/naveenkumar76'
+cta: 'https://www.behance.net/naveenkumar76'
 tech:
   - React
   - Express

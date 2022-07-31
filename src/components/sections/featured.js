@@ -26,6 +26,10 @@ const StyledProject = styled.li`
   border-radius: 5px;
   align-items: center;
   border: solid 1px #45B09F;
+  &:hover
+  {
+    background: rgba(69, 176, 159, 0.14);
+  }
 
   @media (max-width: 768px) {
     border: none;
@@ -36,11 +40,11 @@ const StyledProject = styled.li`
 
     margin-bottom: 50px;
     @media (max-width: 768px) {
-      margin-bottom: 30px;
+      margin-bottom: 50px;
     }
 
     @media (max-width: 480px) {
-      margin-bottom: 30px;
+      margin-bottom: 50px;
     }
   
 
@@ -62,6 +66,8 @@ const StyledProject = styled.li`
       }
     }
   }
+
+
 
   .project-content {
     margin-left: 1.7rem;
@@ -172,12 +178,19 @@ const StyledProject = styled.li`
     color: var(--light-slate);
     font-size: var(--fz-lg);
     padding-right: 20px;
+    text-align: justify;
+    
+    box-shadow:none;
+    &:hover {
+      box-shadow: none;
+    }
 
     @media (max-width: 768px) {
       display: none;
       padding: 20px 0;
       background-color: transparent;
       box-shadow: none;
+      text-align: justify;
 
       &:hover {
         box-shadow: none;
