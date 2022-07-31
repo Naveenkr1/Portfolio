@@ -5,7 +5,7 @@ module.exports = {
     title: 'Naveen Kumar',
     description:
       'Naveen Kumar is a UI/UX Designer',
-    siteUrl: 'https://brittanychiang.com', // No trailing slash allowed!
+    siteUrl: 'https://naveenkr.me', // No trailing slash allowed!
     image: '/og.png', // Path to your image you placed in the 'static' foldesr
     twitterUsername: '@bchiang7',
   },
