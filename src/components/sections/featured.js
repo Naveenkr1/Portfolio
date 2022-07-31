@@ -423,8 +423,9 @@ const Featured = () => {
                       dangerouslySetInnerHTML={{ __html: html }}
                     />
                   </div>
-
+                  <a href={external ? external : github ? github : '#'}>
                   <button className='project-study'>View Case Study</button>
+                  </a>
                 </div>
 
                 <div className="project-image">
