@@ -8,7 +8,7 @@ module.exports = {
       url: 'https://www.instagram.com/naveeu/',
     },
     {
-      name: 'Behance',
+      name: 'GitHub',
       url: 'https://www.behance.net/naveenkumar76',
     },
     {
@@ -23,16 +23,16 @@ module.exports = {
 
   navLinks: [
     {
-      name: 'About',
-      url: '/#about',
+      name: 'Work',
+      url: '/#projects',
     },
     {
       name: 'Experience',
       url: '/#jobs',
     },
     {
-      name: 'Work',
-      url: '/#projects',
+      name: 'About',
+      url: '/#about',
     },
     {
       name: 'Contact',
