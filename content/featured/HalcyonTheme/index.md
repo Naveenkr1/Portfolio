@@ -1,6 +1,6 @@
 ---
 date: '1'
-title: 'Akra Tech'
+title: 'WakaAlert'
 cover: './image 32.png'
 github: 'https://www.behance.net/naveenkumar76'
 external: 'https://www.behance.net/naveenkumar76/'

@@ -6,6 +6,10 @@ import sr from '@utils/sr';
 import { srConfig } from '@config';
 import { Icon } from '@components/icons';
 import { usePrefersReducedMotion } from '@hooks';
+import GifVideo from '../../../video';
+
+import iotterGIF from '../../../static/igif.gif'
+import (GifVideo)
 
 const StyledProjectsGrid = styled.ul`
   ${({ theme }) => theme.mixins.resetList};
@@ -430,7 +434,11 @@ const Featured = () => {
 
                 <div className="project-image">
                   <a href={external ? external : github ? github : '#'}>
-                    <GatsbyImage image={image} alt={title} className="img" />
+                    { <GatsbyImage image={image} alt={title} className="img"  />}
+                    {/* <img src={image} alt="Otter dancing with a fish" /> */}
+
+                  
+                    
                   </a>
                 </div>
               </StyledProject>

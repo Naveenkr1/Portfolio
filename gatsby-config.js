@@ -157,5 +157,28 @@ module.exports = {
       trackingId: 'UA-45666519-2',
      },
     },
+    
+// gif
+{
+  resolve: `gatsby-transformer-remark`,
+  options: {
+    plugins: [
+      {
+        resolve: `gatsby-remark-interactive-gifs`,
+        options: {
+          root: `${__dirname}`,
+          src: `${__dirname}/content/gif`,
+          dest: `${__dirname}/public/static/gifs`,
+          play: `${__dirname}/src/img/play.gif`,
+          placeholder: `${__dirname}/src/img/play.gif`,
+          loading: `${__dirname}/src/img/play.gif`,
+          relativePath: `/static/gifs`,
+        },
+      },
+    ],
+  },
+},
+
+
   ],
 };

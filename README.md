@@ -13,14 +13,20 @@ Please also note that I did not build this site with the intention of it being a
    ```sh
    nvm install
    ```
+3. Install nvm
 
-3. Install dependencies
+      ```sh
+   nvm install
+   ```
+
+
+4. Install dependencies
 
    ```sh
    yarn
    ```
 
-4. Start the development server
+5. Start the development server
 
    ```sh
    npm start
