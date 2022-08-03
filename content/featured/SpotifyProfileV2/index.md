@@ -2,8 +2,8 @@
 date: '3'
 title: 'Build a Spotify Connected App'
 cover: './course-card.png'
-external: '#'
-cta: '#'
+external: 'naveenkr.me'
+cta: 'naveenkr.me'
 tech:
   - React
   - Express

@@ -2,8 +2,8 @@
 date: '2'
 title: 'Spotify Profile'
 cover: './demo.png'
-github: '#'
-external: '#'
+github: 'naveenkr.me'
+external: 'naveenkr.me'
 tech:
   - React
   - Styled Components
