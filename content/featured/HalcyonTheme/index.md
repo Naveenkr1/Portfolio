@@ -1,5 +1,5 @@
 ---
-date: '1'
+date: '2'
 title: 'WakaAlert'
 cover: './image 32.png'
 github: 'https://www.behance.net/naveenkumar76'
