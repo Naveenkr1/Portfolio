@@ -183,7 +183,7 @@ const StyledProject = styled.li`
     color: var(--light-slate);
     font-size: var(--fz-lg);
     padding-right: 20px;
-    text-align: justify;
+    text-align: left;
     
     box-shadow:none;
     &:hover {

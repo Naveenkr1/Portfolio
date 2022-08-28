@@ -12,7 +12,7 @@ const StyledAboutSection = styled.section`
     display: grid;
     grid-template-columns: 3fr 2fr;
     grid-gap: 50px;
-    text-align: justify;
+    text-align: left;
     line-height: 25px;
     letter-spacing: -0.02em;
     font-size: 19px;
