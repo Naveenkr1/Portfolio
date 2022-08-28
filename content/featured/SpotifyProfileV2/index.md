@@ -1,7 +1,7 @@
 ---
 date: '3'
 title: 'Mycrypto'
-cover: './Cover.png'
+cover: './Cover01.png'
 external: 'naveenkr.me'
 cta: 'naveenkr.me'
 tech:
