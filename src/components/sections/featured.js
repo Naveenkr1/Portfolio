@@ -355,7 +355,7 @@ const StyledProject = styled.li`
       }
     }
   }
-`;
+`
 
 const Featured = () => {
   const data = useStaticQuery(graphql`
@@ -434,20 +434,13 @@ const Featured = () => {
                  
                   <a href="/case-study">  {/* I have changed here */}
 
-                  <button className='project-study' >View Case Study</button>
+                    <button className='project-study' >View Case Study</button>
                   </a>
                 </div>
 
                 <div className="project-image">
-<<<<<<< HEAD
                   <a href="/case-study"> {/* I have changed here */}
-=======
-                  <a href={github ? github : ''}>
->>>>>>> 23c262767414de6fcb3595e7bfe3a04de744730c
-                    { <GatsbyImage image={image} alt={title} className="img"  />}
-                   
-
-                  
+                    { <GatsbyImage image={image} alt={title} className="img"  />}  
                     
                   </a>
                 </div>
