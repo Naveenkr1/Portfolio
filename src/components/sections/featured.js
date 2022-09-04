@@ -6,6 +6,7 @@ import sr from '@utils/sr';
 import { srConfig } from '@config';
 import { Icon } from '@components/icons';
 import { usePrefersReducedMotion } from '@hooks';
+// import CaseStudy from '../../pages/case-study';
 
 // import GifVideo from '../../../video';
 
@@ -419,6 +420,8 @@ const Featured = () => {
 
                     <h3 className="project-title">
                       <a href={external}>{title}</a>
+                      {/* <a href="/case-study">{title}</a> */} 
+                      {/* I have changed here */}
                     </h3>
 
                     <p className="project-type">UI/UX Designer</p>
@@ -428,13 +431,15 @@ const Featured = () => {
                       dangerouslySetInnerHTML={{ __html: html }}
                     />
                   </div>
-                  <a href={external ? external : github ? github : '#'}>
-                  <button className='project-study'>View Case Study</button>
+                 
+                  <a href="/case-study">  {/* I have changed here */}
+
+                  <button className='project-study' >View Case Study</button>
                   </a>
                 </div>
 
                 <div className="project-image">
-                  <a href={external ? external : github ? github : '#'}>
+                  <a href="/case-study"> {/* I have changed here */}
                     { <GatsbyImage image={image} alt={title} className="img"  />}
                     {/* <img src={image} alt="Otter dancing with a fish" /> */}
 
