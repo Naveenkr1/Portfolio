@@ -184,7 +184,7 @@ const StyledProject = styled.li`
     color: var(--light-slate);
     font-size: var(--fz-lg);
     padding-right: 20px;
-    text-align: justify;
+    text-align: left;
     
     box-shadow:none;
     &:hover {
@@ -402,7 +402,7 @@ const Featured = () => {
   return (
     <section id="projects">
       <h2 className="numbered-heading" ref={revealTitle}>
-        Featured Work
+        Selected Work
       </h2>
 
       <StyledProjectsGrid>
@@ -439,9 +439,13 @@ const Featured = () => {
                 </div>
 
                 <div className="project-image">
+<<<<<<< HEAD
                   <a href="/case-study"> {/* I have changed here */}
+=======
+                  <a href={github ? github : ''}>
+>>>>>>> 23c262767414de6fcb3595e7bfe3a04de744730c
                     { <GatsbyImage image={image} alt={title} className="img"  />}
-                    {/* <img src={image} alt="Otter dancing with a fish" /> */}
+                   
 
                   
                     
