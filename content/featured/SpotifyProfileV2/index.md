@@ -2,7 +2,7 @@
 date: '3'
 title: 'Mycrypto'
 cover: './Cover01.png'
-external: 'naveenkr.me'
+external: '404'
 cta: 'naveenkr.me'
 tech:
   - React
