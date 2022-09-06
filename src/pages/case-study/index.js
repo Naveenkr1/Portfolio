@@ -14,6 +14,9 @@ import Insta_Spotify from './Images/Insta_Spotify.svg';
 import Key_Pain_Point from './Images/Key_Pain_Point.svg';
 import Chart from './Images/Chart.png';
 import Solution_PC from './Images/Solution_PC.png';
+import Caption_PC from './Images/Caption_PC.svg';
+import Caption_Mobile from './Images/Caption_Mobile.svg';
+import Solution_Mobile from './Images/Solution_Mobile.svg';
 import Key_Pain_Point_Mobile from './Images/Key_Pain_Point_Mobile.svg';
 import Ques from './Images/Ques.svg';
 import QuesMobile from './Images/QuesMobile.svg';
@@ -148,11 +151,17 @@ function CaseStudy() {
                     <div className="column-9 w-col w-col-8" />
                 </div>
                 <div className="image-caption">
+                    <img src={Caption_PC} id='image-pc' loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" />
+                </div>
+                <div className="image-caption">
+                    <img src={Caption_Mobile} id='image-mobile' loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw"  alt="" className="image-4" />
+                </div>
+                {/* <div className="image-caption">
                     <img src="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204.jpg" loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" srcSet="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-500.jpeg 500w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-800.jpeg 800w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-1080.jpeg 1080w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-1600.jpeg 1600w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-2000.jpeg 2000w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-2600.jpeg 2600w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-3200.jpeg 3200w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204.jpg 4218w" alt="" className="image-4" />
                 </div>
                 <div className="div-block-5 social">
                     <img src="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205.jpg" loading="lazy" sizes="100vw" srcSet="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205-p-500.jpeg 500w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205-p-800.jpeg 800w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205-p-1080.jpeg 1080w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205-p-1600.jpeg 1600w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205-p-2000.jpeg 2000w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205-p-2600.jpeg 2600w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205-p-3200.jpeg 3200w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b38125bc584319f0492fc8_Instagram%20post%20-%205.jpg 4218w" alt="" className="image-29" />
-                </div>
+                </div> */}
                 <div className="columns-4 double w-row">
                     <div className="column-8 w-col w-col-6">
                         <h3 className="heading-2">
@@ -163,7 +172,8 @@ function CaseStudy() {
                 </div>
                 <div data-w-id="87cc062d-1402-911c-9434-77f55b831b58" style={{ opacity: 1 }} className="w-layout-grid grid-8">
                     {/* <img  sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" src={Solution_PC} alt="" /> */}
-                    <img style={{ width: '100%', height: '100%' }} src={Solution_PC} alt="" />
+                    <img style={{ width: '100%', height: '100%' }} src={Solution_PC} id='image-pc' alt="" />
+                    <img style={{ width: '100%', height: '100%' }} src={Solution_Mobile} id='image-mobile' alt="" />
                 </div>
                 <div className="columns-4 double w-row">
                     <div className="column-8 spaceabove w-col w-col-4">

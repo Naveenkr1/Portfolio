@@ -1,30 +1,19 @@
 import React from 'react';
 
 const IconGitHub = () => (
-
-
-
-<svg xmlns="http://www.w3.org/2000/svg" 
-role="img"
-width="24" height="24" 
-
-fill="none"
-stroke="currentColor"
-strokeWidth="10"
-strokeLinecap="round"
-strokeLinejoin="round"
-className="feather feather-github"
-viewBox="0 0 24 24">
-<path d="M8.197 11.217C13.267 11.217 13.267 18 8.197 18H2V11.217M8.197 11.217H2M8.197 11.217C13.267 11.217 13.267 5 8.197 5H2V11.217M14 13.5C14 15.985 15.79 18 18 18C20.755 18 21.5 16 21.5 16M20.5 6H15.5M18 9C15.79 9 14 11.015 14 13.5H22C22 11.015 20.21 9 18 9Z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="feather feather-github">
+    <title>GitHub</title>
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+  </svg>
 );
 
 export default IconGitHub;
-
-
-
-<svg width="24" height="24" 
-viewBox="0 0 24 24" 
- xmlns="http://www.w3.org/2000/svg">
-
-</svg>

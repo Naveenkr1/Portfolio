@@ -3141,6 +3141,12 @@ textarea.w-select {
     height: 174px;
 
 }
+@media screen and (max-width: 909px) {
+.heading-2 img {
+    /* width: 30%; */
+    height: 120px;
+
+}}
 
 .column-8 {
     display: block;
