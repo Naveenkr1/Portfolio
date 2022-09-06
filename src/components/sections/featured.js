@@ -432,14 +432,14 @@ const Featured = () => {
                     />
                   </div>
                  
-                  <a href="/case-study">  {/* I have changed here */}
+                  <a href={external}>  {/* I have changed here */}
 
                   <button className='project-study' >View Case Study</button>
                   </a>
                 </div>
 
                 <div className="project-image">
-                  <a href="/case-study"> {/* I have changed here */}
+                  <a href={external}> {/* I have changed here */}
                     { <GatsbyImage image={image} alt={title} className="img"  />}
                     {/* <img src={image} alt="Otter dancing with a fish" /> */}
 

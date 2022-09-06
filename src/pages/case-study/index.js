@@ -35,13 +35,13 @@ function CaseStudy() {
                 <div style={{ marginTop: 30, marginBottom: 30 }} className="nav-bar">
                     <a href="/" className="navbar-logo">
                         <img id="image-pc" src={Logo} alt="" />
-                        <div id="image-pc">Back To Home</div>
+                        {/* <div id="image-pc">Back To Home</div> */}
                         <img src={Arrow} id="image-mobile" alt="" />
                     </a>
-                    <div>
+                    {/* <div>
                         <img src={Mobile} id="image-pc" alt="" />
                         <img src={Desktop} id="image-mobile" alt="" />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <div className="title-lumos wf-section">

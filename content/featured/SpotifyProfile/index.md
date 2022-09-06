@@ -4,7 +4,7 @@ title: 'Spotify Moments'
 cover: './demo2.png'
 github: '/src\pages\case-study\index.js'
 link 2: 'www.google.com'
-external: '/src\pages\case-study\index.js'
+external: '/case-studys'
 tech:
   - React
   - Styled Components

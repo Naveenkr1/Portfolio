@@ -3,14 +3,17 @@ module.exports = {
 
   socialMedia: [
     
-    {
-      name: 'Instagram',
-      url: 'https://www.instagram.com/naveeu/',
-    },
+    
     {
       name: 'GitHub',
       url: 'https://www.behance.net/naveenkumar76',
     },
+
+    {
+      name: 'Instagram',
+      url: 'https://www.instagram.com/naveeu/',
+    },
+    
     {
       name: 'Linkedin',
       url: 'https://www.linkedin.com/in/naveeu/',
