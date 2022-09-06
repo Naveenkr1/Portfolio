@@ -22,8 +22,7 @@ import Ques from './Images/Ques.svg';
 import QuesMobile from './Images/QuesMobile.svg';
 import User_Flow from './Images/User_Flow.svg';
 import Logo from './Svg/LogoN.svg';
-import Mobile from './Svg/mobile.svg';
-import Desktop from './Svg/desktop.svg';
+
 import Arrow from './Svg/arrow.svg';
 
 function CaseStudy() {
