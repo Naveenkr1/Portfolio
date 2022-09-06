@@ -12,7 +12,7 @@ import Research from './Images/Research.svg';
 import Anlysis from './Images/Anlysis.svg';
 import Insta_Spotify from './Images/Insta_Spotify.svg';
 import Key_Pain_Point from './Images/Key_Pain_Point.svg';
-import Chart from './Images/Chart.png';
+import Flow from './Images/Flow.png';
 import Solution_PC from './Images/Solution_PC.png';
 import Caption_PC from './Images/Caption_PC.svg';
 import Caption_Mobile from './Images/Caption_Mobile.svg';
@@ -21,24 +21,26 @@ import Key_Pain_Point_Mobile from './Images/Key_Pain_Point_Mobile.svg';
 import Ques from './Images/Ques.svg';
 import QuesMobile from './Images/QuesMobile.svg';
 import User_Flow from './Images/User_Flow.svg';
+import Logo from './Svg/LogoN.svg';
+import Mobile from './Svg/Mobile.svg';
+import Desktop from './Svg/desktop.svg';
+import Arrow from './Svg/arrow.svg';
 
 function CaseStudy() {
 
-    const handleClick = () => {}
+    const handleClick = () => { }
     return (
         <div>
             <div data-animation="default" data-collapse="tiny" data-duration={400} data-easing="ease-in-sine" data-easing2="ease-out-sine" role="banner" className="navbar w-nav">
-                <div className="nav-bar w-container">
-                    <a href="/" className="link-block w-inline-block">
-                        <div className="text-block-19">-</div>
+                <div style={{ marginTop: 30, marginBottom: 30 }} className="nav-bar">
+                    <a href="/" className="navbar-logo">
+                        <img id="image-pc" src={Logo} alt="" />
+                        <div id="image-pc">Back To Home</div>
+                        <img src={Arrow} id="image-mobile" alt="" />
                     </a>
-                    <nav role="navigation" className="nav-menu w-nav-menu">
-                        <a href="/" className="nav-link-2 blue w-nav-link">Work ——</a>
-                        <a href="/play" className="nav-link-2 w-nav-link">Play ——</a>
-                        <a href="/info" className="nav-link-2 w-nav-link">Info ——</a>
-                    </nav>
-                    <div onClick={handleClick} className="menu-button w-nav-button">
-                        <div id="nav-button" className="icon w-icon-nav-menu"  />
+                    <div>
+                        <img src={Mobile} id="image-pc" alt="" />
+                        <img src={Desktop} id="image-mobile" alt="" />
                     </div>
                 </div>
             </div>
@@ -154,7 +156,7 @@ function CaseStudy() {
                     <img src={Caption_PC} id='image-pc' loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" />
                 </div>
                 <div className="image-caption">
-                    <img src={Caption_Mobile} id='image-mobile' loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw"  alt="" className="image-4" />
+                    <img src={Caption_Mobile} id='image-mobile' loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" />
                 </div>
                 {/* <div className="image-caption">
                     <img src="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204.jpg" loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" srcSet="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-500.jpeg 500w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-800.jpeg 800w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-1080.jpeg 1080w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-1600.jpeg 1600w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-2000.jpeg 2000w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-2600.jpeg 2600w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204-p-3200.jpeg 3200w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61b37ebf5e6d50382dc0507f_Instagram%20post%20-%204.jpg 4218w" alt="" className="image-4" />
@@ -188,7 +190,7 @@ function CaseStudy() {
                     <div className="column-9 w-col w-col-8" />
                 </div>
                 <div className="image-caption">
-                    <img src={Chart} loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" />
+                    <img src={User_Flow} loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" />
                     {/* <img src={User_Flow} loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" /> */}
                 </div>
                 <div className="columns-5 w-row">
@@ -210,7 +212,7 @@ function CaseStudy() {
                     <div className="column-9 w-col w-col-1" />
                 </div>
                 <div className="div-block-4">
-                    <img src={User_Flow} loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" />
+                    <img src={Flow} loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 1919px) 78vw, 60vw" alt="" className="image-4" />
                 </div>
                 <div className="columns-9 w-row">
                     <div className="column-8 w-col w-col-11" />

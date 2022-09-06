@@ -2529,6 +2529,21 @@ textarea.w-select {
     margin-right: auto;
     margin-left: auto;
     padding: 5px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo div {
+    font-size: 18px;
+    margin-left: 10px;
+    color: white;
+    text-decoration: underline;
 }
 
 .nav-link-2 {
@@ -3099,7 +3114,6 @@ textarea.w-select {
     -webkit-box-flex: 0;
     -webkit-flex: 0 auto;
     -ms-flex: 0 auto;
-    
     flex: 0 auto;
     text-align: right;
 }
@@ -3139,14 +3153,14 @@ textarea.w-select {
 .heading-2 img {
     /* width: 30%; */
     height: 174px;
-
 }
-@media screen and (max-width: 909px) {
-.heading-2 img {
-    /* width: 30%; */
-    height: 120px;
 
-}}
+@media screen and (max-width: 909px) {
+    .heading-2 img {
+        /* width: 30%; */
+        height: 120px;
+    }
+}
 
 .column-8 {
     display: block;
@@ -6654,14 +6668,14 @@ textarea.w-select {
         grid-template-rows: 100px;
     }
     .nav-bar {
-        display: block;
-        max-width: 92%;
+        display: flex;
+        width: 92%;
         padding-top: 5px;
         padding-right: 0px;
         padding-left: 0px;
-        -webkit-justify-content: space-around;
+        -webkit-justify-content: space-between;
         -ms-flex-pack: distribute;
-        justify-content: space-around;
+        justify-content: space-between;
         -webkit-flex-wrap: nowrap;
         -ms-flex-wrap: nowrap;
         flex-wrap: nowrap;
@@ -7072,7 +7086,6 @@ textarea.w-select {
     }
     .column-11 {
         padding-left: 0px;
-        
     }
     .column-12 {
         margin-bottom: 20px;
@@ -7220,16 +7233,13 @@ textarea.w-select {
         display: block;
         overflow: visible;
         margin-top: 0px;
-/* edit by naman */
-       
+        /* edit by naman */
         width: fit-content;
-       
         /* display: flex; */
         /* align-items: center; */
         /* float: left; */
         justify-content: center;
         /* flex-wrap: nowrap; */
-        
     }
     .title {
         margin-top: 10px;
