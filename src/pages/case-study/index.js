@@ -7,7 +7,8 @@ import svg04 from './Svg/04.svg';
 import svg05 from './Svg/05.svg';
 import svg06 from './Svg/06.svg';
 import svg07 from './Svg/07.svg';
-import svg08 from './Svg/08.svg';
+import svg08 from './Svg/08.svg'; 
+import svg09 from './Svg/09.svg';
 import Research from './Images/Research.svg';
 import Anlysis from './Images/Anlysis.svg';
 import Insta_Spotify from './Images/Insta_Spotify.svg';
@@ -29,7 +30,7 @@ function CaseStudy() {
 
     const handleClick = () => { }
     return (
-        <div>
+        <div className="body">
             <div data-animation="default" data-collapse="tiny" data-duration={400} data-easing="ease-in-sine" data-easing2="ease-out-sine" role="banner" className="navbar w-nav">
                 <div style={{ marginTop: 30, marginBottom: 30 }} className="nav-bar">
                     <a href="/" className="navbar-logo">
@@ -291,8 +292,8 @@ function CaseStudy() {
                 </div>
                 <div className="columns-9 w-row">
                     <div className="column-8 spaceabove w-col w-col-11">
-                        <h3 className="heading-2">
-                            <span className="text-span-7">Prototest ——</span>‍
+                    <h3 className="heading-2">
+                            <img src={svg09} alt="" />
                         </h3>
                     </div>
                     <div className="column-9 w-col w-col-1" />
