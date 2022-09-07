@@ -16,6 +16,12 @@ html {
 
 body {
     margin: 0
+  
+}
+.body{
+    max-width: 100%;
+    overflow-x: hidden;
+    background-color: #0a0a09;
 }
 
 article,
@@ -286,10 +292,12 @@ html {
 body {
     margin: 0;
     min-height: 100%;
-    background-color: #fff;
+    background-color: #0a0a09;
     font-family: Arial, sans-serif;
     font-size: 14px;
     line-height: 20px;
+    max-width: 100%;
+    overflow-x: hidden;
     color: #333
 }
 
@@ -423,7 +431,7 @@ html[data-w-dynpage] [data-w-cloak] {
     bottom: 12px !important;
     left: auto !important;
     color: #AAADB0 !important;
-    background-color: #fff !important;
+    background-color:#0a0a09 !important;
     border-radius: 3px !important;
     padding: 6px 8px 6px 6px !important;
     font-size: 12px !important;
@@ -5684,7 +5692,7 @@ textarea.w-select {
 
 .text-span-11 {
     border-bottom-style: solid;
-    border-bottom-color: #d;
+    
 }
 
 .x-font {
