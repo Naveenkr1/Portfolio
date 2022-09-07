@@ -299,7 +299,7 @@ body {
     min-width: 100%;
     overflow-x: hidden;
     color: #333;
-    zoom: 90%;
+    /* zoom: 90%; */
 }
 
 img {
@@ -2601,12 +2601,12 @@ textarea.w-select {
 .body {
     border-radius: 20px;
     background-color: #000;
-    font-size: 16px;
-    zoom: 90%;
+    /* font-size: 16px;
+    zoom: 90%; */
 }
 
 .navbar {
-    width: 100vw;
+    width: 100%;
     margin-bottom: 0px;
     padding-bottom: 0px;
     background-color: #0a0a09;
