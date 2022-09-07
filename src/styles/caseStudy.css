@@ -4758,9 +4758,7 @@ textarea.w-select {
     display: none !important;
 }
 
-#image-pc {
-    display: block !important;
-}
+
 
 @media screen and (max-width: 909px) {
     #image-mobile {
