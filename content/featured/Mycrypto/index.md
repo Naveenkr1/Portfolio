@@ -1,8 +1,10 @@
 ---
-date: '3'
-title: 'Mycrypto'
+date: '4'
+title: 'Mycrypto (Coming Soon)'
 cover: './Cover01.png'
-external: '404'
+external: '#'
+button: 'Comming Soon'
+role: 'UI/UX Designer'
 cta: 'naveenkr.me'
 tech:
   - React

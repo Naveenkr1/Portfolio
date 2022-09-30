@@ -16,9 +16,11 @@ const StyledAboutSection = styled.section`
     line-height: 25px;
     letter-spacing: -0.02em;
     font-size: 19px;
+    text-align: start;
     @media (max-width: 768px) {
       display: block; 
       letter-spacing: -0.05em;
+     
     }
   }
 `;

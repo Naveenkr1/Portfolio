@@ -5,6 +5,8 @@ cover: './demo2.png'
 github: '/src\pages\case-study\index.js'
 link 2: 'www.google.com'
 external: '/case-study'
+button: 'View Case Study'
+role: 'UI/UX Designer'
 tech:
   - React
   - Styled Components
