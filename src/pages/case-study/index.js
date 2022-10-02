@@ -13,8 +13,10 @@ import Research from './Images/Research.svg';
 import Anlysis from './Images/Anlysis.svg';
 import Insta_Spotify from './Images/Insta_Spotify.svg';
 import Key_Pain_Point from './Images/Key_Pain_Point.svg';
-import Flow from './Images/Flow.png';
+import Flow from './Images/Flow.png'
+import Cover01 from './Images/Cover01.png'
 import Solution_PC from './Images/Solution_PC.png';
+import wireframe from './Images/Wireframe.png'
 import Caption_PC from './Images/Caption_PC.svg';
 import Caption_Mobile from './Images/Caption_Mobile.svg';
 import Solution_Mobile from './Images/Solution_Mobile.svg';
@@ -395,17 +397,17 @@ function CaseStudy() {
                 <div className="line-1 big" />
             </div>
             <div className="next wf-section">
-                <a href="/see-sound" className="next-section w-inline-block">
+                <a href="/https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study" className="next-section w-inline-block">
                     <div className="next-text-section">
                         <div className="text-block-17">Next Project ——</div>
                     </div>
                     <div className="next-div">
                         <div className="columns-3 next w-row">
                             <div className="column-6 w-col w-col-4">
-                                <h1 className="heading">See Sound</h1>
+                                <h1 className="heading">Play On</h1>
                             </div>
                             <div className="column-7 next spotify w-col w-col-8">
-                                <img src="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61da95a53dd133a82e618fce_Artboard%201%402x.png" loading="lazy" sizes="(max-width: 479px) 92vw, (max-width: 767px) 100vw, (max-width: 1919px) 61vw, 53vw" srcSet="https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61da95a53dd133a82e618fce_Artboard%201%402x-p-500.png 500w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61da95a53dd133a82e618fce_Artboard%201%402x-p-800.png 800w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61da95a53dd133a82e618fce_Artboard%201%402x-p-1080.png 1080w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61da95a53dd133a82e618fce_Artboard%201%402x-p-1600.png 1600w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61da95a53dd133a82e618fce_Artboard%201%402x-p-2000.png 2000w, https://uploads-ssl.webflow.com/616ba7730d9694e3d4325f7b/61da95a53dd133a82e618fce_Artboard%201%402x.png 3840w" alt="" className="image-6 next spotify" />
+                                <img src={Cover01} alt="" className="image-6 next spotify" />
                             </div>
                         </div>
                     </div>
