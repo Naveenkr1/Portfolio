@@ -147,7 +147,7 @@ const About = () => {
 
             <p>
               I'm currently a UI/UX Designer at <a href="https://designbrewery.in/">Design Brewery </a>. My past experiences include working 
-              as an UI/UX Designer at <a href="https://akratech.com/">Akra Tech </a>, and as a freelance designer for 2 years.
+              as an UX Designer Intern at <a href="https://gaana.com/">Gaana </a>, and as a freelance designer for 2 years.
             </p>
 
             <p>
