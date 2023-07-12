@@ -1,0 +1,24 @@
+/* CustomCursor.css */
+
+/* Default cursor style */
+body {
+    cursor: url('../components/Cursour/Cursor.svg'), auto;
+  }
+  
+  /* Custom cursor style */
+  body.custom-cursor {
+    cursor: url('../components/Cursour/hand.svg'), auto;
+    position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px; /* Adjust the width and height to match your cursor image */
+  height: 20px;
+  pointer-events: none;
+  transition: transform 0.2s ease-out; /* Add a transition for smooth movement */
+  z-index: 9999;
+  }
+
+/* Custom pointer style */
+body.custom-pointer {
+  cursor: url('../components/Cursour/hand.svg'), auto;
+}

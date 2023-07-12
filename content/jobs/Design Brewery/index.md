@@ -1,10 +1,10 @@
 ---
-date: '2017-12-21'
-title: 'UI Engineer Co-op'
-company: 'Apple'
-location: 'Cupertino, CA'
-range: 'July - December 2017'
-url: 'https://www.apple.com/music/'
+date: '2022-10-01'
+title: 'UI/UX Designer'
+company: 'Design Brewery'
+location: 'Gurugram'
+range: 'Oct 2022 - Present'
+url: 'https://www.designbrewery.in/'
 ---
 
 - Developed and shipped highly interactive web applications for Apple Music using Ember.js

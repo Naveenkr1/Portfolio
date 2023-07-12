@@ -1,9 +1,9 @@
 ---
-date: '2017-04-01'
-title: 'Studio Developer'
-company: 'Scout'
+date: '2021-07-01'
+title: 'UI/UX Designer'
+company: 'Akra Tech'
 location: 'Northeastern University'
-range: 'January - June 2017'
+range: 'Aug 2021 - June 2022'
 url: 'https://web.northeastern.edu/scout/'
 ---
 
