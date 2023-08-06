@@ -145,17 +145,15 @@ const About = () => {
               Hello, I'm <a href='' >Naveen Kumar </a>, a UI/UX designer with an edge of digital product design, User experience, and interaction design.
             </p>
 
-            <p>
+           <p>
               I'm currently a UI/UX Designer at <a href="https://designbrewery.in/">Design Brewery </a>. My past experiences include working 
-              as an UX Designer Intern at <a href="https://gaana.com/">Gaana </a>, and as a freelance designer for 2 years.
-            </p>
-
+              as an UX Designer Intern at <a href="https://gaana.com/">Gaana </a>.
+           </p>
             <p>
-            I believe in the power of design in technology, helping create a smooth interaction and delightful experience between human and products,
-             pragmatically solving complex problems with tactical solutions, and bringing a conceptual idea to reality. I enjoy the process and 
-             the sense of achievement of contribution to the course of humanity it gives me. It makes me feel alive.
+            I originally started off as a Computer Science major during undergrad, but quickly realized that I was fascinated by the 'Why' behind the code I was writing.
+            This led me to exploring the field of UI/UX, and after a few side projects and freelance work, I fell in love with the art of problem solving.
             </p>
-
+            <p> I like to think of myself as a full-stack product designer who can lead a project from research & design to the prototyping phase to ensure a smooth developer handoff.</p>
             <p>Here are a few technologies I’ve been working with recently:</p>
           </div>
 

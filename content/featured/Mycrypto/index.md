@@ -1,6 +1,6 @@
 ---
 date: '4'
-title: 'Mycrypto (Coming Soon)'
+title: 'Mycrypto (Comming Soon)'
 cover: './Cover01.png'
 external: '#'
 button: 'Comming Soon'
