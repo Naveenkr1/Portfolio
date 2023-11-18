@@ -1,9 +1,9 @@
 ---
-date: '2016-12-21'
+date: '2021-12-21'
 title: 'UI Designer Intern'
 company: 'Ganna'
 location: 'Noida,Remote'
-range: 'July - December 2016'
+range: 'July - December 2021'
 url: 'https://gaana.com/'
 ---
 
