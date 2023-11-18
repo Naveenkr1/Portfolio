@@ -1,6 +1,6 @@
 ---
 date: '2021-12-21'
-title: 'UI Designer Intern'
+title: 'UX Designer Intern'
 company: 'Ganna'
 location: 'Noida,Remote'
 range: 'July - December 2021'
