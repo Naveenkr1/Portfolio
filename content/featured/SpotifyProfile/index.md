@@ -1,5 +1,5 @@
 ---
-date: '1'
+date: '2'
 title: 'Spotify Moments'
 cover: './demo2.png'
 github: '/src\pages\case-study\index.js'
