@@ -4,7 +4,7 @@ title: 'PlayOn'
 cover: './Cover01.png'
 external: 'https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study'
 button: 'View Case Study'
-role: 'UI/UX Designer'
+role: 'UI/UX Design'
 cta: 'https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study'
 tech:
   - React
