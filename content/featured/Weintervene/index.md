@@ -3,7 +3,7 @@ date: '3'
 title: 'Weintervene Redesign'
 cover: './Cover.png'
 button: 'View Case Study'
-role: 'UI/UX Designer'
+role: 'UI/UX Design'
 github: 'https://www.behance.net/gallery/151416553/School-App-Design-%28Weintervene%29?tracking_source=for_you_feed_user_published'
 external: 'https://www.behance.net/gallery/151416553/School-App-Design-%28Weintervene%29?tracking_source=for_you_feed_user_published'
 tech:
