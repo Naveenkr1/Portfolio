@@ -6,7 +6,7 @@ github: '/src\pages\case-study\index.js'
 link 2: 'www.google.com'
 external: '/case-study'
 button: 'View Case Study'
-role: 'UI/UX Designer'
+role: 'UI/UX Design'
 tech:
   - React
   - Styled Components
