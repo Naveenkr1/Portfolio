@@ -60,13 +60,13 @@ const Hero = () => {
 
   const one = <h1>Hi, my name is</h1>;
   const two = <h2 className="big-heading">Naveen Kumar.</h2>;
-  const three = <h3 className="big-heading">UI/UX Designer</h3>;
+  const three = <h3 className="big-heading">Product Designer</h3>;
   const four = (
     <>
       <p>
         I'm a digital UI/UX Designer focusing on crafting user experiences and design 
         systems for software, web, and mobile products. I'm passionate about applying consumer 
-        psychology for an interaction science-backed approach.{' '}
+        psychology for an interactive science-backed approach.{' '}
        
       </p>
     </>
