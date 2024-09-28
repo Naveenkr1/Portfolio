@@ -64,7 +64,7 @@ const Hero = () => {
   const four = (
     <>
       <p>
-        I'm a digital UI/UX Designer focusing on crafting user experiences and design 
+        I'm a digital Product Designer focusing on crafting user experiences and design 
         systems for software, web, and mobile products. I'm passionate about applying consumer 
         psychology for an interactive science-backed approach.{' '}
        
