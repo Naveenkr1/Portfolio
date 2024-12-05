@@ -2,6 +2,10 @@ module.exports = {
   email: 'nnaveen.8527@gmail.com',
 
   socialMedia: [
+    {
+       name: 'GitHub',
+      url: 'https://github.com/bchiang7',
+      },
     
     
     {
@@ -10,7 +14,8 @@ module.exports = {
     },
 
     {
-      name: 'Instagram',
+
+       name: 'Instagram',
       url: 'https://www.instagram.com/naveeu/',
     },
     
