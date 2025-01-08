@@ -3,7 +3,7 @@ date: '2022-10-01'
 title: 'UI/UX Designer'
 company: 'Design Brewery'
 location: 'Gurugram'
-range: 'Oct 2022 - Present'
+range: 'Oct 2022 - July 2024'
 url: 'https://www.designbrewery.in/'
 ---
 
