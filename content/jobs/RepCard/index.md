@@ -11,4 +11,4 @@ url: 'https://www.repcard.com/'
 - Creating prototypes, wireframes, and user flows
 - Collaborating with stakeholders, product, Developers
 - Designing and maintaining style guides and design systems.
-- Utilizing various design tools and techniques
+- Utilizing various design tools and techniques 
