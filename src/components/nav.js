@@ -173,7 +173,7 @@ const Nav = ({ isHome }) => {
   );
 
   const ResumeLink = (
-    <a className="resume-button" href="https://drive.google.com/file/d/1SLFleGOp7NflafhEWJtOF6-eRUUTBUgE/view?usp=drivesdk" target="_blank" rel="noopener noreferrer">
+    <a className="resume-button" href="https://drive.google.com/file/d/1ojYlEB3z79qFVK_4Hjw_iLsmDav4iL1d/view?usp=drive_link" target="_blank" rel="noopener noreferrer">
       Resume
     </a>
   );
