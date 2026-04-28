@@ -1,3 +1,15 @@
+---
+date: '6'
+title: 'Weintervene'
+cover: './cover.webp'
+cta: ''
+external: ''
+button: 'Read More'
+role: ''
+tech:
+  - User Experience
+---
+
 /*
 date: '3'
 title: 'Weintervene Redesign'

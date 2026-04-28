@@ -1,8 +1,8 @@
 ---
-date: '2'
+date: '9'
 title: 'Spotify Moments'
 cover: './demo2.png'
-github: '/src\pages\case-study\index.js'
+cta: ''
 external: '/case-study'
 button: 'View Case Study'
 role: 'UX Design'

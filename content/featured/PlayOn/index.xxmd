@@ -1,11 +1,11 @@
 ---
-date: '2'
+date: '8'
 title: 'PlayOn'
 cover: './Cover01.png'
+cta: 'https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study'
 external: 'https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study'
 button: 'View Case Study'
 role: 'UI/UX Design'
-cta: 'https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study'
 tech:
   - React
   - Express
