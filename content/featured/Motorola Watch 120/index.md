@@ -4,7 +4,7 @@ title: 'Motorola Watch 120'
 cover: './Motowatch.png'
 cta: 'https://www.figma.com/proto/nsUwTIXV1l9uDCFBM6aKwF/TradingRooms?node-id=27-7283&t=GpuIGWC7VI30RtEQ-1&scaling=scale-down-width&content-scaling=fixed&page-id=0%3A1'
 external: 'https://www.figma.com/proto/nsUwTIXV1l9uDCFBM6aKwF/TradingRooms?node-id=27-7283&t=GpuIGWC7VI30RtEQ-1&scaling=scale-down-width&content-scaling=fixed&page-id=0%3A1'
-button: 'View Case Study 🔒'
+button: 'View More'
 role: 'UX Design'
 tech:
   - User Experience
