@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "summary": "",
+    "role": "",
+    "results": "",
+    "methods": ""
+  },
+  "blocks": [
+    {
+      "id": "1777698007540",
+      "type": "text",
+      "content": "<h2>New Section</h2><p>Start writing here...</p>"
+    },
+    {
+      "id": "1777698009289",
+      "type": "toc",
+      "items": []
+    },
+    {
+      "id": "1777698011689",
+      "type": "toc",
+      "items": []
+    },
+    {
+      "id": "1777698012005",
+      "type": "toc",
+      "items": []
+    }
+  ]
+}
