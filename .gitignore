@@ -1,11 +1,18 @@
 # Project dependencies
 .cache
 node_modules
+admin/node_modules
 yarn-error.log
 package-lock.json
+gatsby-error.log
 
 # Build directory
 /public
 .DS_Store
+
+# Local test scripts and backups
+test-*.js
+*.bak
+update_case_study.py
 
 .vscode/

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'gatsby';
+import { useStaticQuery, graphql, Link } from 'gatsby';
 import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styled, { css } from 'styled-components';
@@ -128,6 +128,21 @@ const StyledLinks = styled.div`
 `;
 
 const Nav = ({ isHome }) => {
+  const data = useStaticQuery(graphql`
+    query {
+      allResumeJson {
+        edges {
+          node {
+            type
+            value
+          }
+        }
+      }
+    }
+  `);
+
+  const resumeData = data.allResumeJson.edges[0]?.node || { type: 'url', value: '#' };
+
   const [isMounted, setIsMounted] = useState(!isHome);
   const scrollDirection = useScrollDirection('down');
   const [scrolledToTop, setScrolledToTop] = useState(true);
@@ -173,7 +188,7 @@ const Nav = ({ isHome }) => {
   );
 
   const ResumeLink = (
-    <a className="resume-button" href="https://drive.google.com/file/d/1SLFleGOp7NflafhEWJtOF6-eRUUTBUgE/view?usp=drive_link" target="_blank" rel="noopener noreferrer">
+    <a className="resume-button" href={resumeData.value} target="_blank" rel="noopener noreferrer">
       Resume
     </a>
   );

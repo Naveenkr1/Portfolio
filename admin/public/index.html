@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ─── MOBILE HEADER ─── -->
+  <div class="mobile-header">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-text">Admin</span>
+    </div>
+    <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand-wrapper">
+      <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-text">Admin Panel</span>
+      </div>
+      <button class="sidebar-close" id="sidebar-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-section="homepage" id="nav-homepage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Homepage</span>
+      </button>
+      <button class="nav-item" data-section="featured" id="nav-featured">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Selected Work</span>
+        <span class="nav-count" id="featured-count">0</span>
+      </button>
+      <button class="nav-item" data-section="jobs" id="nav-jobs">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Jobs</span>
+        <span class="nav-count" id="jobs-count">0</span>
+      </button>
+      <button class="nav-item" data-section="case-studies" id="nav-case-studies">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span>Case Studies</span>
+        <span class="nav-count" id="case-studies-count">0</span>
+      </button>
+      <button class="nav-item" data-section="resume" id="nav-resume">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span>Resume</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="http://localhost:8000" target="_blank" class="view-site-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span>View Portfolio</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN CONTENT ─── -->
+  <main class="main-content" id="main-content">
+    <!-- HEADER -->
+    <header class="content-header">
+      <div class="header-left">
+        <h1 class="page-title" id="page-title">Selected Work</h1>
+        <p class="page-subtitle" id="page-subtitle">Manage your featured portfolio projects</p>
+      </div>
+      <div class="header-right">
+        <button class="btn-primary" id="btn-deploy" style="background:var(--slate); color:var(--dark-navy);" onclick="deployToLive()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Publish to Live</span>
+        </button>
+        <button class="btn-create" id="btn-create">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="btn-create-text">Add New</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HOMEPAGE SECTION -->
+    <section class="content-section active" id="section-homepage">
+      <div class="homepage-container">
+        <!-- Hero Section Management -->
+        <div class="homepage-card">
+          <div class="card-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <h3>Hero Section</h3>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Introduction</label>
+              <input type="text" id="hero-intro" placeholder="e.g. Hi, my name is">
+            </div>
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="hero-name" placeholder="Your Name">
+            </div>
+            <div class="form-group full-width">
+              <label>Headline / Title</label>
+              <input type="text" id="hero-title" placeholder="e.g. Product Designer">
+            </div>
+            <div class="form-group full-width">
+              <label>Hero Description</label>
+              <textarea id="hero-description" rows="3" placeholder="Write a short, punchy intro..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Button Text</label>
+              <input type="text" id="hero-button" placeholder="e.g. Check out my Work">
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-primary" id="btn-hero-save">Save Hero Section</button>
+          </div>
+        </div>
+
+        <!-- About Section Management -->
+        <div class="homepage-card">
+          <div class="card-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <h3>About Me</h3>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Biography (Paragraphs - Use new line for new paragraph)</label>
+              <textarea id="about-paragraphs" rows="8" placeholder="Tell your story..."></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label>Skills Title</label>
+              <input type="text" id="about-skills-title" placeholder="e.g. Here are a few technologies I’ve been working with recently:">
+            </div>
+            <div class="form-group full-width">
+              <label>Skills (Comma separated)</label>
+              <input type="text" id="about-skills" placeholder="e.g. UI/UX Design, Wireframing, Figma">
+            </div>
+          </div>
+          <div class="card-footer">
+            <button class="btn-primary" id="btn-about-save">Save About Section</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SELECTED WORK SECTION -->
+    <section class="content-section" id="section-featured">
+      <div class="card-list" id="featured-list">
+        <!-- Cards injected by JS -->
+      </div>
+      <div class="empty-state" id="featured-empty" style="display:none;">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <h3>No projects yet</h3>
+        <p>Create your first featured project to get started.</p>
+      </div>
+    </section>
+
+    <!-- JOBS SECTION -->
+    <section class="content-section" id="section-jobs">
+      <div class="card-list" id="jobs-list">
+        <!-- Cards injected by JS -->
+      </div>
+      <div class="empty-state" id="jobs-empty" style="display:none;">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <h3>No jobs yet</h3>
+        <p>Add your work experience entries.</p>
+      </div>
+    </section>
+
+    <!-- CASE STUDIES SECTION -->
+    <section class="content-section" id="section-case-studies">
+      <div class="card-list" id="case-studies-list">
+        <!-- Cards injected by JS -->
+      </div>
+      <div class="empty-state" id="case-studies-empty" style="display:none;">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <h3>No case studies yet</h3>
+        <p>Create your first case study to get started.</p>
+      </div>
+    </section>
+
+    <!-- RESUME SECTION -->
+    <section class="content-section" id="section-resume">
+      <div class="resume-container">
+        <div class="resume-card">
+          <div class="resume-header">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <div class="header-text">
+              <h3>External Resume URL</h3>
+              <p>Enter the link to your resume (e.g., Google Drive, Dropbox, or a hosted PDF). This URL will be used for the "Resume" button in the portfolio navbar.</p>
+            </div>
+          </div>
+          
+          <div class="form-group" style="margin-top: 20px;">
+            <div class="input-with-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <input type="url" id="resume-url-input" placeholder="https://drive.google.com/..." />
+            </div>
+          </div>
+          
+          <div class="resume-footer">
+            <button class="btn-primary" id="btn-resume-save">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Resume Link
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ─── MODAL: FEATURED PROJECT ─── -->
+  <div class="modal-overlay" id="modal-featured">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-featured-title">New Project</h2>
+        <button class="modal-close" id="modal-featured-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="form-featured" class="modal-body">
+        <input type="hidden" id="feat-editing-slug" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="feat-title">Project Title</label>
+            <input type="text" id="feat-title" placeholder="e.g. Ask Nestle" required />
+          </div>
+          <div class="form-group">
+            <label for="feat-role">Role</label>
+            <input type="text" id="feat-role" placeholder="e.g. UI/UX Design" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="feat-description">Description</label>
+          <textarea id="feat-description" rows="3" placeholder="Brief project description..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="feat-cta">Case Study URL</label>
+            <input type="url" id="feat-cta" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label for="feat-external">External Link</label>
+            <input type="url" id="feat-external" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="feat-button">Button Text</label>
+            <input type="text" id="feat-button" value="Read More" />
+          </div>
+          <div class="form-group">
+            <label for="feat-tech">Tech / Tags</label>
+            <input type="text" id="feat-tech" placeholder="User Experience, React (comma separated)" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Cover Image</label>
+          <div class="image-upload" id="feat-image-upload">
+            <input type="file" id="feat-cover" accept="image/*" />
+            <div class="upload-placeholder" id="feat-upload-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>Click to upload or drag & drop</span>
+              <span class="upload-hint">PNG, JPG, WebP, GIF — Max 10MB</span>
+            </div>
+            <img id="feat-cover-preview" class="cover-preview" style="display:none;" alt="Cover preview" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btn-feat-cancel">Cancel</button>
+          <button type="submit" class="btn-primary" id="btn-feat-save">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Project
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── MODAL: JOB ─── -->
+  <div class="modal-overlay" id="modal-job">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-job-title">New Job</h2>
+        <button class="modal-close" id="modal-job-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="form-job" class="modal-body">
+        <input type="hidden" id="job-editing-slug" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="job-title">Job Title</label>
+            <input type="text" id="job-title" placeholder="e.g. Product Designer" required />
+          </div>
+          <div class="form-group">
+            <label for="job-company">Company</label>
+            <input type="text" id="job-company" placeholder="e.g. Google" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="job-location">Location</label>
+            <input type="text" id="job-location" placeholder="e.g. Gurugram" />
+          </div>
+          <div class="form-group">
+            <label for="job-range">Duration</label>
+            <input type="text" id="job-range" placeholder="e.g. Jan 2022 - Jul 2024" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="job-url">Company URL</label>
+            <input type="url" id="job-url" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label for="job-date">Sort Date</label>
+            <input type="date" id="job-date" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="job-description">Responsibilities</label>
+          <textarea id="job-description" rows="5" placeholder="- Conducted user research&#10;- Created prototypes and wireframes&#10;- Collaborated with cross-functional teams"></textarea>
+          <span class="form-hint">Use markdown bullet points (start each line with -)</span>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btn-job-cancel">Cancel</button>
+          <button type="submit" class="btn-primary" id="btn-job-save">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Job
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── DELETE CONFIRMATION ─── -->
+  <div class="modal-overlay" id="modal-delete">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2>Confirm Delete</h2>
+        <button class="modal-close" id="modal-delete-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="delete-warning">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <p>Are you sure you want to delete <strong id="delete-item-name"></strong>?</p>
+          <p class="delete-subtitle">This action cannot be undone. The folder and all its files will be permanently removed.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="btn-delete-cancel">Cancel</button>
+          <button class="btn-danger" id="btn-delete-confirm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TOAST CONTAINER ─── -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ─── CASE STUDY BUILDER ─── -->
+  <div class="builder-overlay" id="builder-overlay">
+    <div class="builder-container">
+      <header class="builder-header">
+        <div class="builder-header-left">
+          <button class="btn-icon" id="btn-builder-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="builder-title-group">
+            <input type="text" id="builder-case-study-title" placeholder="Enter Case Study Title" class="builder-title-input" />
+            <span class="builder-slug" id="builder-case-study-slug">/slug</span>
+          </div>
+        </div>
+        <div class="builder-header-right">
+          <a id="btn-builder-preview" class="btn-secondary" target="_blank" href="#" style="text-decoration:none; display:none;">Preview</a>
+          <div class="builder-view-toggle">
+            <button class="btn-view active" id="btn-view-desktop" title="Desktop View">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </button>
+            <button class="btn-view" id="btn-view-mobile" title="Mobile View">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="builder-status">
+            <span>Draft</span>
+            <label class="switch">
+              <input type="checkbox" id="builder-publish-toggle">
+              <span class="slider"></span>
+            </label>
+            <span>Published</span>
+          </div>
+          <button class="btn-primary" id="btn-builder-save">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </header>
+
+      <div class="builder-layout">
+        <!-- Builder Sidebar: Add Blocks -->
+        <aside class="builder-sidebar">
+          <div class="sidebar-group">
+            <h3>Add Blocks</h3>
+            <div class="block-tools">
+              <button class="block-tool" onclick="builder.addBlock('text')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                <span>Text Section</span>
+              </button>
+              <button class="block-tool" onclick="builder.addBlock('image')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Image Grid</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="sidebar-group">
+            <h3>Templates</h3>
+            <button class="btn-secondary btn-full" onclick="builder.applyTemplate('blank')">Blank Template</button>
+            <button class="btn-secondary btn-full" onclick="builder.applyTemplate('premade')">Case Study Template</button>
+          </div>
+        </aside>
+
+        <!-- Builder Main: Canvas -->
+        <div class="builder-canvas">
+          <div class="builder-metadata-section">
+            <h3 class="metadata-title">Case Study Details</h3>
+            <div class="form-group">
+              <label>Banner Image</label>
+              <div class="banner-upload-container" onclick="document.getElementById('banner-upload').click()">
+                <img id="banner-preview" src="" style="display:none; width:100%; height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;" />
+                <div id="banner-placeholder" class="banner-placeholder">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span>Upload Banner</span>
+                </div>
+              </div>
+              <input type="file" id="banner-upload" accept="image/*" style="display:none" onchange="builder.handleBannerUpload(this.files)">
+            </div>
+            <div class="form-group">
+              <label for="builder-meta-summary">Summary (Hero Section)</label>
+              <textarea id="builder-meta-summary" rows="3" placeholder="Brief overview of the project..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="builder-meta-role">Role & Timeline</label>
+              <input type="text" id="builder-meta-role" placeholder="e.g. Lead Designer • 3 Months">
+            </div>
+            <div class="form-group">
+              <label for="builder-meta-results">Key Results</label>
+              <input type="text" id="builder-meta-results" placeholder="e.g. 25% increase in conversion">
+            </div>
+            <div class="form-group">
+              <label for="builder-meta-methods">Methods & Tools</label>
+              <input type="text" id="builder-meta-methods" placeholder="e.g. Figma, User Research, Prototyping">
+            </div>
+            
+          </div>
+          
+          <h3 class="metadata-title" style="margin-top:40px; border-top:1px solid var(--lightest-navy); padding-top:30px;">Case Study Content</h3>
+          <div id="builder-blocks-list" class="builder-blocks">
+            <!-- Blocks injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Hyperlink Modal -->
+  <!-- Floating Link Popover -->
+  <div class="link-popover" id="modal-link">
+    <div class="popover-content">
+      <input type="url" id="link-url" placeholder="Paste or type a link..." />
+      <input type="text" id="link-text" placeholder="Text to display" />
+      <div class="popover-actions">
+        <button id="btn-link-confirm" class="btn-primary-sm">Save</button>
+        <button id="btn-link-cancel" class="btn-secondary-sm">Cancel</button>
+      </div>
+    </div>
+    <div class="popover-arrow"></div>
+  </div>
+
+  <!-- Upload Progress Overlay -->
+  <div class="progress-overlay" id="upload-progress-overlay">
+    <div class="progress-card">
+      <h3 id="progress-title">Saving Case Study...</h3>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+      <p id="progress-status">Preparing data...</p>
+    </div>
+  </div>
+
+  <script src="builder.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

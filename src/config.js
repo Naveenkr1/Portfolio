@@ -29,17 +29,14 @@ module.exports = {
       name: 'Work',
       url: '/#projects',
     },
-
-    {
-      name: 'About',
-      url: '/#about',
-    },
-    
     {
       name: 'Experience',
       url: '/#jobs',
     },
-    
+    {
+      name: 'About',
+      url: '/#about',
+    },
     {
       name: 'Contact',
       url: '/#contact',

@@ -340,6 +340,12 @@ const StyledProject = styled.li`
       border-radius: var(--border-radius);
       mix-blend-mode: multiply;
       filter: grayscale(100%) contrast(1) brightness(90%);
+      transition: var(--transition);
+
+      &.is-gif {
+        mix-blend-mode: normal !important;
+        filter: none !important;
+      }
 
       @media (max-width: 957px) {
         width: 20rem;
@@ -350,8 +356,8 @@ const StyledProject = styled.li`
         object-fit: cover;
         width: auto;
         height: 100%;
-        filter: none;
-        mix-blend-mode: normal;
+        filter: none !important;
+        mix-blend-mode: normal !important;
       }
     }
   }
@@ -369,6 +375,7 @@ const Featured = () => {
             frontmatter {
               title
               cover {
+                publicURL
                 childImageSharp {
                   gatsbyImageData(width: 700, placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
                 }
@@ -404,7 +411,7 @@ const Featured = () => {
   return (
     <section id="projects">
       <h2 className="numbered-heading" ref={revealTitle}>
-        Featured Work
+        Selected Work
       </h2>
 
       <StyledProjectsGrid>
@@ -412,13 +419,14 @@ const Featured = () => {
           featuredProjects.map(({ node }, i) => {
             const { frontmatter, html } = node;
             const { external, button, role, title, tech, github, cover, cta } = frontmatter;
-            const image = getImage(cover);
+            const isGif = cover?.publicURL?.toLowerCase().endsWith('.gif');
+            const image = isGif ? null : getImage(cover);
 
             return (
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
                 <div className="project-content">
                   <div>
-                    <p className="project-overline">Featured Project</p>
+                    <p className="project-overline">Selected Project</p>
 
                     <h3 className="project-title">
                       <a href={external}>{title}</a>
@@ -441,12 +449,12 @@ const Featured = () => {
                 </div>
 
                 <div className="project-image">
-                  <a href={external}> {/* I have changed here */}
-                    { <GatsbyImage image={image} alt={title} className="img"  />}
-                 
-
-                  
-                    
+                  <a href={external}>
+                    {image ? (
+                      <GatsbyImage image={image} alt={title} className="img" />
+                    ) : (
+                      <img src={cover.publicURL} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />
+                    )}
                   </a>
                 </div>
               </StyledProject>

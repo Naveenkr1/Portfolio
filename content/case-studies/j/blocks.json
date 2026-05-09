@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "summary": "",
+    "role": "",
+    "results": "",
+    "methods": ""
+  },
+  "blocks": [
+    {
+      "id": "1777698458331",
+      "type": "text",
+      "content": "<h2>New Section</h2><p>Start writing here...</p>"
+    },
+    {
+      "id": "1777698458713",
+      "type": "text",
+      "content": "<h2>New Section</h2><p>Start writing here...</p>"
+    },
+    {
+      "id": "1777698458845",
+      "type": "text",
+      "content": "<h2>New Section</h2><p>Start writing here...</p>"
+    },
+    {
+      "id": "1777698462130",
+      "type": "image",
+      "images": [],
+      "grid": 1
+    }
+  ]
+}

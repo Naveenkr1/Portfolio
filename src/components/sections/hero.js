@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useStaticQuery, graphql } from 'gatsby';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styled from 'styled-components';
 import { navDelay, loaderDelay } from '@utils';
@@ -46,6 +47,24 @@ const StyledHeroSection = styled.section`
 `;
 
 const Hero = () => {
+  const data = useStaticQuery(graphql`
+    query {
+      allHeroJson {
+        edges {
+          node {
+            intro
+            name
+            title
+            description
+            buttonText
+          }
+        }
+      }
+    }
+  `);
+
+  const heroData = data.allHeroJson.edges[0].node;
+
   const [isMounted, setIsMounted] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -58,17 +77,12 @@ const Hero = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  const one = <h1>Hi, my name is</h1>;
-  const two = <h2 className="big-heading">Naveen Kumar.</h2>;
-  const three = <h3 className="big-heading">Product Designer</h3>;
+  const one = <h1>{heroData.intro}</h1>;
+  const two = <h2 className="big-heading">{heroData.name}</h2>;
+  const three = <h3 className="big-heading">{heroData.title}</h3>;
   const four = (
     <>
-      <p>
-        I'm a digital Product Designer focusing on crafting user experiences and design 
-        systems for software, web, and mobile products. I'm passionate about applying consumer 
-        psychology for an interactive science-backed approach.{' '}
-       
-      </p>
+      <p>{heroData.description}</p>
     </>
   );
   const five = (
@@ -76,7 +90,7 @@ const Hero = () => {
       className="email-link"
       href="#projects"
       rel="noreferrer">
-      Check out my Work
+      {heroData.buttonText}
     </a>
   );
 

@@ -10,7 +10,7 @@ const StyledContent = styled.div`
   min-height: 100vh;
 `;
 
-const Layout = ({ children, location }) => {
+const Layout = ({ children, location, hideSocialAndEmail }) => {
   const isHome = location.pathname === '/';
   const [isLoading, setIsLoading] = useState(isHome);
 
@@ -63,8 +63,12 @@ const Layout = ({ children, location }) => {
           ) : (
             <StyledContent>
               <Nav isHome={isHome} />
-              <Social isHome={isHome} />
-              <Email isHome={isHome} />
+              {!hideSocialAndEmail && (
+                <>
+                  <Social isHome={isHome} />
+                  <Email isHome={isHome} />
+                </>
+              )}
 
               <div id="content">
                 {children}

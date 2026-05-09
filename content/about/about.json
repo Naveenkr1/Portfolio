@@ -1,0 +1,17 @@
+{
+  "title": "About Me",
+  "paragraphs": [
+    "Hello, I'm Naveen Kumar, a UI/UX designer with an edge in digital product design, User experience, and interaction design.",
+    "I originally started off as a Computer Science major during undergrad but quickly realized that I was fascinated by the 'Why' behind the code I was writing. This led me to explore the field of UI/UX, and after a few side projects and freelance work, I fell in love with the art of problem-solving.",
+    "I like to think of myself as a full-stack product designer who can lead a project from research & design to the prototyping phase to ensure a smooth developer handoff."
+  ],
+  "skillsTitle": "Here are a few technologies I’ve been working with recently:",
+  "skills": [
+    "UI/UX Design",
+    "Wireframing",
+    "prototyping",
+    "UX Research",
+    "Visual Design",
+    "Story Map"
+  ]
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dark-navy: #0A192F;
+      --navy: #112240;
+      --light-navy: #233554;
+      --lightest-navy: #30415D;
+      --slate: #8892B0;
+      --light-slate: #A8B2D1;
+      --lightest-slate: #CCD6F6;
+      --green: #64FFDA;
+      --red: #FF6B6B;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--dark-navy);
+      color: var(--lightest-slate);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .login-container {
+      background: var(--navy);
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px -15px rgba(2, 12, 27, 0.7);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+    }
+    p {
+      color: var(--slate);
+      margin: 0 0 24px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      background: var(--dark-navy);
+      border: 1px solid var(--light-navy);
+      border-radius: 4px;
+      color: var(--lightest-slate);
+      font-size: 1rem;
+      outline: none;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    input:focus {
+      border-color: var(--green);
+    }
+    .btn-primary {
+      background-color: transparent;
+      color: var(--green);
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+      background-color: rgba(100, 255, 218, 0.1);
+    }
+    .error-msg {
+      display: none;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 30px 20px;
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Admin Panel</h2>
+    <p>Enter password to continue</p>
+    <form id="form-login">
+      <div class="form-group">
+        <input type="password" id="login-password" placeholder="Password" required>
+      </div>
+      <button type="submit" class="btn-primary">Login</button>
+    </form>
+    <div id="login-error" class="error-msg">Incorrect password</div>
+  </div>
+
+  <script>
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      errorEl.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          window.location.href = '/admin'; // Redirect on success
+        } else {
+          errorEl.textContent = data.error || 'Incorrect password';
+          errorEl.style.display = 'block';
+        }
+      } catch (err) {
+        errorEl.textContent = 'Connection error';
+        errorEl.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

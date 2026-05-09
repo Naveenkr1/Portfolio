@@ -11,6 +11,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
   const { createPage } = actions;
   const postTemplate = path.resolve(`src/templates/post.js`);
   const tagTemplate = path.resolve('src/templates/tag.js');
+  const caseStudyTemplate = path.resolve('src/templates/case-study.js');
 
   const result = await graphql(`
     {
@@ -30,6 +31,20 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
       tagsGroup: allMarkdownRemark(limit: 2000) {
         group(field: frontmatter___tags) {
           fieldValue
+        }
+      }
+      caseStudiesRemark: allMarkdownRemark(
+        filter: { 
+          fileAbsolutePath: { regex: "/content/case-studies/" }
+        }
+        sort: { order: DESC, fields: [frontmatter___date] }
+      ) {
+        edges {
+          node {
+            frontmatter {
+              slug
+            }
+          }
         }
       }
     }
@@ -61,6 +76,22 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
       component: tagTemplate,
       context: {
         tag: tag.fieldValue,
+      },
+    });
+  });
+
+  // Create case study pages
+  const caseStudies = result.data.caseStudiesRemark.edges;
+  caseStudies.forEach(({ node }) => {
+    // Only skip drafts if we are in production
+    if (process.env.NODE_ENV === 'production' && node.frontmatter.published === false) {
+      return;
+    }
+    createPage({
+      path: `/case-study/${node.frontmatter.slug}`,
+      component: caseStudyTemplate,
+      context: {
+        slug: node.frontmatter.slug,
       },
     });
   });
@@ -104,4 +135,53 @@ exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
       },
     },
   });
+};
+
+exports.onCreateNode = ({ node, actions, getNode }) => {
+  const { createNodeField } = actions;
+
+  if (node.internal.type === `MarkdownRemark`) {
+    const fileNode = getNode(node.parent);
+    if (fileNode.internal.type === 'File' && fileNode.sourceInstanceName === 'content' && fileNode.relativeDirectory.startsWith('case-studies')) {
+      const parts = fileNode.relativeDirectory.split('/');
+      const slug = `/${parts[parts.length - 1]}`;
+      createNodeField({
+        node,
+        name: `slug`,
+        value: slug,
+      });
+    }
+  }
+};
+
+exports.createSchemaCustomization = ({ actions }) => {
+  const { createTypes } = actions;
+  const typeDefs = `
+    type MarkdownRemark implements Node {
+      frontmatter: MarkdownRemarkFrontmatter
+    }
+    type MarkdownRemarkFrontmatter @infer {
+      title: String
+      slug: String
+      date: Date @dateformat
+      published: Boolean
+      summary: String
+      role: String
+      results: String
+      methods: String
+      tocEnabled: Boolean
+      tocItems: [TOCItem]
+      cover: File @fileByRelativePath
+      tech: [String]
+      github: String
+      external: String
+      button: String
+      cta: String
+    }
+    type TOCItem {
+      text: String
+      anchor: String
+    }
+  `;
+  createTypes(typeDefs);
 };

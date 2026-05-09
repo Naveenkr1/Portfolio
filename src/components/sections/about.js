@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useStaticQuery, graphql } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
 import { srConfig } from '@config';
@@ -121,6 +122,22 @@ const StyledPic = styled.div`
 `;
 
 const About = () => {
+  const data = useStaticQuery(graphql`
+    query {
+      allAboutJson {
+        edges {
+          node {
+            title
+            paragraphs
+            skillsTitle
+            skills
+          }
+        }
+      }
+    }
+  `);
+
+  const aboutData = data.allAboutJson.edges[0].node;
   const revealContainer = useRef(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -132,26 +149,19 @@ const About = () => {
     sr.reveal(revealContainer.current, srConfig());
   }, []);
 
-  const skills = ['UI/UX Design', 'Wireframing', 'prototyping', 'UX Research', 'Visual Design', 'Story Map'];
+  const { title, paragraphs, skillsTitle, skills } = aboutData;
 
   return (
     <StyledAboutSection id="about" ref={revealContainer}>
-      <h2 className="numbered-heading">About Me</h2>
+      <h2 className="numbered-heading">{title}</h2>
 
       <div className="inner">
         <StyledText>
           <div>
-            <p>
-              Hello, I'm <a href='' >Naveen Kumar </a>, a UI/UX designer with an edge in digital product design, User experience, and interaction design.
-            </p>
-
-          
-            <p>
-            I originally started off as a Computer Science major during undergrad but quickly realized that I was fascinated by the 'Why' behind the code I was writing.
-            This led me to explore the field of UI/UX, and after a few side projects and freelance work, I fell in love with the art of problem-solving.
-            </p>
-            <p> I like to think of myself as a full-stack product designer who can lead a project from research & design to the prototyping phase to ensure a smooth developer handoff.</p>
-            <p>Here are a few technologies I’ve been working with recently:</p>
+            {paragraphs.map((paragraph, i) => (
+              <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }} />
+            ))}
+            <p>{skillsTitle}</p>
           </div>
 
           <ul className="skills-list">

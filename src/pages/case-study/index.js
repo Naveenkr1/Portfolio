@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { srConfig } from '@config';
+import sr from '@utils/sr';
 import '../../styles/caseStudy.css';
 import svg01 from './Svg/01.svg';
 import svg02 from './Svg/02.svg';
@@ -28,6 +30,21 @@ import Logo from './Svg/LogoN.svg';
 import Arrow from './Svg/arrow.svg';
 
 function CaseStudy() {
+    useEffect(() => {
+        if (sr) {
+            sr.reveal('.title-lumos', srConfig());
+            sr.reveal('.section-3', srConfig());
+            sr.reveal('.chapter', srConfig());
+            sr.reveal('.social', srConfig());
+            sr.reveal('.right-box', srConfig());
+            sr.reveal('.image-caption', srConfig());
+            sr.reveal('.double', srConfig());
+            sr.reveal('.grid-8', srConfig());
+            sr.reveal('.columns-20', srConfig());
+            sr.reveal('.div-block-12', srConfig());
+            sr.reveal('.next', srConfig());
+        }
+    }, []);
 
     const handleClick = () => { }
     return (
