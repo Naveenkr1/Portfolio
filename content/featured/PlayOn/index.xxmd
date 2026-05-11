@@ -1,9 +1,9 @@
 ---
 date: '8'
-title: 'PlayOn'
-cover: './Cover01.png'
-cta: 'https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study'
-external: 'https://www.behance.net/gallery/152045559/Online-Gaming-App-UIUX-Case-Study'
+title: 'WeWork Workspace Booking Experience'
+cover: './Cover02.webp'
+cta: 'https://www.figma.com/proto/yBZbQzRa9ava9jt7dS4zyU/WeWork?node-id=347-3651&t=Iv5WGt4po7kkCV3w-1&scaling=scale-down-width&content-scaling=fixed&page-id=347%3A3650'
+external: 'https://www.figma.com/proto/yBZbQzRa9ava9jt7dS4zyU/WeWork?node-id=347-3651&t=Iv5WGt4po7kkCV3w-1&scaling=scale-down-width&content-scaling=fixed&page-id=347%3A3650'
 button: 'View Case Study'
 role: 'UI/UX Design'
 tech:
@@ -13,6 +13,5 @@ tech:
   - Styled Components
 ---
 
-Online gaming has made headway over the past few years. An interesting gaming
-platform that has several games where a large number of players compete with each
-other in real-time to compete and win exciting cash prizes.
+A product redesign focused on improving workspace booking experience, increasing usability,
+and streamlining customer interactions across mobile and desktop.
