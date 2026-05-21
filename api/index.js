@@ -39,13 +39,6 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(STATIC_DIR, 'uploads')));
-
-// Serve login page
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
-});
 
 // Login endpoint sets cookie
 app.post('/api/login', async (req, res) => {
@@ -71,18 +64,8 @@ app.use((req, res, next) => {
   if (req.cookies && req.cookies.admin_auth === 'valid') {
     return next();
   }
-  if (req.path.startsWith('/api/')) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  res.redirect('/login');
+  return res.status(401).json({ error: 'Unauthorized' });
 });
-
-// Serve case study content statically
-app.use('/api/content/case-studies', express.static(CASE_STUDIES_DIR));
-
-// Serve static on /admin (now protected by middleware)
-app.use('/admin', express.static(path.join(__dirname, 'public')));
-app.get('/', (req, res) => res.redirect('/admin'));
 
 // Multer config for Cloudinary
 const storage = new CloudinaryStorage({
@@ -769,9 +752,4 @@ app.get('/api/case-studies/:slug', async (req, res) => {
 // START SERVER
 // ─────────────────────────────────────────────
 
-app.listen(PORT, () => {
-  console.log(`\n  🚀 Portfolio Admin Panel`);
-  console.log(`  ───────────────────────`);
-  console.log(`  Local:   http://localhost:${PORT}`);
-  console.log(`  Content: ${PORTFOLIO_ROOT}/content/\n`);
-});
+module.exports = app;
