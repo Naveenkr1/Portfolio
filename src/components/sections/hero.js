@@ -49,21 +49,20 @@ const StyledHeroSection = styled.section`
 const Hero = () => {
   const data = useStaticQuery(graphql`
     query {
-      allHeroJson {
+      allMongodbPortfolioHeros {
         edges {
           node {
-            intro
+            subtitle
             name
             title
             description
-            buttonText
           }
         }
       }
     }
   `);
 
-  const heroData = data.allHeroJson.edges[0].node;
+  const heroData = data.allMongodbPortfolioHeros.edges[0].node;
 
   const [isMounted, setIsMounted] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -77,9 +76,9 @@ const Hero = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  const one = <h1>{heroData.intro}</h1>;
+  const one = <h1>{heroData.title}</h1>;
   const two = <h2 className="big-heading">{heroData.name}</h2>;
-  const three = <h3 className="big-heading">{heroData.title}</h3>;
+  const three = <h3 className="big-heading">{heroData.subtitle}</h3>;
   const four = (
     <>
       <p>{heroData.description}</p>
@@ -90,7 +89,7 @@ const Hero = () => {
       className="email-link"
       href="#projects"
       rel="noreferrer">
-      {heroData.buttonText}
+      Check out my work
     </a>
   );
 

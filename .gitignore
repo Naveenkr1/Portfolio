@@ -16,3 +16,8 @@ test-*.js
 update_case_study.py
 
 .vscode/
+
+# Secrets
+.env
+admin/.env
+admin/cookies.txt

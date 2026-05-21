@@ -124,12 +124,11 @@ const StyledPic = styled.div`
 const About = () => {
   const data = useStaticQuery(graphql`
     query {
-      allAboutJson {
+      allMongodbPortfolioAbouts {
         edges {
           node {
             title
-            paragraphs
-            skillsTitle
+            description
             skills
           }
         }
@@ -137,7 +136,7 @@ const About = () => {
     }
   `);
 
-  const aboutData = data.allAboutJson.edges[0].node;
+  const aboutData = data.allMongodbPortfolioAbouts.edges[0].node;
   const revealContainer = useRef(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -149,7 +148,7 @@ const About = () => {
     sr.reveal(revealContainer.current, srConfig());
   }, []);
 
-  const { title, paragraphs, skillsTitle, skills } = aboutData;
+  const { title, description, skills } = aboutData;
 
   return (
     <StyledAboutSection id="about" ref={revealContainer}>
@@ -158,10 +157,9 @@ const About = () => {
       <div className="inner">
         <StyledText>
           <div>
-            {paragraphs.map((paragraph, i) => (
-              <p key={i} dangerouslySetInnerHTML={{ __html: paragraph }} />
-            ))}
-            <p>{skillsTitle}</p>
+            <div dangerouslySetInnerHTML={{ __html: description }} />
+            <br />
+            <p>Here are a few technologies I’ve been working with recently:</p>
           </div>
 
           <ul className="skills-list">

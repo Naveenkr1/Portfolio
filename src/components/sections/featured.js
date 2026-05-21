@@ -27,20 +27,27 @@ const StyledProject = styled.li`
   position: relative;
   display: flex;
   flex-direction: row-reverse;
-  gap: 10px;
-  padding: 1rem;
+  gap: 30px;
+  padding: 16px;
   border-radius: 5px;
   align-items: center;
   border: solid 1px #45B09F;
-  &:hover
-  {
-    background: rgba(69, 176, 159, 0.14);
+  margin-bottom: 100px;
+
+  &:hover {
+    background: rgba(69, 176, 159, 0.05);
+  }
+
+  @media (max-width: 1080px) {
+    gap: 20px;
+    padding: 1.5rem;
   }
 
   @media (max-width: 768px) {
-    border: none;
-    flex-direction: column-reverse;
+    flex-direction: column;
     padding: 0;
+    border: none;
+    background: transparent !important;
   }
 
 
@@ -76,19 +83,15 @@ const StyledProject = styled.li`
 
 
   .project-content {
-    margin-left: 1.7rem;
+    flex: 1;
     position: relative;
-    @media (max-width: 1080px) {
-    }
-    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
     @media (max-width: 768px) {
       width: 100%;
-      box-shadow: none;
-      display: flex; 
-      justify-content: space-between;
-      align-items: center;
-      margin-left: 0;
-      z-index: 5;
+      padding: 20px 0;
     }
   }
 
@@ -252,55 +255,35 @@ const StyledProject = styled.li`
       ${({ theme }) => theme.mixins.flexCenter};
       padding: 10px;
 
-      &.external {
-        svg {
-          width: 22px;
-          height: 22px;
-          margin-top: -4px;
-        }
-      }
-
       svg {
         width: 20px;
         height: 20px;
       }
     }
-
-    .cta {
-      ${({ theme }) => theme.mixins.smallButton};
-      margin: 10px;
-    }
   }
 
   .project-image {
-    ${({ theme }) => theme.mixins.boxShadow};
-    grid-column: 6 / -1;
-    grid-row: 1 / -1;
+    flex: 1.3;
     position: relative;
     z-index: 1;
-
-
+    border-radius: 4px;
+    overflow: hidden;
 
     @media (max-width: 768px) {
-      grid-column: 1 / -1;
-      height: 100%;
-      opacity: 1;
-      box-shadow: none;
-      border: 1px solid #45B09F;
-      padding: .6rem;
-      border-radius: 5px;;
+      width: 100%;
+      margin-bottom: 20px;
     }
 
     a {
+      display: block;
       width: 100%;
       height: 100%;
-      background-color: var(--green);
+      background-color: transparent;
       border-radius: var(--border-radius);
       vertical-align: middle;
 
       @media (max-width: 768px) {
         background-color: transparent;
-        border-radius: 5px;
       }
 
       @media (min-width: 768px) {
@@ -335,11 +318,11 @@ const StyledProject = styled.li`
     }
 
     .img {
-      width: 30rem;
-      height: 20rem;
-      border-radius: var(--border-radius);
-      mix-blend-mode: multiply;
-      filter: grayscale(100%) contrast(1) brightness(90%);
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 4px;
+      object-fit: cover;
       transition: var(--transition);
 
       &.is-gif {
@@ -348,14 +331,16 @@ const StyledProject = styled.li`
       }
 
       @media (max-width: 957px) {
-        width: 20rem;
-        height: 13rem;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 3 / 2;
       }
 
       @media (max-width: 768px) {
         object-fit: cover;
-        width: auto;
-        height: 100%;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 3 / 2;
         filter: none !important;
         mix-blend-mode: normal !important;
       }
@@ -366,28 +351,20 @@ const StyledProject = styled.li`
 const Featured = () => {
   const data = useStaticQuery(graphql`
     {
-      featured: allMarkdownRemark(
-        filter: { fileAbsolutePath: { regex: "/content/featured/" } }
-        sort: { fields: [frontmatter___date], order: ASC }
+      featured: allMongodbPortfolioProjects(
+        filter: { published: { eq: true } }
+        sort: { fields: [date], order: ASC }
       ) {
         edges {
           node {
-            frontmatter {
-              title
-              cover {
-                publicURL
-                childImageSharp {
-                  gatsbyImageData(width: 700, placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
-                }
-              }
-              tech
-              github
-              external
-              role
-              button
-              cta
-            }
-            html
+            title
+            cover
+            tech
+            external
+            role
+            button
+            cta
+            description
           }
         }
       }
@@ -417,10 +394,8 @@ const Featured = () => {
       <StyledProjectsGrid>
         {featuredProjects &&
           featuredProjects.map(({ node }, i) => {
-            const { frontmatter, html } = node;
-            const { external, button, role, title, tech, github, cover, cta } = frontmatter;
-            const isGif = cover?.publicURL?.toLowerCase().endsWith('.gif');
-            const image = isGif ? null : getImage(cover);
+            const { external, button, role, title, tech, cover, cta, description } = node;
+            const isGif = cover && cover.toLowerCase().endsWith('.gif');
 
             return (
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
@@ -438,7 +413,7 @@ const Featured = () => {
 
                     <div
                       className="project-description"
-                      dangerouslySetInnerHTML={{ __html: html }}
+                      dangerouslySetInnerHTML={{ __html: description }}
                     />
                   </div>
                  
@@ -450,11 +425,7 @@ const Featured = () => {
 
                 <div className="project-image">
                   <a href={external}>
-                    {image ? (
-                      <GatsbyImage image={image} alt={title} className="img" />
-                    ) : (
-                      <img src={cover.publicURL} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />
-                    )}
+                    <img src={cover} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />
                   </a>
                 </div>
               </StyledProject>

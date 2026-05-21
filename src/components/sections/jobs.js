@@ -167,20 +167,18 @@ const StyledTabPanel = styled.div`
 const Jobs = () => {
   const data = useStaticQuery(graphql`
     query {
-      jobs: allMarkdownRemark(
-        filter: { fileAbsolutePath: { regex: "/content/jobs/" } }
-        sort: { fields: [frontmatter___date], order: DESC }
+      jobs: allMongodbPortfolioJobs(
+        filter: { published: { eq: true } }
+        sort: { fields: [date], order: DESC }
       ) {
         edges {
           node {
-            frontmatter {
-              title
-              company
-              location
-              range
-              url
-            }
-            html
+            title
+            company
+            location
+            range
+            url
+            description
           }
         }
       }
@@ -250,7 +248,7 @@ const Jobs = () => {
         <StyledTabList role="tablist" aria-label="Job tabs" onKeyDown={e => onKeyDown(e)}>
           {jobsData &&
             jobsData.map(({ node }, i) => {
-              const { company } = node.frontmatter;
+              const { company } = node;
               return (
                 <StyledTabButton
                   key={i}
@@ -272,8 +270,7 @@ const Jobs = () => {
         <StyledTabPanels>
           {jobsData &&
             jobsData.map(({ node }, i) => {
-              const { frontmatter, html } = node;
-              const { title, url, company, range } = frontmatter;
+              const { title, url, company, range, description } = node;
 
               return (
                 <CSSTransition key={i} in={activeTabId === i} timeout={250} classNames="fade">
@@ -296,7 +293,7 @@ const Jobs = () => {
 
                     <p className="range">{range}</p>
 
-                    <div dangerouslySetInnerHTML={{ __html: html }} />
+                    <div dangerouslySetInnerHTML={{ __html: description }} />
                   </StyledTabPanel>
                 </CSSTransition>
               );

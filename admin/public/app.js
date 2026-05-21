@@ -121,19 +121,19 @@ async function loadHomepage() {
     const heroRes = await fetch(`${API}/api/homepage/hero`);
     const hero = await heroRes.json();
     if (hero.name) {
-      document.getElementById('hero-intro').value = hero.intro || '';
+      document.getElementById('hero-intro').value = hero.title || ''; // Maps intro -> title
       document.getElementById('hero-name').value = hero.name || '';
-      document.getElementById('hero-title').value = hero.title || '';
+      document.getElementById('hero-title').value = hero.subtitle || ''; // Maps title -> subtitle
       document.getElementById('hero-description').value = hero.description || '';
-      document.getElementById('hero-button').value = hero.buttonText || '';
+      document.getElementById('hero-button').value = hero.buttonText || 'Check out my Work';
     }
 
     // Load About
     const aboutRes = await fetch(`${API}/api/homepage/about`);
     const about = await aboutRes.json();
     if (about.title) {
-      document.getElementById('about-paragraphs').value = (about.paragraphs || []).join('\n\n');
-      document.getElementById('about-skills-title').value = about.skillsTitle || '';
+      document.getElementById('about-paragraphs').value = about.description || '';
+      document.getElementById('about-skills-title').value = 'Skills';
       document.getElementById('about-skills').value = (about.skills || []).join(', ');
     }
   } catch (err) {
@@ -217,8 +217,8 @@ function renderFeatured() {
       </div>
       <div class="card-order">${i + 1}</div>
       <div class="card-cover">
-        ${p.coverImage
-          ? `<img src="${API}/api/featured/${encodeURIComponent(p.slug)}/cover" alt="${p.title}" />`
+        ${p.cover
+          ? `<img src="${p.cover.startsWith('http') ? p.cover : `${API}/api/featured/${encodeURIComponent(p.slug)}/cover`}" alt="${p.title}" />`
           : `<div class="card-cover-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
         }
       </div>
@@ -281,8 +281,9 @@ function editFeatured(slug) {
   // Show existing cover
   const preview = document.getElementById('feat-cover-preview');
   const placeholder = document.getElementById('feat-upload-placeholder');
-  if (p.coverImage) {
-    preview.src = `${API}/api/featured/${encodeURIComponent(slug)}/cover`;
+  if (p.cover) {
+    const coverUrl = p.cover.startsWith('http') ? p.cover : `${API}/api/featured/${encodeURIComponent(slug)}/cover`;
+    preview.src = coverUrl;
     preview.style.display = 'block';
     placeholder.style.display = 'none';
   } else {
@@ -493,24 +494,28 @@ function bindModals() {
     const originalText = btn.innerHTML;
     
     const data = {
-      intro: document.getElementById('hero-intro').value,
+      title: document.getElementById('hero-intro').value,
       name: document.getElementById('hero-name').value,
-      title: document.getElementById('hero-title').value,
+      subtitle: document.getElementById('hero-title').value,
       description: document.getElementById('hero-description').value,
-      buttonText: document.getElementById('hero-button').value
     };
 
     try {
       btn.disabled = true;
       btn.innerHTML = 'Saving...';
-      await fetch(`${API}/api/homepage/hero`, {
+      const res = await fetch(`${API}/api/homepage/hero`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      showToast('Hero section updated!');
+      if (!res.ok) {
+        const err = await res.json();
+        showToast(err.error || `Save failed (${res.status})`, 'error');
+      } else {
+        showToast('Hero section updated ✅');
+      }
     } catch (err) {
-      showToast('Failed to save hero section', 'error');
+      showToast('Failed to save hero section: ' + err.message, 'error');
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalText;
@@ -532,22 +537,26 @@ function bindModals() {
 
     const data = {
       title: 'About Me',
-      paragraphs,
-      skillsTitle: document.getElementById('about-skills-title').value,
+      description: document.getElementById('about-paragraphs').value,
       skills
     };
 
     try {
       btn.disabled = true;
       btn.innerHTML = 'Saving...';
-      await fetch(`${API}/api/homepage/about`, {
+      const res = await fetch(`${API}/api/homepage/about`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      showToast('About section updated!');
+      if (!res.ok) {
+        const err = await res.json();
+        showToast(err.error || `Save failed (${res.status})`, 'error');
+      } else {
+        showToast('About section updated ✅');
+      }
     } catch (err) {
-      showToast('Failed to save about section', 'error');
+      showToast('Failed to save about section: ' + err.message, 'error');
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalText;
@@ -585,12 +594,17 @@ function bindForms() {
     try {
       const url = isEdit ? `${API}/api/featured/${encodeURIComponent(slug)}` : `${API}/api/featured`;
       const method = isEdit ? 'PUT' : 'POST';
-      await fetch(url, { method, body: formData });
+      const res = await fetch(url, { method, body: formData });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || `Save failed (${res.status})`, 'error');
+        return;
+      }
       closeModal('modal-featured');
       await loadFeatured();
-      showToast(isEdit ? 'Project updated' : 'Project created');
+      showToast(isEdit ? 'Project updated ✅' : 'Project created ✅');
     } catch (err) {
-      showToast('Save failed', 'error');
+      showToast('Save failed: ' + err.message, 'error');
     }
   });
 
@@ -613,12 +627,17 @@ function bindForms() {
     try {
       const url = isEdit ? `${API}/api/jobs/${encodeURIComponent(slug)}` : `${API}/api/jobs`;
       const method = isEdit ? 'PUT' : 'POST';
-      await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || `Save failed (${res.status})`, 'error');
+        return;
+      }
       closeModal('modal-job');
       await loadJobs();
-      showToast(isEdit ? 'Job updated' : 'Job created');
+      showToast(isEdit ? 'Job updated ✅' : 'Job created ✅');
     } catch (err) {
-      showToast('Save failed', 'error');
+      showToast('Save failed: ' + err.message, 'error');
     }
   });
 

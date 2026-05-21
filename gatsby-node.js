@@ -6,6 +6,48 @@
 
 const path = require('path');
 const _ = require('lodash');
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
+
+exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => {
+  const { createNode } = actions;
+  
+  const supabaseUrl = process.env.GATSBY_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseKey = process.env.GATSBY_SUPABASE_KEY || process.env.SUPABASE_SERVICE_KEY;
+  if (!supabaseUrl || !supabaseKey) return;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const fetchAndCreateNodes = async (table, typeName) => {
+    const { data, error } = await supabase.from(table).select('*');
+    if (error) throw error;
+    if (!data) return;
+    
+    data.forEach(item => {
+      // Tech field might be stored as JSON array in postgres, ensure it's an array
+      if (item.tech && typeof item.tech === 'string') {
+        try { item.tech = JSON.parse(item.tech); } catch(e){}
+      }
+      const nodeMeta = {
+        id: createNodeId(`${typeName}-${item.id}`),
+        parent: null,
+        children: [],
+        internal: {
+          type: typeName,
+          mediaType: `application/json`,
+          content: JSON.stringify(item),
+          contentDigest: createContentDigest(item),
+        },
+      };
+      const node = Object.assign({}, item, nodeMeta);
+      createNode(node);
+    });
+  };
+
+  await fetchAndCreateNodes('projects', 'MongodbPortfolioProjects');
+  await fetchAndCreateNodes('jobs', 'MongodbPortfolioJobs');
+  await fetchAndCreateNodes('hero', 'MongodbPortfolioHeros');
+  await fetchAndCreateNodes('about', 'MongodbPortfolioAbouts');
+};
 
 exports.createPages = async ({ actions, graphql, reporter }) => {
   const { createPage } = actions;

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -5,9 +6,21 @@ const fs = require('fs');
 const multer = require('multer');
 const matter = require('gray-matter');
 const cookieParser = require('cookie-parser');
+const supabase = require('./supabase');
+const bcrypt = require('bcryptjs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
+
+// Cloudinary Config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 
 // Paths
 const PORTFOLIO_ROOT = path.resolve(__dirname, '..');
@@ -35,13 +48,21 @@ app.get('/login', (req, res) => {
 });
 
 // Login endpoint sets cookie
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { password } = req.body;
-  if (password === 'Sage6969@') {
-    res.cookie('admin_auth', 'valid', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
-    res.json({ success: true });
-  } else {
-    res.status(401).json({ error: 'Incorrect password' });
+  try {
+    const { data: admin } = await supabase.from('admin').select('*').eq('username', 'admin').single();
+    if (!admin) return res.status(401).json({ error: 'Admin not initialized' });
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (isMatch) {
+      res.cookie('admin_auth', 'valid', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ error: 'Incorrect password' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -63,37 +84,25 @@ app.use('/api/content/case-studies', express.static(CASE_STUDIES_DIR));
 app.use('/admin', express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => res.redirect('/admin'));
 
-// Multer config for cover image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const slug = req.params.slug || req.body.slug;
-    const dir = path.join(FEATURED_DIR, slug);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `cover${ext}`);
+// Multer config for Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'portfolio/featured',
+    allowed_formats: ['jpg', 'png', 'webp', 'jpeg', 'gif', 'svg'],
   },
 });
 const upload = multer({ storage });
 
-// Multer config for PDF uploads
-const resumeStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, STATIC_DIR);
-  },
-  filename: (req, file, cb) => {
-    cb(null, 'resume.pdf');
-  },
-});
-const uploadResume = multer({
-  storage: resumeStorage,
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'application/pdf') cb(null, true);
-    else cb(new Error('Only PDFs are allowed'));
+const resumeStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'portfolio/resumes',
+    allowed_formats: ['pdf'],
+    resource_type: 'raw',
   },
 });
+const uploadResume = multer({ storage: resumeStorage });
 
 // ─────────────────────────────────────────────
 // HELPERS
@@ -248,22 +257,27 @@ const { exec } = require('child_process');
 // DEPLOY API
 // ─────────────────────────────────────────────
 
-app.post('/api/deploy', (req, res) => {
+app.post('/api/deploy', async (req, res) => {
   try {
-    // Run git add, commit, and push from the PORTFOLIO_ROOT
-    const cmd = 'git add content/ && git commit -m "Content update via Admin Panel" && git push';
-    exec(cmd, { cwd: PORTFOLIO_ROOT }, (error, stdout, stderr) => {
-      if (error) {
-        // If there's nothing to commit, git returns an error, which is fine to catch.
-        if (stdout.includes('nothing to commit') || stderr.includes('nothing to commit')) {
-          return res.json({ success: true, message: 'No changes to publish.' });
-        }
-        console.error(`Deploy error: ${error.message}`);
-        return res.status(500).json({ error: error.message, stderr });
-      }
-      res.json({ success: true, message: 'Changes published to live portfolio successfully!', stdout });
-    });
+    const webhookUrl = process.env.DEPLOY_WEBHOOK_URL;
+    
+    if (!webhookUrl) {
+      return res.json({ 
+        success: false, 
+        message: 'Deployment webhook URL is not configured. Please add DEPLOY_WEBHOOK_URL to your admin/.env file.' 
+      });
+    }
+
+    console.log(`Triggering deploy webhook: ${webhookUrl}`);
+    const response = await fetch(webhookUrl, { method: 'POST' });
+    
+    if (response.ok) {
+      res.json({ success: true, message: 'Deployment triggered successfully! Your live site will update shortly.' });
+    } else {
+      res.status(500).json({ error: `Webhook failed with status: ${response.status}` });
+    }
   } catch (err) {
+    console.error(`Deploy error: ${err.message}`);
     res.status(500).json({ error: err.message });
   }
 });
@@ -273,21 +287,9 @@ app.post('/api/deploy', (req, res) => {
 // ─────────────────────────────────────────────
 
 // GET all featured projects
-app.get('/api/featured', (req, res) => {
+app.get('/api/featured', async (req, res) => {
   try {
-    const dirs = fs.readdirSync(FEATURED_DIR).filter(d =>
-      fs.statSync(path.join(FEATURED_DIR, d)).isDirectory(),
-    );
-
-    const projects = dirs
-      .map(slug => parseFeaturedProject(slug))
-      .filter(Boolean)
-      .sort((a, b) => {
-        const aNum = parseInt(a.date) || 0;
-        const bNum = parseInt(b.date) || 0;
-        return aNum - bNum;
-      });
-
+    const { data: projects, error } = await supabase.from('projects').select('*').order('date', { ascending: true }); if(error) throw error;
     res.json(projects);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -295,23 +297,16 @@ app.get('/api/featured', (req, res) => {
 });
 
 // PUT reorder featured projects — MUST be before /:slug routes
-app.put('/api/featured/reorder', (req, res) => {
+app.put('/api/featured/reorder', async (req, res) => {
   try {
     const { order } = req.body;
     if (!order || !Array.isArray(order)) {
       return res.status(400).json({ error: 'order array required' });
     }
 
-    order.forEach((slug, index) => {
-      const dir = path.join(FEATURED_DIR, slug);
-      if (!fs.existsSync(dir)) return;
-
-      const project = parseFeaturedProject(slug);
-      if (!project) return;
-
-      project.date = String(index + 1);
-      writeFeaturedMarkdown(dir, project);
-    });
+    for (let i = 0; i < order.length; i++) {
+      await supabase.from('projects').update({ date: String(i + 1) }).eq('slug', order[i]);
+    }
 
     res.json({ success: true });
   } catch (err) {
@@ -335,36 +330,24 @@ app.get('/api/featured/:slug/cover', (req, res) => {
 });
 
 // POST create a new featured project
-app.post('/api/featured', upload.single('cover'), (req, res) => {
+app.post('/api/featured', upload.single('cover'), async (req, res) => {
   try {
     const { title, role, description, tech, cta, external, button } = req.body;
-    const slug = title; // Use title as folder name
-
-    const dir = path.join(FEATURED_DIR, slug);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
     // Determine cover path
     let coverPath = './cover.webp';
     if (req.file) {
-      coverPath = `./${req.file.filename}`;
+      coverPath = req.file.path || req.file.secure_url;
     }
 
     // Calculate next order number
-    const dirs = fs.readdirSync(FEATURED_DIR).filter(d =>
-      fs.statSync(path.join(FEATURED_DIR, d)).isDirectory(),
-    );
-    const maxDate = dirs.reduce((max, d) => {
-      const p = parseFeaturedProject(d);
-      if (p) {
-        const num = parseInt(p.date) || 0;
-        return Math.max(max, num);
-      }
-      return max;
-    }, 0);
+    const { count } = await supabase.from('projects').select('*', { count: 'exact', head: true });
 
-    const data = {
-      date: String(maxDate + 1),
+    const { data: project, error } = await supabase.from('projects').insert([{
+      date: String(count + 1),
       title,
+      slug,
       cover: coverPath,
       cta: cta || '',
       external: external || '',
@@ -373,67 +356,56 @@ app.post('/api/featured', upload.single('cover'), (req, res) => {
       tech: tech ? (typeof tech === 'string' ? JSON.parse(tech) : tech) : [],
       description: description || '',
       published: true,
-    };
-
-    writeFeaturedMarkdown(dir, data);
-    res.json({ success: true, project: parseFeaturedProject(slug) });
+    }]).select().single(); if(error) throw error;
+    res.json({ success: true, project });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // PUT update a featured project
-app.put('/api/featured/:slug', upload.single('cover'), (req, res) => {
+app.put('/api/featured/:slug', upload.single('cover'), async (req, res) => {
   try {
     const { slug } = req.params;
-    const dir = path.join(FEATURED_DIR, slug);
-    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
+    const { data: project } = await supabase.from('projects').select('*').eq('slug', slug).single();
+    if (!project) return res.status(404).json({ error: 'Not found' });
 
-    const existing = parseFeaturedProject(slug);
-    if (!existing) return res.status(404).json({ error: 'Not found' });
-
-    let coverPath = existing.cover;
+    let coverPath = project.cover;
     if (req.file) {
-      coverPath = `./${req.file.filename}`;
+      coverPath = req.file.path || req.file.secure_url;
     }
 
     const { title, role, description, tech, cta, external, button } = req.body;
+    console.log('Updating project:', slug, { title, role, description, tech, cta, external, button });
 
-    const data = {
-      date: existing.date,
-      title: title || existing.title,
+    const update = {
+      title: title || project.title,
       cover: coverPath,
-      cta: cta !== undefined ? cta : existing.cta,
-      external: external !== undefined ? external : existing.external,
-      button: button || existing.button,
-      role: role !== undefined ? role : existing.role,
-      tech: tech ? (typeof tech === 'string' ? JSON.parse(tech) : tech) : existing.tech,
-      description: description !== undefined ? description : existing.description,
-      published: existing.published,
+      cta: cta !== undefined ? cta : project.cta,
+      external: external !== undefined ? external : project.external,
+      button: button || project.button,
+      role: role !== undefined ? role : project.role,
+      tech: tech ? (typeof tech === 'string' ? JSON.parse(tech) : tech) : project.tech,
+      description: description !== undefined ? description : project.description,
     };
 
-    // Handle rename if title changed
-    if (title && title !== slug) {
-      const newDir = path.join(FEATURED_DIR, title);
-      fs.renameSync(dir, newDir);
-      writeFeaturedMarkdown(newDir, data);
-      res.json({ success: true, project: parseFeaturedProject(title) });
-    } else {
-      writeFeaturedMarkdown(dir, data);
-      res.json({ success: true, project: parseFeaturedProject(slug) });
+    if (title && title !== project.title) {
+      update.slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     }
+
+    const { data: updatedProject, error } = await supabase.from('projects').update(update).eq('slug', slug).select().single(); if(error) throw error;
+    console.log('Project updated in MongoDB:', updatedProject.slug);
+    res.json({ success: true, project: updatedProject });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // DELETE a featured project
-app.delete('/api/featured/:slug', (req, res) => {
+app.delete('/api/featured/:slug', async (req, res) => {
   try {
-    const dir = path.join(FEATURED_DIR, req.params.slug);
-    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
-
-    fs.rmSync(dir, { recursive: true, force: true });
+    const { data: result, error } = await supabase.from('projects').delete().eq('slug', req.params.slug).select().single(); if(error) throw error;
+    if (!result) return res.status(404).json({ error: 'Not found' });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -441,21 +413,15 @@ app.delete('/api/featured/:slug', (req, res) => {
 });
 
 // POST toggle publish/unpublish
-app.post('/api/featured/:slug/toggle-publish', (req, res) => {
+app.post('/api/featured/:slug/toggle-publish', async (req, res) => {
   try {
-    const dir = path.join(FEATURED_DIR, req.params.slug);
-    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
+    const { slug } = req.params;
+    const { data: project } = await supabase.from('projects').select('*').eq('slug', slug).single();
+    if (!project) return res.status(404).json({ error: 'Not found' });
 
-    const mdPath = path.join(dir, 'index.md');
-    const xxmdPath = path.join(dir, 'index.xxmd');
+    const { data: p2, error } = await supabase.from('projects').update({ published: !project.published }).eq('slug', slug).select().single(); if(error) throw error; Object.assign(project, p2);
 
-    if (fs.existsSync(mdPath)) {
-      fs.renameSync(mdPath, xxmdPath);
-    } else if (fs.existsSync(xxmdPath)) {
-      fs.renameSync(xxmdPath, mdPath);
-    }
-
-    res.json({ success: true, project: parseFeaturedProject(req.params.slug) });
+    res.json({ success: true, project });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -468,21 +434,9 @@ app.post('/api/featured/:slug/toggle-publish', (req, res) => {
 // ─────────────────────────────────────────────
 
 // GET all jobs
-app.get('/api/jobs', (req, res) => {
+app.get('/api/jobs', async (req, res) => {
   try {
-    const dirs = fs.readdirSync(JOBS_DIR).filter(d =>
-      fs.statSync(path.join(JOBS_DIR, d)).isDirectory(),
-    );
-
-    const jobs = dirs
-      .map(slug => parseJob(slug))
-      .filter(Boolean)
-      .sort((a, b) => {
-        const aDate = new Date(a.date);
-        const bDate = new Date(b.date);
-        return bDate - aDate; // Most recent first
-      });
-
+    const { data: jobs, error } = await supabase.from('jobs').select('*').order('date', { ascending: false }); if(error) throw error;
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -490,7 +444,7 @@ app.get('/api/jobs', (req, res) => {
 });
 
 // PUT reorder jobs — MUST be before /:slug routes
-app.put('/api/jobs/reorder', (req, res) => {
+app.put('/api/jobs/reorder', async (req, res) => {
   try {
     const { order } = req.body;
     if (!order || !Array.isArray(order)) {
@@ -498,18 +452,11 @@ app.put('/api/jobs/reorder', (req, res) => {
     }
 
     const baseDate = new Date('2025-01-01');
-    order.forEach((slug, index) => {
-      const dir = path.join(JOBS_DIR, slug);
-      if (!fs.existsSync(dir)) return;
-
-      const job = parseJob(slug);
-      if (!job) return;
-
+    for (let i = 0; i < order.length; i++) {
       const d = new Date(baseDate);
-      d.setDate(d.getDate() - index);
-      job.date = d.toISOString().split('T')[0];
-      writeJobMarkdown(dir, job);
-    });
+      d.setDate(d.getDate() - i);
+      await supabase.from('jobs').update({ date: d.toISOString().split('T')[0] }).eq('slug', order[i]);
+    }
 
     res.json({ success: true });
   } catch (err) {
@@ -518,77 +465,65 @@ app.put('/api/jobs/reorder', (req, res) => {
 });
 
 // POST create a new job
-app.post('/api/jobs', (req, res) => {
+app.post('/api/jobs', async (req, res) => {
   try {
     const { title, company, location, range, url, description, date } = req.body;
-    const slug = company || title;
+    const slug = (company || title).toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-    const dir = path.join(JOBS_DIR, slug);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-    const data = {
+    const { data: job, error } = await supabase.from('jobs').insert([{
       date: date || new Date().toISOString().split('T')[0],
       title,
       company: company || slug,
+      slug,
       location: location || '',
       range: range || '',
       url: url || '#',
       description: description || '',
       published: true,
-    };
-
-    writeJobMarkdown(dir, data);
-    res.json({ success: true, job: parseJob(slug) });
+    }]).select().single(); if(error) throw error;
+    res.json({ success: true, job });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // PUT update a job
-app.put('/api/jobs/:slug', (req, res) => {
+app.put('/api/jobs/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const dir = path.join(JOBS_DIR, slug);
-    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
-
-    const existing = parseJob(slug);
-    if (!existing) return res.status(404).json({ error: 'Not found' });
+    const { data: job } = await supabase.from('jobs').select('*').eq('slug', slug).single();
+    if (!job) return res.status(404).json({ error: 'Not found' });
 
     const { title, company, location, range, url, description, date } = req.body;
+    console.log('Updating job:', slug, { title, company, location, range, url, description, date });
 
-    const data = {
-      date: date || existing.date,
-      title: title !== undefined ? title : existing.title,
-      company: company !== undefined ? company : existing.company,
-      location: location !== undefined ? location : existing.location,
-      range: range !== undefined ? range : existing.range,
-      url: url !== undefined ? url : existing.url,
-      description: description !== undefined ? description : existing.description,
-      published: existing.published,
+    const update = {
+      date: date || job.date,
+      title: title !== undefined ? title : job.title,
+      company: company !== undefined ? company : job.company,
+      location: location !== undefined ? location : job.location,
+      range: range !== undefined ? range : job.range,
+      url: url !== undefined ? url : job.url,
+      description: description !== undefined ? description : job.description,
     };
 
-    // Handle rename if company changed
-    if (company && company !== slug) {
-      const newDir = path.join(JOBS_DIR, company);
-      fs.renameSync(dir, newDir);
-      writeJobMarkdown(newDir, data);
-      res.json({ success: true, job: parseJob(company) });
-    } else {
-      writeJobMarkdown(dir, data);
-      res.json({ success: true, job: parseJob(slug) });
+    if (company && company !== job.company) {
+      update.slug = company.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     }
+
+    const { data: updatedJob, error } = await supabase.from('jobs').update(update).eq('slug', slug).select().single(); if(error) throw error;
+    console.log('Job updated in MongoDB:', updatedJob.slug);
+    res.json({ success: true, job: updatedJob });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // DELETE a job
-app.delete('/api/jobs/:slug', (req, res) => {
+app.delete('/api/jobs/:slug', async (req, res) => {
   try {
-    const dir = path.join(JOBS_DIR, req.params.slug);
-    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
-
-    fs.rmSync(dir, { recursive: true, force: true });
+    const { data: result, error } = await supabase.from('jobs').delete().eq('slug', req.params.slug).select().single(); if(error) throw error;
+    if (!result) return res.status(404).json({ error: 'Not found' });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -596,21 +531,15 @@ app.delete('/api/jobs/:slug', (req, res) => {
 });
 
 // POST toggle publish/unpublish for jobs
-app.post('/api/jobs/:slug/toggle-publish', (req, res) => {
+app.post('/api/jobs/:slug/toggle-publish', async (req, res) => {
   try {
-    const dir = path.join(JOBS_DIR, req.params.slug);
-    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
+    const { slug } = req.params;
+    const { data: job } = await supabase.from('jobs').select('*').eq('slug', slug).single();
+    if (!job) return res.status(404).json({ error: 'Not found' });
 
-    const mdPath = path.join(dir, 'index.md');
-    const xxmdPath = path.join(dir, 'index.xxmd');
+    const { data: j2, error } = await supabase.from('jobs').update({ published: !job.published }).eq('slug', slug).select().single(); if(error) throw error; Object.assign(job, j2);
 
-    if (fs.existsSync(mdPath)) {
-      fs.renameSync(mdPath, xxmdPath);
-    } else if (fs.existsSync(xxmdPath)) {
-      fs.renameSync(xxmdPath, mdPath);
-    }
-
-    res.json({ success: true, job: parseJob(req.params.slug) });
+    res.json({ success: true, job });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -646,55 +575,48 @@ app.post('/api/resume', (req, res) => {
   }
 });
 
-app.post('/api/resume/upload', uploadResume.single('resume'), (req, res) => {
+app.post('/api/resume/upload', uploadResume.single('resume'), async (req, res) => {
   try {
-    const filePath = path.join(RESUME_DIR, 'resume.json');
-    fs.writeFileSync(filePath, JSON.stringify({ type: 'file', value: '/resume.pdf' }, null, 2));
-    res.json({ success: true, url: '/resume.pdf' });
+    const resumeUrl = req.file.path || req.file.secure_url;
+    // We can store this in a setting or update the Hero/About if needed
+    // For now, let's just return it or save to a small collection if you want
+    res.json({ success: true, url: resumeUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // ─── HOMEPAGE API ───
-app.get('/api/homepage/hero', (req, res) => {
+app.get('/api/homepage/hero', async (req, res) => {
   try {
-    const filePath = path.join(HERO_DIR, 'hero.json');
-    if (!fs.existsSync(filePath)) return res.json({});
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    res.json(data);
+    const { data: hero } = await supabase.from('hero').select('*').limit(1).single();
+    res.json(hero || {});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/homepage/hero', (req, res) => {
+app.post('/api/homepage/hero', async (req, res) => {
   try {
-    const filePath = path.join(HERO_DIR, 'hero.json');
-    if (!fs.existsSync(HERO_DIR)) fs.mkdirSync(HERO_DIR, { recursive: true });
-    fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2));
+    await supabase.from('hero').upsert({ id: '00000000-0000-0000-0000-000000000000', ...req.body });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.get('/api/homepage/about', (req, res) => {
+app.get('/api/homepage/about', async (req, res) => {
   try {
-    const filePath = path.join(ABOUT_DIR, 'about.json');
-    if (!fs.existsSync(filePath)) return res.json({});
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    res.json(data);
+    const { data: about } = await supabase.from('about').select('*').limit(1).single();
+    res.json(about || {});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/homepage/about', (req, res) => {
+app.post('/api/homepage/about', async (req, res) => {
   try {
-    const filePath = path.join(ABOUT_DIR, 'about.json');
-    if (!fs.existsSync(ABOUT_DIR)) fs.mkdirSync(ABOUT_DIR, { recursive: true });
-    fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2));
+    await supabase.from('about').upsert({ id: '00000000-0000-0000-0000-000000000000', ...req.body });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -705,65 +627,49 @@ app.post('/api/homepage/about', (req, res) => {
 // CASE STUDIES API
 // ─────────────────────────────────────────────
 
-app.get('/api/case-studies', (req, res) => {
+app.get('/api/case-studies', async (req, res) => {
   try {
-    if (!fs.existsSync(CASE_STUDIES_DIR)) fs.mkdirSync(CASE_STUDIES_DIR, { recursive: true });
-    const dirs = fs.readdirSync(CASE_STUDIES_DIR).filter(d => 
-      fs.statSync(path.join(CASE_STUDIES_DIR, d)).isDirectory()
-    );
-    const studies = dirs.map(slug => {
-      const dir = path.join(CASE_STUDIES_DIR, slug);
-      const mdFile = findMarkdownFile(dir);
-      if (!mdFile) return null;
-      const raw = fs.readFileSync(mdFile.path, 'utf-8');
-      const { data: frontmatter } = matter(raw);
-      return { slug, title: frontmatter.title || slug, date: frontmatter.date, published: mdFile.published };
-    }).filter(Boolean);
-    res.json(studies);
+    const { data: studies, error } = await supabase.from('case_studies').select('slug, title, date, published').order('date', { ascending: false });
+    if (error) throw error;
+    res.json(studies || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/case-studies', (req, res) => {
+app.post('/api/case-studies', async (req, res) => {
   try {
     const { title, slug } = req.body;
-    const dir = path.join(CASE_STUDIES_DIR, slug);
-    if (fs.existsSync(dir)) return res.status(400).json({ error: 'Slug already exists' });
-    fs.mkdirSync(dir, { recursive: true });
+    const { data: existing } = await supabase.from('case_studies').select('id').eq('slug', slug).single();
+    if (existing) return res.status(400).json({ error: 'Slug already exists' });
     
-    const initialContent = `---
-title: '${title}'
-slug: '${slug}'
-date: '${new Date().toISOString().split('T')[0]}'
----
-
-# ${title}
-`;
-    fs.writeFileSync(path.join(dir, 'index.md'), initialContent);
+    const { error } = await supabase.from('case_studies').insert([{
+      title,
+      slug,
+      date: new Date().toISOString().split('T')[0],
+      published: false
+    }]);
+    if (error) throw error;
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.delete('/api/case-studies/:slug', (req, res) => {
+app.delete('/api/case-studies/:slug', async (req, res) => {
   try {
-    const dir = path.join(CASE_STUDIES_DIR, req.params.slug);
-    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
-    fs.rmSync(dir, { recursive: true, force: true });
+    const { error } = await supabase.from('case_studies').delete().eq('slug', req.params.slug);
+    if (error) throw error;
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/case-studies/:slug', (req, res) => {
+app.post('/api/case-studies/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
     const { blocks, published, title, summary, role, results, methods, banner } = req.body;
-    const dir = path.join(CASE_STUDIES_DIR, slug);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
     // Handle Banner Image
     let bannerPath = banner || '';
@@ -786,8 +692,7 @@ app.post('/api/case-studies/:slug', (req, res) => {
     }
 
     let markdown = ``;
-
-    const savedBlocks = JSON.parse(JSON.stringify(blocks)); // Deep copy to avoid mutating the original blocks for the markdown generation if needed
+    const savedBlocks = JSON.parse(JSON.stringify(blocks)); 
 
     const derivedTocItems = [];
     savedBlocks.forEach(block => {
@@ -795,14 +700,10 @@ app.post('/api/case-studies/:slug', (req, res) => {
         let content = block.content;
         if (block.tocEntry) {
           const anchor = (block.tocName || 'section').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-          // Inject ID into the first H2 tag found in the content
           if (content.includes('<h2')) {
             content = content.replace(/<h2([^>]*)>/, `<h2 id="${anchor}"$1>`);
           }
-          derivedTocItems.push({
-            text: block.tocName || 'Section',
-            anchor: anchor
-          });
+          derivedTocItems.push({ text: block.tocName || 'Section', anchor: anchor });
         }
         markdown += `${content.trim()}\n\n`;
       } else if (block.type === 'image') {
@@ -835,7 +736,7 @@ app.post('/api/case-studies/:slug', (req, res) => {
       }
     });
 
-    const frontmatter = {
+    const updateData = {
       title,
       slug,
       date: new Date().toISOString().split('T')[0],
@@ -845,19 +746,14 @@ app.post('/api/case-studies/:slug', (req, res) => {
       results: results || '',
       methods: methods || '',
       banner: bannerPath,
-      tocEnabled: derivedTocItems.length > 0,
-      tocItems: derivedTocItems
+      toc_enabled: derivedTocItems.length > 0,
+      toc_items: derivedTocItems,
+      blocks: savedBlocks,
+      markdown: markdown
     };
 
-    const fileContent = matter.stringify(markdown, frontmatter);
-
-    // Save optimized blocks (paths instead of base64)
-    const builderData = {
-      metadata: { title, published, summary, role, results, methods, banner: bannerPath, tocEnabled: derivedTocItems.length > 0, tocItems: derivedTocItems },
-      blocks: savedBlocks
-    };
-    fs.writeFileSync(path.join(dir, 'blocks.json'), JSON.stringify(builderData, null, 2));
-    fs.writeFileSync(path.join(dir, 'index.md'), fileContent);
+    const { error } = await supabase.from('case_studies').update(updateData).eq('slug', slug);
+    if (error) throw error;
     
     res.json({ success: true });
   } catch (err) {
@@ -866,29 +762,27 @@ app.post('/api/case-studies/:slug', (req, res) => {
   }
 });
 
-app.get('/api/case-studies/:slug', (req, res) => {
+app.get('/api/case-studies/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const dir = path.join(CASE_STUDIES_DIR, slug);
-    const mdFile = findMarkdownFile(dir);
-    if (!mdFile) return res.status(404).json({ error: 'Not found' });
+    const { data: study, error } = await supabase.from('case_studies').select('*').eq('slug', slug).single();
+    if (error || !study) return res.status(404).json({ error: 'Not found' });
+    
+    const frontmatter = {
+      title: study.title,
+      slug: study.slug,
+      date: study.date,
+      published: study.published,
+      summary: study.summary,
+      role: study.role,
+      results: study.results,
+      methods: study.methods,
+      banner: study.banner,
+      tocEnabled: study.toc_enabled,
+      tocItems: study.toc_items
+    };
 
-    const raw = fs.readFileSync(mdFile.path, 'utf-8');
-    const { data: frontmatter, content } = matter(raw);
-    
-    // We'd need a way to parse MD back to blocks for a perfect editor
-    // For now, let's just return the raw content if needed
-    // But our builder currently only works one-way or needs blocks storage
-    const blocksFile = path.join(dir, 'blocks.json');
-    if (fs.existsSync(blocksFile)) {
-      const data = JSON.parse(fs.readFileSync(blocksFile, 'utf-8'));
-      if (Array.isArray(data)) {
-        return res.json({ blocks: data, metadata: {}, frontmatter });
-      }
-      return res.json({ blocks: data.blocks || [], metadata: data.metadata || {}, frontmatter });
-    }
-    
-    res.json({ blocks: [], metadata: {}, frontmatter });
+    res.json({ blocks: study.blocks || [], metadata: frontmatter, frontmatter });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
