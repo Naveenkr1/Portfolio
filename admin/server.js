@@ -671,31 +671,20 @@ app.post('/api/case-studies/:slug', async (req, res) => {
     const { slug } = req.params;
     const { blocks, published, title, summary, role, results, methods, banner } = req.body;
 
-    // Handle Banner Image
+    // Handle Banner Image via Cloudinary
     let bannerPath = banner || '';
     if (bannerPath.startsWith('data:')) {
-      const slugDir = path.join(UPLOADS_DIR, slug);
-      if (!fs.existsSync(slugDir)) fs.mkdirSync(slugDir, { recursive: true });
-      
-      const mimeMatch = bannerPath.match(/^data:(image\/\w+);base64,/);
-      const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
-      let ext = 'png';
-      if (mimeType.includes('gif')) ext = 'gif';
-      else if (mimeType.includes('webp')) ext = 'webp';
-      else if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
-      else if (mimeType.includes('svg')) ext = 'svg';
-
-      const fileName = `banner.${ext}`;
-      const base64Data = bannerPath.replace(/^data:image\/\w+;base64,/, "");
-      fs.writeFileSync(path.join(slugDir, fileName), base64Data, 'base64');
-      bannerPath = `/uploads/case-studies/${slug}/${fileName}`;
+      const uploadRes = await cloudinary.uploader.upload(bannerPath, { folder: `portfolio/case-studies/${slug}` });
+      bannerPath = uploadRes.secure_url;
     }
 
     let markdown = ``;
     const savedBlocks = JSON.parse(JSON.stringify(blocks)); 
 
     const derivedTocItems = [];
-    savedBlocks.forEach(block => {
+    
+    // Convert to for...of to allow async await for Cloudinary uploads
+    for (let block of savedBlocks) {
       if (block.type === 'text') {
         let content = block.content;
         if (block.tocEntry) {
@@ -707,34 +696,22 @@ app.post('/api/case-studies/:slug', async (req, res) => {
         }
         markdown += `${content.trim()}\n\n`;
       } else if (block.type === 'image') {
-        const slugDir = path.join(UPLOADS_DIR, slug);
-        if (!fs.existsSync(slugDir)) fs.mkdirSync(slugDir, { recursive: true });
-        
         markdown += `\n<div class="grid grid-${block.grid}">\n\n`;
-        block.images.forEach((img, i) => {
+        
+        for (let i = 0; i < block.images.length; i++) {
+          let img = block.images[i];
           if (img.startsWith('data:')) {
-            const mimeMatch = img.match(/^data:(image\/\w+);base64,/);
-            const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
-            let ext = 'png';
-            if (mimeType.includes('gif')) ext = 'gif';
-            else if (mimeType.includes('webp')) ext = 'webp';
-            else if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
-            else if (mimeType.includes('svg')) ext = 'svg';
-
-            const fileName = `img-${block.id}-${i}.${ext}`;
-            const base64Data = img.replace(/^data:image\/\w+;base64,/, "");
-            fs.writeFileSync(path.join(slugDir, fileName), base64Data, 'base64');
-            
-            const publicPath = `/uploads/case-studies/${slug}/${fileName}`;
+            const uploadRes = await cloudinary.uploader.upload(img, { folder: `portfolio/case-studies/${slug}` });
+            const publicPath = uploadRes.secure_url;
             markdown += `![Image](${publicPath})\n\n`;
             block.images[i] = publicPath;
           } else {
             markdown += `![Image](${img})\n\n`;
           }
-        });
+        }
         markdown += `</div>\n\n`;
       }
-    });
+    }
 
     const updateData = {
       title,
