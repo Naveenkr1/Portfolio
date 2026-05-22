@@ -731,7 +731,7 @@ function renderCaseStudies() {
         ${s.published ? 'Published' : 'Draft'}
       </div>
       <div class="card-actions">
-        <a class="card-action-btn" title="Preview" href="http://localhost:8000/case-study/${s.slug}" target="_blank" style="text-decoration:none;">
+        <a class="card-action-btn" title="Preview" href="${window.location.origin}/case-study/${s.slug}/" target="_blank" style="text-decoration:none;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
         <button class="card-action-btn" title="Copy Link" onclick="copyCaseStudyLink('${esc(s.slug)}')">
@@ -775,7 +775,7 @@ function confirmDeleteCaseStudy(slug, title) {
 }
 
 function copyCaseStudyLink(slug) {
-  const url = `http://localhost:8000/case-study/${slug}`;
+  const url = `${window.location.origin}/case-study/${slug}/`;
   navigator.clipboard.writeText(url);
   showToast('Link copied to clipboard');
 }

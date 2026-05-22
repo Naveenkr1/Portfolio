@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Layout } from '@components';
 import sr from '@utils/sr';
 import { srConfig } from '@config';
+import { marked } from 'marked';
 
 const StyledCaseStudyContainer = styled.main`
   width: 100%;
@@ -451,16 +452,16 @@ const StyledMetadataRow = styled.div`
 `;
 
 const CaseStudyTemplate = ({ data, location }) => {
-  const { markdownRemark, featured } = data;
+  const { caseStudy, featured } = data;
   
   // Get 2 other projects for "Other Work"
   const otherProjects = featured?.edges
     ? featured.edges
-        .filter(({ node }) => node.frontmatter.slug !== markdownRemark?.frontmatter?.slug)
+        .filter(({ node }) => node.slug !== caseStudy?.slug)
         .slice(0, 2)
     : [];
   
-  if (!markdownRemark) {
+  if (!caseStudy) {
     return (
       <Layout location={location}>
         <div style={{ padding: '100px 0', textAlign: 'center' }}>
@@ -471,7 +472,10 @@ const CaseStudyTemplate = ({ data, location }) => {
     );
   }
 
-  const { frontmatter, html } = markdownRemark;
+  const { title, date, summary, role, results, methods, banner, toc_enabled, slug: frontSlug, toc_items, markdown } = caseStudy;
+  const frontmatter = { title, date, summary, role, results, methods, banner, tocEnabled: toc_enabled, slug: frontSlug, tocItems: toc_items };
+  const html = marked.parse(markdown || '');
+  
   const [activeSection, setActiveSection] = useState('');
   const [lightbox, setLightbox] = useState({ isOpen: false, currentIdx: 0, images: [] });
 
@@ -650,9 +654,8 @@ const CaseStudyTemplate = ({ data, location }) => {
           <h2>Other Work</h2>
           <StyledOtherWorkGrid>
             {otherProjects.map(({ node }, i) => {
-              const { frontmatter } = node;
-              const { title, summary, cover, slug, role } = frontmatter;
-              const imageSrc = cover?.publicURL || '';
+              const { title, description, cover, slug, role } = node;
+              const imageSrc = cover || '';
               return (
                 <StyledWorkCard key={i} href={`/case-study/${slug}`}>
                   <div className="card-image">
@@ -660,7 +663,7 @@ const CaseStudyTemplate = ({ data, location }) => {
                   </div>
                   <div className="card-content">
                     <h3>{title}</h3>
-                    <p>{role || summary || 'View project details'}</p>
+                    <p>{role || description || 'View project details'}</p>
                   </div>
                 </StyledWorkCard>
               );
@@ -703,38 +706,33 @@ export default CaseStudyTemplate;
 
 export const pageQuery = graphql`
   query($slug: String!) {
-    markdownRemark(frontmatter: { slug: { eq: $slug } }) {
-      html
-      frontmatter {
-        title
-        date
-        summary
-        role
-        results
-        methods
-        banner
-        tocEnabled
-        slug
-        tocItems {
-          text
-          anchor
-        }
+    caseStudy: mongodbPortfolioCaseStudies(slug: { eq: $slug }) {
+      title
+      date
+      summary
+      role
+      results
+      methods
+      banner
+      toc_enabled
+      slug
+      toc_items {
+        text
+        anchor
       }
+      markdown
     }
-    featured: allMarkdownRemark(
-      filter: { fileAbsolutePath: { regex: "/content/featured/" } }
+    featured: allMongodbPortfolioProjects(
+      filter: { published: { eq: true } }
+      sort: { fields: [date], order: ASC }
     ) {
       edges {
         node {
-          frontmatter {
-            title
-            slug
-            cover {
-              publicURL
-            }
-            summary
-            role
-          }
+          title
+          slug
+          cover
+          description
+          role
         }
       }
     }

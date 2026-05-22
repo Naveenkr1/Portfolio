@@ -47,6 +47,7 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => 
   await fetchAndCreateNodes('jobs', 'MongodbPortfolioJobs');
   await fetchAndCreateNodes('hero', 'MongodbPortfolioHeros');
   await fetchAndCreateNodes('about', 'MongodbPortfolioAbouts');
+  await fetchAndCreateNodes('case_studies', 'MongodbPortfolioCaseStudies');
 };
 
 exports.createPages = async ({ actions, graphql, reporter }) => {
@@ -75,17 +76,13 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
           fieldValue
         }
       }
-      caseStudiesRemark: allMarkdownRemark(
-        filter: { 
-          fileAbsolutePath: { regex: "/content/case-studies/" }
-        }
-        sort: { order: DESC, fields: [frontmatter___date] }
+      caseStudiesDB: allMongodbPortfolioCaseStudies(
+        sort: { order: DESC, fields: [date] }
       ) {
         edges {
           node {
-            frontmatter {
-              slug
-            }
+            slug
+            published
           }
         }
       }
@@ -123,17 +120,17 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
   });
 
   // Create case study pages
-  const caseStudies = result.data.caseStudiesRemark.edges;
+  const caseStudies = result.data.caseStudiesDB.edges;
   caseStudies.forEach(({ node }) => {
     // Only skip drafts if we are in production
-    if (process.env.NODE_ENV === 'production' && node.frontmatter.published === false) {
+    if (process.env.NODE_ENV === 'production' && node.published === false) {
       return;
     }
     createPage({
-      path: `/case-study/${node.frontmatter.slug}`,
+      path: `/case-study/${node.slug}`,
       component: caseStudyTemplate,
       context: {
-        slug: node.frontmatter.slug,
+        slug: node.slug,
       },
     });
   });
@@ -223,6 +220,37 @@ exports.createSchemaCustomization = ({ actions }) => {
     type TOCItem {
       text: String
       anchor: String
+    }
+    type MongodbPortfolioCaseStudies implements Node @infer {
+      title: String
+      slug: String
+      date: String
+      published: Boolean
+      summary: String
+      role: String
+      results: String
+      methods: String
+      banner: String
+      toc_enabled: Boolean
+      toc_items: [CaseStudyTOCItem]
+      markdown: String
+    }
+    type CaseStudyTOCItem {
+      text: String
+      anchor: String
+    }
+    type MongodbPortfolioProjects implements Node @infer {
+      title: String
+      slug: String
+      date: String
+      published: Boolean
+      cover: String
+      description: String
+      role: String
+      tech: [String]
+      external: String
+      button: String
+      cta: String
     }
   `;
   createTypes(typeDefs);

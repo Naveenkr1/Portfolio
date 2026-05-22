@@ -33,12 +33,28 @@ const ABOUT_DIR = path.join(PORTFOLIO_ROOT, 'content', 'about');
 const STATIC_DIR = path.join(PORTFOLIO_ROOT, 'static');
 const UPLOADS_DIR = path.join(STATIC_DIR, 'uploads', 'case-studies');
 
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
+
+// Serve Admin UIs directly to bypass Gatsby
+app.use('/admin', (req, res, next) => {
+  if (req.cookies && req.cookies.admin_auth === 'valid') {
+    return next();
+  }
+  res.redirect('/login');
+});
+app.use('/admin', express.static(path.join(STATIC_DIR, 'admin')));
+
+app.get('/login', (req, res) => {
+  // If they are already logged in, redirect them to admin
+  if (req.cookies && req.cookies.admin_auth === 'valid') {
+    return res.redirect('/admin');
+  }
+  res.setHeader('Content-Type', 'text/html');
+  res.send(fs.readFileSync(path.join(STATIC_DIR, 'login.html'), 'utf8'));
+});
 
 // Login endpoint sets cookie
 app.post('/api/login', async (req, res) => {
@@ -623,7 +639,8 @@ app.get('/api/case-studies', async (req, res) => {
 app.post('/api/case-studies', async (req, res) => {
   try {
     const { title, slug } = req.body;
-    const { data: existing } = await supabase.from('case_studies').select('id').eq('slug', slug).single();
+    const { data: existing, error: checkError } = await supabase.from('case_studies').select('id').eq('slug', slug).maybeSingle();
+    if (checkError) throw checkError;
     if (existing) return res.status(400).json({ error: 'Slug already exists' });
     
     const { error } = await supabase.from('case_studies').insert([{

@@ -21,3 +21,4 @@ update_case_study.py
 .env
 admin/.env
 admin/cookies.txt
+.vercel

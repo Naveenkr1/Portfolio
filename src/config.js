@@ -19,12 +19,8 @@ module.exports = {
       url: 'https://www.linkedin.com/in/naveeu/',
     },
     {
-      name: 'Codepen',
-      url: '#',
-    },
-    {
       name: 'External',
-      url: 'http://localhost:3001',
+      url: '/admin',
     },
   ],
 
