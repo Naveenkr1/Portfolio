@@ -739,8 +739,14 @@ app.post('/api/case-studies/:slug', async (req, res) => {
       markdown: markdown
     };
 
-    const { error } = await supabase.from('case_studies').update(updateData).eq('slug', slug);
-    if (error) throw error;
+    const { data: existing } = await supabase.from('case_studies').select('id').eq('slug', slug).maybeSingle();
+    if (existing) {
+      const { error } = await supabase.from('case_studies').update(updateData).eq('id', existing.id);
+      if (error) throw error;
+    } else {
+      const { error } = await supabase.from('case_studies').insert([updateData]);
+      if (error) throw error;
+    }
     
     res.json({ success: true });
   } catch (err) {
