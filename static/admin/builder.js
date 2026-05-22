@@ -150,7 +150,7 @@ class CaseStudyBuilder {
     
     const previewBtn = document.getElementById('btn-builder-preview');
     previewBtn.style.display = 'inline-flex';
-    previewBtn.href = `http://localhost:8000/case-study/${this.slug}`;
+    previewBtn.href = `${window.location.origin}/case-study/${this.slug}/`;
     
     document.getElementById('builder-overlay').classList.add('active');
     
@@ -504,7 +504,7 @@ class CaseStudyBuilder {
       // Update preview button
       const previewBtn = document.getElementById('btn-builder-preview');
       previewBtn.style.display = 'inline-flex';
-      previewBtn.href = `http://localhost:8000/case-study/${this.slug}`;
+      previewBtn.href = `${window.location.origin}/case-study/${this.slug}/`;
 
       showToast('Case study saved successfully');
       await loadCaseStudies();
