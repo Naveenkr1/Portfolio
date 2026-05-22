@@ -597,7 +597,12 @@ app.get('/api/homepage/hero', async (req, res) => {
 
 app.post('/api/homepage/hero', async (req, res) => {
   try {
-    await supabase.from('hero').upsert({ id: '00000000-0000-0000-0000-000000000000', ...req.body });
+    const { data: existing } = await supabase.from('hero').select('id').limit(1).maybeSingle();
+    if (existing) {
+      await supabase.from('hero').update(req.body).eq('id', existing.id);
+    } else {
+      await supabase.from('hero').insert([req.body]);
+    }
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -615,7 +620,12 @@ app.get('/api/homepage/about', async (req, res) => {
 
 app.post('/api/homepage/about', async (req, res) => {
   try {
-    await supabase.from('about').upsert({ id: '00000000-0000-0000-0000-000000000000', ...req.body });
+    const { data: existing } = await supabase.from('about').select('id').limit(1).maybeSingle();
+    if (existing) {
+      await supabase.from('about').update(req.body).eq('id', existing.id);
+    } else {
+      await supabase.from('about').insert([req.body]);
+    }
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
