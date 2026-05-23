@@ -24,13 +24,14 @@ const StyledLinkWrapper = styled.div`
     background: none;
     border: none;
     padding: 10px;
+    margin-bottom: -10px;
     cursor: pointer;
     color: var(--light-slate);
     transition: var(--transition);
     
     svg {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
     }
 
     &:hover,
@@ -41,7 +42,7 @@ const StyledLinkWrapper = styled.div`
   }
 
   a {
-    margin: 10px auto 20px;
+    margin: 0px auto 20px;
     padding: 10px;
     font-family: var(--font-mono);
     font-size: var(--fz-xxs);
