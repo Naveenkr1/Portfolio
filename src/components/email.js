@@ -24,7 +24,8 @@ const StyledLinkWrapper = styled.div`
     background: none;
     border: none;
     padding: 10px;
-    margin-bottom: -10px;
+    margin-top: -10px;
+    margin-bottom: 20px;
     cursor: pointer;
     color: var(--light-slate);
     transition: var(--transition);
@@ -42,7 +43,7 @@ const StyledLinkWrapper = styled.div`
   }
 
   a {
-    margin: 0px auto 20px;
+    margin: 20px auto 0px;
     padding: 10px;
     font-family: var(--font-mono);
     font-size: var(--fz-xxs);
@@ -82,6 +83,7 @@ const Email = ({ isHome }) => {
   return (
     <Side isHome={isHome} orientation="right">
       <StyledLinkWrapper>
+        <a href={`mailto:${email}`}>{email}</a>
         <button 
           className="copy-btn" 
           onClick={handleCopy} 
@@ -90,7 +92,6 @@ const Email = ({ isHome }) => {
         >
           {isCopied ? <IconCheck /> : <IconCopy />}
         </button>
-        <a href={`mailto:${email}`}>{email}</a>
       </StyledLinkWrapper>
     </Side>
   );
