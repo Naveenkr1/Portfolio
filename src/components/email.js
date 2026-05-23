@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { email } from '@config';
 import { Side } from '@components';
+import { IconCopy, IconCheck } from '@components/icons';
 
 const StyledLinkWrapper = styled.div`
   display: flex;
@@ -19,8 +20,28 @@ const StyledLinkWrapper = styled.div`
     background-color: var(--light-slate);
   }
 
+  .copy-btn {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    color: var(--light-slate);
+    transition: var(--transition);
+    
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover,
+    &:focus {
+      transform: translateY(-3px);
+      color: var(--green);
+    }
+  }
+
   a {
-    margin: 20px auto;
+    margin: 10px auto 20px;
     padding: 10px;
     font-family: var(--font-mono);
     font-size: var(--fz-xxs);
@@ -35,13 +56,44 @@ const StyledLinkWrapper = styled.div`
   }
 `;
 
-const Email = ({ isHome }) => (
-  <Side isHome={isHome} orientation="right">
-    <StyledLinkWrapper>
-      <a href={`mailto:${email}`}>{email}</a>
-    </StyledLinkWrapper>
-  </Side>
-);
+const Email = ({ isHome }) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    let timeoutId;
+    if (isCopied) {
+      timeoutId = setTimeout(() => {
+        setIsCopied(false);
+      }, 4000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isCopied]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(email);
+    setIsCopied(true);
+  };
+
+  return (
+    <Side isHome={isHome} orientation="right">
+      <StyledLinkWrapper>
+        <button 
+          className="copy-btn" 
+          onClick={handleCopy} 
+          aria-label="Copy email to clipboard"
+          title="Copy email"
+        >
+          {isCopied ? <IconCheck /> : <IconCopy />}
+        </button>
+        <a href={`mailto:${email}`}>{email}</a>
+      </StyledLinkWrapper>
+    </Side>
+  );
+};
 
 Email.propTypes = {
   isHome: PropTypes.bool,
