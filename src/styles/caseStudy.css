@@ -15,18 +15,17 @@ html {
 }
 
 body {
-    margin: 0
-  
+    margin: 0;
 }
 .body{
     max-width: 100%;
     overflow-x: hidden;
     background-color: #0a0a09;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
 }
-
-article,
-aside,
-details,
 figcaption,
 figure,
 footer,
@@ -292,14 +291,7 @@ html {
 body {
     margin: 0;
     min-height: 100%;
-    background-color: #0a0a09;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    line-height: 20px;
     min-width: 100%;
-    overflow-x: hidden;
-    color: #333;
-    /* zoom: 90%; */
 }
 
 img {
