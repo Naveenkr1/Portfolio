@@ -33,7 +33,7 @@ const StyledHeader = styled.header`
 
   @media (prefers-reduced-motion: no-preference) {
     ${props =>
-    props.scrollDirection === 'up' &&
+      props.scrollDirection === 'up' &&
       !props.scrolledToTop &&
       css`
         height: var(--nav-scroll-height);
@@ -43,7 +43,7 @@ const StyledHeader = styled.header`
       `};
 
     ${props =>
-    props.scrollDirection === 'down' &&
+      props.scrollDirection === 'down' &&
       !props.scrolledToTop &&
       css`
         height: var(--nav-scroll-height);
@@ -94,6 +94,17 @@ const StyledLinks = styled.div`
     display: none;
   }
 
+  @keyframes dotPulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(3.5);
+      opacity: 0;
+    }
+  }
+
   ol {
     ${({ theme }) => theme.mixins.flexBetween};
     padding: 0;
@@ -108,6 +119,8 @@ const StyledLinks = styled.div`
 
       a {
         padding: 10px;
+        display: inline-flex;
+        align-items: center;
 
         &:before {
           content: '0' counter(item) '.';
@@ -115,6 +128,35 @@ const StyledLinks = styled.div`
           color: var(--green);
           font-size: var(--fz-xxs);
           text-align: right;
+        }
+      }
+    }
+
+    .highlight-link {
+      a {
+        color: var(--green) !important;
+
+        .pulsing-indicator {
+          width: 6px;
+          height: 6px;
+          background-color: var(--green);
+          border-radius: 50%;
+          margin-left: 6px;
+          display: inline-block;
+          position: relative;
+          vertical-align: middle;
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: var(--green);
+            animation: dotPulse 2s infinite ease-out;
+          }
         }
       }
     }
@@ -127,7 +169,30 @@ const StyledLinks = styled.div`
   }
 `;
 
-const Nav = ({ isHome }) => {
+const StyledBackLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: var(--fz-xs);
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+  margin-left: 15px;
+
+  &:hover,
+  &:focus {
+    color: var(--green);
+    transform: translateX(-3px);
+  }
+
+  svg {
+    fill: currentColor;
+    transition: var(--transition);
+  }
+`;
+
+const Nav = ({ isHome, isCaseStudy }) => {
   const data = useStaticQuery(graphql`
     query {
       allResumeJson {
@@ -138,10 +203,23 @@ const Nav = ({ isHome }) => {
           }
         }
       }
+      allSettingsJson {
+        edges {
+          node {
+            showTab
+          }
+        }
+      }
     }
   `);
 
   const resumeData = data.allResumeJson.edges[0]?.node || { type: 'url', value: '#' };
+  const showAiPlay = data.allSettingsJson?.edges[0]?.node?.showTab !== false; // defaults to true
+
+  const visibleNavLinks = navLinks.filter(link => {
+    if ((link.name === 'AI Play' || link.name === 'AI Playground') && !showAiPlay) return false;
+    return true;
+  });
 
   const [isMounted, setIsMounted] = useState(!isHome);
   const scrollDirection = useScrollDirection('down');
@@ -194,16 +272,28 @@ const Nav = ({ isHome }) => {
   );
 
   return (
-    <StyledHeader scrollDirection={scrollDirection} scrolledToTop={scrolledToTop}>
+    <StyledHeader
+      scrollDirection={scrollDirection}
+      scrolledToTop={scrolledToTop}
+      isCaseStudy={isCaseStudy}
+    >
       <StyledNav>
         {prefersReducedMotion ? (
           <>
-            {Logo}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              {Logo}
+              {isCaseStudy && (
+                <StyledBackLink to="/#projects">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style={{marginRight: '6px'}}><path d="M7.82843 10.9999H20V12.9999H7.82843L13.1924 18.3638L11.7782 19.778L4 11.9999L11.7782 4.22168L13.1924 5.63589L7.82843 10.9999Z"></path></svg>
+                  Back
+                </StyledBackLink>
+              )}
+            </div>
 
             <StyledLinks>
               <ol>
-                {navLinks &&
-                  navLinks.map(({ url, name }, i) => (
+                {visibleNavLinks &&
+                  visibleNavLinks.map(({ url, name }, i) => (
                     <li key={i}>
                       <Link to={url}>{name}</Link>
                     </li>
@@ -219,7 +309,15 @@ const Nav = ({ isHome }) => {
             <TransitionGroup component={null}>
               {isMounted && (
                 <CSSTransition classNames={fadeClass} timeout={timeout}>
-                  <>{Logo}</>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    {Logo}
+                    {isCaseStudy && (
+                      <StyledBackLink to="/#projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style={{marginRight: '6px'}}><path d="M7.82843 10.9999H20V12.9999H7.82843L13.1924 18.3638L11.7782 19.778L4 11.9999L11.7782 4.22168L13.1924 5.63589L7.82843 10.9999Z"></path></svg>
+                        Back
+                      </StyledBackLink>
+                    )}
+                  </div>
                 </CSSTransition>
               )}
             </TransitionGroup>
@@ -228,8 +326,8 @@ const Nav = ({ isHome }) => {
               <ol>
                 <TransitionGroup component={null}>
                   {isMounted &&
-                    navLinks &&
-                    navLinks.map(({ url, name }, i) => (
+                    visibleNavLinks &&
+                    visibleNavLinks.map(({ url, name }, i) => (
                       <CSSTransition key={i} classNames={fadeDownClass} timeout={timeout}>
                         <li key={i} style={{ transitionDelay: `${isHome ? i * 100 : 0}ms` }}>
                           <Link to={url}>{name}</Link>
@@ -266,6 +364,7 @@ const Nav = ({ isHome }) => {
 
 Nav.propTypes = {
   isHome: PropTypes.bool,
+  isCaseStudy: PropTypes.bool,
 };
 
 export default Nav;

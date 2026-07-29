@@ -44,43 +44,12 @@ const StyledProject = styled.li`
   }
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    padding: 0;
-    border: none;
-    background: transparent !important;
-  }
-
-
+    flex-direction: column-reverse;
+    padding: 16px;
+    border: solid 1px #45B09F;
+    background: rgba(2, 12, 27, 0.4) !important;
     margin-bottom: 50px;
-    @media (max-width: 768px) {
-      margin-bottom: 50px;
-    }
-
-    @media (max-width: 480px) {
-      margin-bottom: 50px;
-    }
-  
-
- 
-    .project-links {
-      justify-content: flex-end;
-      margin-left: 0;
-      margin-right: -10px;
-
-      @media (max-width: 768px) {
-        justify-content: flex-start;
-        margin-left: -10px;
-        margin-right: 0;
-      }
-    }
-    .project-image {
-
-      @media (max-width: 768px) {
-      }
-    }
   }
-
-
 
   .project-content {
     flex: 1;
@@ -91,7 +60,7 @@ const StyledProject = styled.li`
 
     @media (max-width: 768px) {
       width: 100%;
-      padding: 20px 0;
+      padding: 10px 0 0 0;
     }
   }
 
@@ -104,50 +73,30 @@ const StyledProject = styled.li`
 
     @media (max-width: 768px) {
       display: none;
+    }
   }
-}
 
   .project-title {
     color: var(--lightest-slate);
     font-size: clamp(24px, 5vw, 28px);
 
-    @media (min-width: 768px) {
-     
-    }
-
     @media (max-width: 768px) {
       color: var(--white);
       font-size: 20px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-
-      a {
-        position: static;
-
-        &:before {
-          content: '';
-          display: block;
-          position: absolute;
-          z-index: 0;
-          width: 100%;
-          height: 100%;
-          top: 0;
-          left: 0;
-        }
-      }
+      margin-top: 5px;
+      margin-bottom: 0;
     }
   }
 
-  .project-type{
+  .project-type {
     margin-top: -5px;
     margin-bottom: 20px;
 
     @media (max-width: 768px) {
-      margin-top: 3px;
-      margin-bottom: 0;
-      font-size: 14px;
+      display: none;
     }
   }
+
   .project-study {
     margin-top: 20px;
     color: var(--green);
@@ -161,23 +110,20 @@ const StyledProject = styled.li`
     text-decoration: none;
     cursor: pointer;
     transition: var(--transition);
+
     &:hover,
     &:focus,
     &:active {
       background-color: var(--green-tint);
       outline: none;
     }
+
     &:after {
       display: none !important;
     }
-    font-size: var(--fz-xs);
 
-    @media (max-width: 768px){
+    @media (max-width: 768px) {
       display: none;
-      margin-top: 0;
-      font-size: 12px !important;
-      padding: 0.5rem .9rem;
-      margin-left: 20px;
     }
   }
 
@@ -188,22 +134,14 @@ const StyledProject = styled.li`
     font-size: var(--fz-lg);
     padding-right: 20px;
     text-align: justify;
-    
-    box-shadow:none;
+    box-shadow: none;
+
     &:hover {
       box-shadow: none;
     }
 
     @media (max-width: 768px) {
       display: none;
-      padding: 20px 0;
-      background-color: transparent;
-      box-shadow: none;
-      text-align: justify;
-
-      &:hover {
-        box-shadow: none;
-      }
     }
 
     a {
@@ -221,25 +159,20 @@ const StyledProject = styled.li`
     flex-wrap: wrap;
     position: relative;
     z-index: 2;
-    margin: 25px 0 10px;
+    margin: 10px 0 20px;
     padding: 0;
     list-style: none;
 
     li {
       margin: 0 20px 5px 0;
-      color: var(--light-slate);
+      color: var(--green);
       font-family: var(--font-mono);
       font-size: var(--fz-xs);
       white-space: nowrap;
     }
 
     @media (max-width: 768px) {
-      margin: 10px 0;
-
-      li {
-        margin: 0 10px 5px 0;
-        color: var(--lightest-slate);
-      }
+      display: none;
     }
   }
 
@@ -260,6 +193,10 @@ const StyledProject = styled.li`
         height: 20px;
       }
     }
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   .project-image {
@@ -271,16 +208,16 @@ const StyledProject = styled.li`
 
     @media (max-width: 768px) {
       width: 100%;
-      margin-bottom: 20px;
     }
 
     a {
       display: block;
       width: 100%;
       height: 100%;
-      background-color: transparent;
+      background-color: var(--green);
       border-radius: var(--border-radius);
       vertical-align: middle;
+      transition: var(--transition);
 
       @media (max-width: 768px) {
         background-color: transparent;
@@ -288,32 +225,31 @@ const StyledProject = styled.li`
 
       @media (min-width: 768px) {
         &:hover,
-      &:focus {
-        background: transparent;
-        outline: 0;
-
-        &:before,
-        .img {
+        &:focus {
           background: transparent;
-          filter: none;
-        }
-      }
+          outline: 0;
 
-      &:before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 3;
-        transition: var(--transition);
-        background-color: var(--navy);
-        mix-blend-mode: screen;
-      }
-        
+          &:before,
+          .img {
+            background: transparent;
+            filter: none;
+          }
+        }
+
+        &:before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 3;
+          transition: var(--transition);
+          background-color: var(--navy);
+          mix-blend-mode: screen;
+        }
       }
     }
 
@@ -323,6 +259,8 @@ const StyledProject = styled.li`
       display: block;
       border-radius: 4px;
       object-fit: cover;
+      mix-blend-mode: multiply;
+      filter: grayscale(100%) contrast(1) brightness(90%);
       transition: var(--transition);
 
       &.is-gif {
@@ -401,15 +339,17 @@ const Featured = () => {
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
                 <div className="project-content">
                   <div>
-                    <p className="project-overline">Selected Project</p>
-
                     <h3 className="project-title">
                       <a href={external}>{title}</a>
                       {/* <a href="/case-study">{title}</a> */} 
                       {/* I have changed here */}
                     </h3>
 
-                    <p className="project-type">{role}</p>
+                    <ul className="project-tech-list">
+                      {tech && tech.map((techItem, idx) => (
+                        <li key={idx}>{techItem}</li>
+                      ))}
+                    </ul>
 
                     <div
                       className="project-description"

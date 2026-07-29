@@ -1,0 +1,67 @@
+---
+title: 'WeWork On-Demand'
+slug: ''
+date: '2026-07-28'
+published: true
+summary: 'WeWork lets people book coworking spaces by the day. But most users were leaving the app without booking anything. I redesigned the experience from scratch making it simple, fast, and enjoyable on mobile. || Making it easy to book a workspace on phone and web'
+details:
+  - label: 'My Role'
+    value: 'UX/UI Designer'
+  - label: 'Project Type'
+    value: 'B2B App'
+  - label: 'Duration'
+    value: '3 Months'
+  - label: 'What i coverd'
+    value: 'Research → Design → Prototype'
+banner: '/uploads/case-studies/wework/img-1785217720856-359.png'
+tocEnabled: true
+tocItems:
+  - text: 'The Product'
+    anchor: 'the-product'
+  - text: 'The Problem'
+    anchor: 'the-problem'
+---
+
+<div class="cards-grid cards-grid-3">
+  <div class="card">
+    <h3>85%</h3>
+    <p>of mobile visitors were leaving without doing anything</p>
+  </div>
+  <div class="card">
+    <h3>92%</h3>
+    <p>of all visitors came from a phone yet the app wasn't built for mobile
+</p>
+  </div>
+  <div class="card">
+    <h3>94%</h3>
+    <p>of users who reached checkout did complete the booking</p>
+  </div>
+</div>
+
+<h2 id="the-product" data-toc-name="The Product" style=""><span style="font-size: 20px;"><span style="font-weight: 700;"><span style="font-size: 24px;">What is WeWork On-Demand?</span></span></span></h2><div><span style="font-size: 12px;"><span style="font-size: 16px;"><span style="font-weight: 400;"><p>WeWork On-Demand lets you book a coworking space for the day, with no long-term commitment and no fixed desk. You pick a location, pick a date, pay, and show up. Think of it like booking a hotel room, but for an office. They offer three things you can book:<br><br></p><p></p><p></p><p></p><p></p><p></p><ul><li><b>Day Pass</b>:&nbsp;&nbsp;one day at a coworking space, starting at ₹699</li></ul><ul><li><b>Bundles</b>:&nbsp;&nbsp;buy 5 or 10 day passes at once and save up to 10%</li></ul><ul><li><b>Conference Rooms</b>: book a meeting room by the hour for your team</li></ul><p></p><p></p><p></p><p></p><p></p></span></span></span></div><br>
+
+<h2 id="the-problem" data-toc-name="The Problem"><h2><span style="font-size: 16px;"><span style="font-size: 20px;"><span style="font-weight: 700;"><span style="font-size: 24px;">What was broken and why it mattered.</span></span></span></span></h2></h2><p></p><div aria-hidden="true" class="pointer-events-none -mt-px h-px translate-y-[calc(var(--scroll-root-safe-area-inset-bottom)-14*var(--spacing))]"></div><p></p><section class="text-token-text-primary w-full focus:outline-none [--shadow-height:45px] has-data-writing-block:pointer-events-none has-data-writing-block:-mt-(--shadow-height) has-data-writing-block:pt-(--shadow-height) [&amp;:has([data-writing-block])&gt;*]:pointer-events-auto [content-visibility:auto] supports-[content-visibility:auto]:[contain-intrinsic-size:auto_100lvh] R6Vx5W_threadScrollVars scroll-mb-[calc(var(--scroll-root-safe-area-inset-bottom,0px)+var(--thread-response-height))] scroll-mt-[calc(var(--header-height)+min(200px,max(70px,20svh)))]" dir="auto" data-turn-id="request-WEB:80a61a15-3f4e-4505-b03e-03b0d5b7bde3-1" data-testid="conversation-turn-2" data-scroll-anchor="false" data-turn="assistant"><div class="text-base my-auto mx-auto pb-10 [--thread-content-margin:var(--thread-content-margin-xs,calc(var(--spacing)*4))] @w-sm/main:[--thread-content-margin:var(--thread-content-margin-sm,calc(var(--spacing)*6))] @w-lg/main:[--thread-content-margin:var(--thread-content-margin-lg,calc(var(--spacing)*16))] px-(--thread-content-margin)"><div class="[--thread-content-max-width:40rem] @w-lg/main:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn"><div class="flex max-w-full flex-col gap-4 grow"><div data-message-author-role="assistant" data-message-id="73d04379-8480-4955-84a6-c286197a5814" dir="auto" data-message-model-slug="gpt-5-3" class="min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal outline-none keyboard-focused:focus-ring [.text-message+&amp;]:mt-1" data-turn-start-message="true" tabindex="0"><div class="flex w-full flex-col gap-1 empty:hidden"><div class="markdown prose dark:prose-invert w-full wrap-break-word dark markdown-new-styling"><p data-start="0" data-end="61">The numbers told a clear and urgent story. Almost everyone visited WeWork On-Demand on their phone, but the experience wasn't designed for mobile. People were leaving almost immediately.<br><br></p></div></div></div></div><div class="z-0 flex min-h-[46px] justify-start"></div><div class="mt-3 w-full empty:hidden"><div class="text-center"></div></div></div></div></section>
+
+
+<div class="cards-grid cards-grid-3">
+  <div class="card">
+    <h3 style="color:#f43e3e;">92%</h3>
+    <p>of visitors came from a mobile phone</p>
+  </div>
+  <div class="card">
+    <h3 style="color:#f43d3e;">85%</h3>
+    <p>of those mobile visitors left without doing anything</p>
+  </div>
+  <div class="card">
+    <h3>94%</h3>
+    <p>who reached checkout did complete the booking</p>
+  </div>
+</div>
+
+
+<div class="callout-block">
+  <h3>The key insight: </h3>
+  <div class="callout-content">
+People who reached the payment screen almost always paid. The problem wasn't that people didn't want to book — the problem was that they were giving up before they even got there. The app was losing people halfway through.
+  </div>
+</div>

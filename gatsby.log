@@ -1,0 +1,665 @@
+
+> personal-website@1.0.0 start
+> npm run develop
+
+
+> personal-website@1.0.0 develop
+> gatsby develop -p 3000
+
+◇ injected env (9) from .env // tip: ⌘ override existing { override: true }
+
+◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+
+[2K[1A[2K[Gwarn Warning: there are unknown plugin options for "gatsby-remark-images":
+ignoreFileExtensions
+Please open an issue at ghub.io/gatsby-remark-images if you believe this option
+is valid.
+
+[2K[1A[2K[Gwarn ⚠️  Node.js 18 and below are deprecated and will no longer be supported in
+future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later.
+ For more information, visit: https://github.com/orgs/supabase/discussions/37217
+
+[2K[1A[2K[G◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+
+[2K[1A[2K[Gsuccess open and validate gatsby-configs, load plugins - 0.503s
+
+[2K[1A[2K[Gsuccess onPreInit - 0.003s
+
+[2K[1A[2K[Ginfo One or more of your plugins have changed since the last time you ran
+Gatsby. As
+a precaution, we're deleting your site's cache to ensure there's no stale data.
+
+[2K[1A[2K[Gsuccess initialize cache - 0.029s
+
+[2K[1A[2K[Gsuccess copy gatsby files - 0.039s
+
+[2K[1A[2K[Gsuccess Compiling Gatsby Functions - 0.116s
+
+[2K[1A[2K[Gsuccess onPreBootstrap - 0.122s
+
+[2K[1A[2K[Gsuccess createSchemaCustomization - 0.043s
+
+[2K[1A[2K[Gsuccess Checking for changed pages - 0.001s
+
+[2K[1A[2K[Gsuccess source and transform nodes - 1.868s
+
+[2K[1A[2K[Gsuccess building schema - 0.289s
+
+[2K[1A[2K[Gsuccess createPages - 0.019s
+
+[2K[1A[2K[Gsuccess createPagesStatefully - 0.022s
+
+[2K[1A[2K[Ginfo Total nodes: 372, SitePage nodes: 28 (use --verbose for breakdown)
+
+[2K[1A[2K[Gsuccess Checking for changed pages - 0.000s
+
+[2K[1A[2K[Gsuccess update schema - 0.040s
+
+[2K[1A[2K[Gsuccess write out redirect data - 0.000s
+
+[2K[1A[2K[Gsuccess Build manifest and related icons - 0.015s
+
+[2K[1A[2K[Gsuccess onPostBootstrap - 0.016s
+
+[2K[1A[2K[Ginfo bootstrap finished - 3.840s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.323s
+
+[2K[1A[2K[Gsuccess write out requires - 0.002s
+
+[2K[1A[2K[Gsuccess run static queries - 0.020s - 7/7 346.91/s
+
+[2K[1A[2K[Gsuccess run page queries - 0.004s - 3/3 837.25/s
+
+[2K[1A[2K[Ginfo [HPM] Proxy created: /  ->  http://localhost:3001
+
+[2K[1A[2K[G⠀
+
+[2K[1A[2K[GYou can now view personal-website in the browser.
+
+[2K[1A[2K[G⠀
+
+[2K[1A[2K[G  http://localhost:3000/
+
+[2K[1A[2K[G⠀
+
+[2K[1A[2K[GView GraphiQL, an in-browser IDE, to explore your site's data and schema
+
+[2K[1A[2K[G⠀
+
+[2K[1A[2K[G  http://localhost:3000/___graphql
+
+[2K[1A[2K[G⠀
+
+[2K[1A[2K[GNote that the development build is not optimized.
+
+[2K[1A[2K[GTo create a production build, use gatsby build
+
+[2K[1A[2K[G⠀
+
+[2K[1A[2K[Gsuccess Building development bundle - 5.766s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.038s - 3/28
+746.38/s
+
+[2K[1A[2K[Gsuccess Caching HTML renderer compilation - 4.817s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.002s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.056s
+
+[2K[1A[2K[Gsuccess write out requires - 0.001s
+
+[2K[1A[2K[Gsuccess run page queries - 0.003s - 1/1 309.95/s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.008s - 1/25
+3215.52/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.001s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.055s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess run page queries - 0.013s - 1/1 79.93/s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.003s - 1/24
+7328.71/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.001s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.060s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gwarn `isModuleDeclaration` has been deprecated, please migrate to
+`isImportOrExportDeclaration`
+    at isModuleDeclaration (/Users/naveen/AI Projects/Portfolio/node_modules/@ba
+bel/types/lib/validators/generated/index.js:2793:35)
+    at PluginPass.Program (/Users/naveen/AI
+Projects/Portfolio/node_modules/babel-plugin-lodash/lib/index.js:102:44)
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.332s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.007s - 0/23
+3247.82/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.001s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.080s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.170s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.003s - 0/23
+7712.94/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.044s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.204s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.006s - 0/23
+3600.10/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.036s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.156s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.003s - 0/23
+8179.96/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.047s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.185s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.003s - 0/23
+8083.41/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.128s
+
+[2K[1A[2K[Gsuccess write out requires - 0.001s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.940s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.009s - 0/23
+2426.15/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.034s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.066s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.004s - 0/23
+5646.71/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.027s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.065s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.002s - 0/23
+9219.67/s
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.061s
+
+[2K[1A[2K[Gsuccess write out requires - 0.001s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.230s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.006s - 0/23
+3552.54/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.040s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.158s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.003s - 0/23
+8047.70/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.062s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.722s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.007s - 0/23
+3122.00/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.032s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.059s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.005s - 0/23
+4955.56/s
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.001s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.070s
+
+[2K[1A[2K[Gsuccess write out requires - 0.001s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.222s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.005s - 0/23
+4464.39/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.084s
+
+[2K[1A[2K[Gsuccess write out requires - 0.001s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.645s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.012s - 0/23
+1858.37/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.062s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.072s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.003s - 0/23
+7608.55/s
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[G
+ ERROR
+
+Error loading a result for the page query in "dev-404-page" / "dev-404-page".
+Query was not run and no cached result was found. Error loading a result for the
+ page query in "/dev-404-page/". Query was not run and no cached result was
+found.
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mError loading a result for the page query in "/dev-404-page/". Query wa[0m
+  [0m[97m[41ms not run and no cached result was found.[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mget-page-data.ts[0m[90m:[0m[93m118[0m[37m [0m[37mreadPageData[0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/get-page-data.ts:118:11[0m
+[0m  [0m
+[0m  [0m[90m-[0m [0m[93mstart-server.ts[0m[90m:[0m[93m394[0m[37m [0m
+[0m  [0m  [0m[90m[Portfolio]/[gatsby]/src/utils/start-server.ts:394:24[0m
+[0m  [0m
+[0m
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.046s
+
+[2K[1A[2K[Gsuccess write out requires - 0.001s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.216s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.005s - 0/23
+4244.03/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.045s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.081s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.007s - 0/23
+3510.56/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.046s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.075s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.004s - 0/23
+6097.36/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.034s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.067s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.002s - 0/23
+10378.86/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.034s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.002s - 0/23
+9253.83/s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.050s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.004s - 0/23
+6415.77/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.034s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.107s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.004s - 0/23
+5522.26/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.038s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.149s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.004s - 0/23
+5839.91/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.000s
+
+[2K[1A[2K[Gsuccess extract queries from components - 0.037s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[Gsuccess Re-building development bundle - 0.131s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.003s - 0/23
+7028.80/s
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.004s
+
+[2K[1A[2K[G
+ ERROR #85913  GRAPHQL
+
+There was a problem reading the file: /Users/naveen/AI
+Projects/Portfolio/.cache/dev-404-page.js
+
+File: .cache/dev-404-page.js
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mENOENT: no such file or directory, open '/Users/naveen/AI Projects/Port[0m
+  [0m[97m[41mfolio/.cache/dev-404-page.js'[0m
+[0m
+
+[2K[1A[2K[Gfailed extract queries from components - 0.090s
+
+[2K[1A[2K[Gsuccess write out requires - 0.001s
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.026s - 0/23
+870.48/s
+
+[2K[1A[2K[G
+ ERROR #98124  WEBPACK
+
+Generating development JavaScript bundle failed
+
+Can't resolve './../../dev-404-page.js' in '/Users/naveen/AI
+Projects/Portfolio/.cache/_this_is_virtual_fs_path_/$virtual'
+
+If you're trying to use a package make sure that './../../dev-404-page.js' is
+installed. If you're trying to use a local file make sure that the path is
+correct.
+
+File: .cache/_this_is_virtual_fs_path_/$virtual/async-requires.js:7:45
+
+
+[2K[1A[2K[Gfailed Re-building development bundle - 0.379s
+
+[2K[1A[2K[GERROR in ./.cache/_this_is_virtual_fs_path_/$virtual/async-requires.js 7:45-138
+Module not found: Error: Can't resolve './../../dev-404-page.js' in
+'/Users/naveen/AI Projects/Portfolio/.cache/_this_is_virtual_fs_path_/$virtual'
+ @ ./.cache/app.js 14:0-52 31:29-42 34:29-42 28:87-32:1 28:0-32:2
+
+webpack compiled with 1 error
+
+[2K[1A[2K[Gsuccess onPreExtractQueries - 0.001s
+
+[2K[1A[2K[G
+ ERROR #85913  GRAPHQL
+
+There was a problem reading the file: /Users/naveen/AI
+Projects/Portfolio/.cache/dev-404-page.js
+
+File: .cache/dev-404-page.js
+
+
+[2K[1A[2K[G
+[0m
+[0m  [0m[97m[41mError[0m[37m[41m:[0m[37m[41m [0m[97m[41mENOENT: no such file or directory, open '/Users/naveen/AI Projects/Port[0m
+  [0m[97m[41mfolio/.cache/dev-404-page.js'[0m
+[0m
+
+[2K[1A[2K[Gfailed extract queries from components - 0.045s
+
+[2K[1A[2K[Gsuccess write out requires - 0.000s
+
+[2K[1A[2K[G
+ ERROR #98124  WEBPACK
+
+Generating development JavaScript bundle failed
+
+Can't resolve './../../dev-404-page.js' in '/Users/naveen/AI
+Projects/Portfolio/.cache/_this_is_virtual_fs_path_/$virtual'
+
+If you're trying to use a package make sure that './../../dev-404-page.js' is
+installed. If you're trying to use a local file make sure that the path is
+correct.
+
+File: .cache/_this_is_virtual_fs_path_/$virtual/async-requires.js:7:45
+
+
+[2K[1A[2K[Gfailed Re-building development bundle - 0.087s
+
+[2K[1A[2K[GERROR in ./.cache/_this_is_virtual_fs_path_/$virtual/async-requires.js 7:45-138
+Module not found: Error: Can't resolve './../../dev-404-page.js' in
+'/Users/naveen/AI Projects/Portfolio/.cache/_this_is_virtual_fs_path_/$virtual'
+ @ ./.cache/app.js 14:0-52 31:29-42 34:29-42 28:87-32:1 28:0-32:2
+
+webpack compiled with 1 error
+
+[2K[1A[2K[Gsuccess Writing page-data.json files to public directory - 0.006s - 0/23
+3658.75/s
+

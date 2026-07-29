@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link } from 'gatsby';
+import { useStaticQuery, graphql, Link } from 'gatsby';
 import styled from 'styled-components';
 import { navLinks } from '@config';
 import { KEY_CODES } from '@utils';
@@ -74,7 +74,7 @@ const StyledHamburgerButton = styled.button`
       top: ${props => (props.menuOpen ? `0` : `-10px`)};
       opacity: ${props => (props.menuOpen ? 0 : 1)};
       transition: ${({ menuOpen }) =>
-    menuOpen ? 'var(--ham-before-active)' : 'var(--ham-before)'};
+        menuOpen ? 'var(--ham-before-active)' : 'var(--ham-before)'};
     }
     &:after {
       width: ${props => (props.menuOpen ? `100%` : `80%`)};
@@ -104,6 +104,17 @@ const StyledSidebar = styled.aside`
     transform: translateX(${props => (props.menuOpen ? 0 : 100)}vw);
     visibility: ${props => (props.menuOpen ? 'visible' : 'hidden')};
     transition: var(--transition);
+  }
+
+  @keyframes dotPulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(3.5);
+      opacity: 0;
+    }
   }
 
   nav {
@@ -140,10 +151,42 @@ const StyledSidebar = styled.aside`
       }
     }
 
+    .highlight-link {
+      a {
+        color: var(--green) !important;
+
+        .pulsing-indicator {
+          width: 6px;
+          height: 6px;
+          background-color: var(--green);
+          border-radius: 50%;
+          margin-left: 6px;
+          display: inline-block;
+          position: relative;
+          vertical-align: middle;
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: var(--green);
+            animation: dotPulse 2s infinite ease-out;
+          }
+        }
+      }
+    }
+
     a {
       ${({ theme }) => theme.mixins.link};
       width: 100%;
       padding: 3px 20px 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -156,6 +199,25 @@ const StyledSidebar = styled.aside`
 `;
 
 const Menu = () => {
+  const data = useStaticQuery(graphql`
+    query {
+      allSettingsJson {
+        edges {
+          node {
+            showTab
+          }
+        }
+      }
+    }
+  `);
+
+  const showAiPlay = data.allSettingsJson?.edges[0]?.node?.showTab !== false;
+
+  const visibleNavLinks = navLinks.filter(link => {
+    if ((link.name === 'AI Play' || link.name === 'AI Playground') && !showAiPlay) return false;
+    return true;
+  });
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -246,7 +308,8 @@ const Menu = () => {
           onClick={toggleMenu}
           menuOpen={menuOpen}
           ref={buttonRef}
-          aria-label="Menu">
+          aria-label="Menu"
+        >
           <div className="ham-box">
             <div className="ham-box-inner" />
           </div>
@@ -254,9 +317,9 @@ const Menu = () => {
 
         <StyledSidebar menuOpen={menuOpen} aria-hidden={!menuOpen} tabIndex={menuOpen ? 1 : -1}>
           <nav ref={navRef}>
-            {navLinks && (
+            {visibleNavLinks && (
               <ol>
-                {navLinks.map(({ url, name }, i) => (
+                {visibleNavLinks.map(({ url, name }, i) => (
                   <li key={i}>
                     <Link to={url} onClick={() => setMenuOpen(false)}>
                       {name}
@@ -266,7 +329,10 @@ const Menu = () => {
               </ol>
             )}
 
-            <a href="https://drive.google.com/file/d/1SLFleGOp7NflafhEWJtOF6-eRUUTBUgE/view?usp=drive_link" className="resume-link">
+            <a
+              href="https://drive.google.com/file/d/1SLFleGOp7NflafhEWJtOF6-eRUUTBUgE/view?usp=drive_link"
+              className="resume-link"
+            >
               Resume
             </a>
           </nav>

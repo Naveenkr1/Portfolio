@@ -1,4 +1,5 @@
 {
+  "devCommand": "serve public -l $PORT",
   "rewrites": [
     {
       "source": "/login",

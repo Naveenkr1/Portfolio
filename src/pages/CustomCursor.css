@@ -22,3 +22,14 @@ body {
 body.custom-pointer {
   cursor: url('../components/Cursour/hand.svg'), auto;
 }
+
+/* Light Theme overrides */
+html.light-theme body {
+  cursor: url('../components/Cursour/Cursor-black.svg'), auto;
+}
+html.light-theme body.custom-cursor {
+  cursor: url('../components/Cursour/hand-black.svg'), auto;
+}
+html.light-theme body.custom-pointer {
+  cursor: url('../components/Cursour/hand-black.svg'), auto;
+}

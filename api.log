@@ -1,0 +1,16 @@
+
+> personal-website@1.0.0 api
+> node api/index.js
+
+◇ injected env (9) from .env // tip: ⌘ override existing { override: true }
+◇ injected env (0) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+Server running on port 3001
+[object Object]
+[object Object]
+[object Object]
+[object Object]
+[object Object]
+[object Object]
+[object Object]
+Triggering deploy webhook: https://api.vercel.com/v1/integrations/deploy/prj_H0rELP1rwtCnempL5ntev8H9YGLv/UZ5OEBFCcp

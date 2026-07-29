@@ -6,27 +6,101 @@
 
 const path = require('path');
 const _ = require('lodash');
-const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+const matter = require('gray-matter');
 require('dotenv').config();
 
 exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => {
   const { createNode } = actions;
   
-  const supabaseUrl = process.env.GATSBY_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseKey = process.env.GATSBY_SUPABASE_KEY || process.env.SUPABASE_SERVICE_KEY;
-  if (!supabaseUrl || !supabaseKey) return;
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const contentDir = path.join(__dirname, 'content');
 
-  const fetchAndCreateNodes = async (table, typeName) => {
-    const { data, error } = await supabase.from(table).select('*');
-    if (error) throw error;
-    if (!data) return;
+  const createJsonNode = (dir, typeName) => {
+    const dirPath = path.join(contentDir, dir);
+    if (!fs.existsSync(dirPath)) return;
+    const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.json'));
+    if (files.length === 0) return;
     
-    data.forEach(item => {
-      // Tech field might be stored as JSON array in postgres, ensure it's an array
+    const raw = fs.readFileSync(path.join(dirPath, files[0]), 'utf-8');
+    const item = JSON.parse(raw);
+    item.id = item.id || '1';
+    
+    if (typeName === 'MongodbPortfolioHeros') {
+      item.subtitle = item.subtitle || item.intro;
+    } else if (typeName === 'MongodbPortfolioAbouts') {
+      item.description = item.description || (item.paragraphs ? item.paragraphs.join('\n') : '');
+    }
+    
+    const nodeMeta = {
+      id: createNodeId(`${typeName}-${item.id}`),
+      parent: null,
+      children: [],
+      internal: {
+        type: typeName,
+        mediaType: `application/json`,
+        content: JSON.stringify(item),
+        contentDigest: createContentDigest(item),
+      },
+    };
+    const node = Object.assign({}, item, nodeMeta);
+    createNode(node);
+  };
+
+  const createMarkdownNodes = (dir, typeName) => {
+    const dirPath = path.join(contentDir, dir);
+    if (!fs.existsSync(dirPath)) return;
+    const subdirs = fs.readdirSync(dirPath).filter(f => fs.statSync(path.join(dirPath, f)).isDirectory());
+    
+    subdirs.forEach(subdir => {
+      const itemDirPath = path.join(dirPath, subdir);
+      const files = fs.readdirSync(itemDirPath);
+      const md = files.find(f => f === 'index.md');
+      const xxmd = files.find(f => f === 'index.xxmd');
+      const fileToParse = md || xxmd;
+      if (!fileToParse) return;
+
+      const raw = fs.readFileSync(path.join(itemDirPath, fileToParse), 'utf-8');
+      const { data, content } = matter(raw);
+      
+      const item = { ...data, id: subdir, slug: subdir };
+      item.published = !!md;
+      
+      if (typeName === 'MongodbPortfolioProjects' || typeName === 'MongodbPortfolioJobs') {
+        item.description = content.trim();
+      } else if (typeName === 'MongodbPortfolioCaseStudies') {
+        item.markdown = content;
+        item.toc_enabled = item.tocEnabled;
+        item.toc_items = item.tocItems;
+      }
+
       if (item.tech && typeof item.tech === 'string') {
         try { item.tech = JSON.parse(item.tech); } catch(e){}
       }
+
+      // Handle relative images in cover or banner
+      const handleRelativeImage = (imgPath, subdir) => {
+        if (!imgPath || imgPath.startsWith('http') || imgPath.startsWith('/')) return imgPath;
+        const staticAssetsDir = path.join(__dirname, 'static', 'assets');
+        if (!fs.existsSync(staticAssetsDir)) fs.mkdirSync(staticAssetsDir, { recursive: true });
+        
+        let safePath = imgPath;
+        if (safePath.startsWith('./')) { safePath = safePath.slice(2); }
+        
+        const sourcePath = path.join(itemDirPath, safePath);
+        if (fs.existsSync(sourcePath)) {
+          const ext = path.extname(sourcePath);
+          let newFileName = `${subdir}-${path.basename(sourcePath, ext)}${ext}`;
+          newFileName = newFileName.split(' ').join('-');
+          const destPath = path.join(staticAssetsDir, newFileName);
+          fs.copyFileSync(sourcePath, destPath);
+          return `/assets/${newFileName}`;
+        }
+        return imgPath;
+      };
+
+      if (item.cover) item.cover = handleRelativeImage(item.cover, subdir);
+      if (item.banner) item.banner = handleRelativeImage(item.banner, subdir);
+
       const nodeMeta = {
         id: createNodeId(`${typeName}-${item.id}`),
         parent: null,
@@ -43,11 +117,16 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => 
     });
   };
 
-  await fetchAndCreateNodes('projects', 'MongodbPortfolioProjects');
-  await fetchAndCreateNodes('jobs', 'MongodbPortfolioJobs');
-  await fetchAndCreateNodes('hero', 'MongodbPortfolioHeros');
-  await fetchAndCreateNodes('about', 'MongodbPortfolioAbouts');
-  await fetchAndCreateNodes('case_studies', 'MongodbPortfolioCaseStudies');
+  try {
+    createJsonNode('hero', 'MongodbPortfolioHeros');
+    createJsonNode('about', 'MongodbPortfolioAbouts');
+    createMarkdownNodes('featured', 'MongodbPortfolioProjects');
+    createMarkdownNodes('jobs', 'MongodbPortfolioJobs');
+    createMarkdownNodes('case-studies', 'MongodbPortfolioCaseStudies');
+  } catch (err) {
+    console.error("CRITICAL ERROR IN sourceNodes:", err);
+    throw err;
+  }
 };
 
 exports.createPages = async ({ actions, graphql, reporter }) => {
@@ -205,6 +284,7 @@ exports.createSchemaCustomization = ({ actions }) => {
       date: Date @dateformat
       published: Boolean
       summary: String
+      details: [CaseStudyDetailItem]
       role: String
       results: String
       methods: String
@@ -221,6 +301,10 @@ exports.createSchemaCustomization = ({ actions }) => {
       text: String
       anchor: String
     }
+    type CaseStudyDetailItem {
+      label: String
+      value: String
+    }
     type MongodbPortfolioCaseStudies implements Node @infer {
       title: String
       slug: String
@@ -230,6 +314,7 @@ exports.createSchemaCustomization = ({ actions }) => {
       role: String
       results: String
       methods: String
+      details: [CaseStudyDetailItem]
       banner: String
       toc_enabled: Boolean
       toc_items: [CaseStudyTOCItem]

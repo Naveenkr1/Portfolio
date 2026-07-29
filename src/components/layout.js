@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled, { ThemeProvider } from 'styled-components';
-import { Head, Loader, Nav, Social, Email, Footer } from '@components';
+import { Head, Loader, Nav, Social, Email, Footer, ThemeToggle } from '@components';
 import { GlobalStyle, theme } from '@styles';
 
 const StyledContent = styled.div`
@@ -10,9 +10,50 @@ const StyledContent = styled.div`
   min-height: 100vh;
 `;
 
-const Layout = ({ children, location, hideSocialAndEmail }) => {
+const Layout = ({ children, location, hideSocialAndEmail, hideNav }) => {
   const isHome = location.pathname === '/';
   const [isLoading, setIsLoading] = useState(isHome);
+  const [themeMode, setThemeMode] = useState('dark');
+  const isCaseStudy = location && location.pathname && location.pathname.includes('case-study');
+
+  useEffect(() => {
+    const isCaseStudy = location && location.pathname && location.pathname.includes('case-study');
+
+    if (isCaseStudy) {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        setThemeMode(savedTheme);
+        if (savedTheme === 'light') {
+          document.documentElement.classList.add('light-theme');
+        } else {
+          document.documentElement.classList.remove('light-theme');
+        }
+      } else {
+        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        if (prefersLight) {
+          setThemeMode('light');
+          document.documentElement.classList.add('light-theme');
+        } else {
+          setThemeMode('dark');
+          document.documentElement.classList.remove('light-theme');
+        }
+      }
+    } else {
+      setThemeMode('dark');
+      document.documentElement.classList.remove('light-theme');
+    }
+  }, [location.pathname]);
+
+  const toggleTheme = () => {
+    const nextTheme = themeMode === 'dark' ? 'light' : 'dark';
+    setThemeMode(nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    if (nextTheme === 'light') {
+      document.documentElement.classList.add('light-theme');
+    } else {
+      document.documentElement.classList.remove('light-theme');
+    }
+  };
 
   // Sets target="_blank" rel="noopener noreferrer" on external links
   const handleExternalLinks = () => {
@@ -62,7 +103,7 @@ const Layout = ({ children, location, hideSocialAndEmail }) => {
             <Loader finishLoading={() => setIsLoading(false)} />
           ) : (
             <StyledContent>
-              <Nav isHome={isHome} />
+              {!hideNav && <Nav isHome={isHome} isCaseStudy={isCaseStudy} />}
               {!hideSocialAndEmail && (
                 <>
                   <Social isHome={isHome} />
@@ -72,7 +113,7 @@ const Layout = ({ children, location, hideSocialAndEmail }) => {
 
               <div id="content">
                 {children}
-                <Footer />
+                <Footer isCaseStudy={isCaseStudy} />
               </div>
             </StyledContent>
           )}

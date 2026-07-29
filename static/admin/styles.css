@@ -880,7 +880,7 @@ input:checked + .slider:before {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 2000;
+  z-index: 11000;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1053,7 +1053,7 @@ input:checked + .slider:before {
    RESUME SECTION
    ───────────────────────────────────────────── */
 .resume-container {
-  max-width: 800px;
+  /* max-width: 800px; */
   margin: 0 auto;
 }
 
@@ -1133,7 +1133,7 @@ input:checked + .slider:before {
    HOMEPAGE SECTION
    ───────────────────────────────────────────── */
 .homepage-container {
-  max-width: 900px;
+  /* max-width: 900px; */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1411,7 +1411,7 @@ input:checked + .slider:before {
 }
 
 .builder-blocks {
-  max-width: 900px;
+  /* max-width: 900px; */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1696,6 +1696,27 @@ input:checked + .slider:before {
   border-color: var(--green-dim);
 }
 
+.rte-select {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--light-slate);
+  height: 32px;
+  min-width: 90px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0 4px;
+  outline: none;
+  font-size: 13px;
+  transition: var(--transition-fast);
+}
+
+.rte-select:hover, .rte-select:focus {
+  background: var(--lightest-navy);
+  color: var(--green);
+  border-color: var(--green-dim);
+}
+
 .rte-color-picker {
   width: 32px;
   height: 32px;
@@ -1763,8 +1784,6 @@ input:checked + .slider:before {
   margin: 1.5rem auto;
   border-radius: 8px;
   cursor: default;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
 }
 
 /* Mobile View Mode for Canvas */

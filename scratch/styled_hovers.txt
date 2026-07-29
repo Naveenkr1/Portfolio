@@ -1,0 +1,134 @@
+Saved styled-components CSS (21508 chars) to scratch/styled_components.css
+Parsed 154 blocks from styled-components.
+--- BLOCK 11 ---
+/*!sc*/
+:root{--dark-navy:#020c1b;--navy:#0a192f;--light-navy:#112240;--lightest-navy:#233554;--navy-shadow:rgba(2,12,27,0.7);--dark-slate:#495670;--slate:#8892b0;--light-slate:#a8b2d1;--lightest-slate:#ccd6f6;--white:#e6f1ff;--green:#64ffda;--green-tint:rgba(100,255,218,0.1);--pink:#f57dff;--blue:#57cbff;--font-sans:'Calibre','Inter','San Francisco','SF Pro Text',-apple-system,system-ui,sans-serif;--font-mono:'SF Mono','Fira Code','Fira Mono','Roboto Mono',monospace;--fz-xxs:12px;--fz-xs:13px;--fz-sm:14px;--fz-md:16px;--fz-lg:18px;--fz-xl:20px;--fz-xxl:22px;--fz-heading:32px;--border-radius:4px;--nav-height:100px;--nav-scroll-height:70px;--tab-height:42px;--tab-width:120px;--easing:cubic-bezier(0.645,0.045,0.355,1);--transition:all 0.25s cubic-bezier(0.645,0.045,0.355,1);--hamburger-width:30px;--ham-before:top 0.1s ease-in 0.25s,opacity 0.1s ease-in;--ham-before-active:top 0.1s ease-out,opacity 0.1s ease-out 0.12s;--ham-after:bottom 0.1s ease-in 0.25s,transform 0.22s cubic-bezier(0.55,0.055,0.675,0.19);--ham-after-active:bottom 0.1s ease-out,transform 0.22s cubic-bezier(0.215,0.61,0.355,1) 0.12s;}
+--- BLOCK 22 ---
+/*!sc*/
+body{margin:0;width:100%;min-height:100%;overflow-x:hidden;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;background-color:var(--navy);color:var(--slate);font-family:var(--font-sans);font-size:var(--fz-xl);line-height:1.3;}
+--- BLOCK 27 ---
+/*!sc*/
+body.blur #content > *{-webkit-filter:blur(5px) brightness(0.7);filter:blur(5px) brightness(0.7);-webkit-transition:var(--transition);transition:var(--transition);pointer-events:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
+--- BLOCK 51 ---
+/*!sc*/
+img[alt=""],img:not([alt]){-webkit-filter:blur(5px);filter:blur(5px);}
+--- BLOCK 54 ---
+/*!sc*/
+a{display:inline-block;-webkit-text-decoration:none;text-decoration:none;-webkit-text-decoration-skip-ink:auto;text-decoration-skip-ink:auto;color:inherit;position:relative;-webkit-transition:var(--transition);transition:var(--transition);}
+--- BLOCK 55 ---
+/*!sc*/
+a:hover,a:focus{color:var(--green);}
+--- BLOCK 56 ---
+/*!sc*/
+a.inline-link{display:inline-block;-webkit-text-decoration:none;text-decoration:none;-webkit-text-decoration-skip-ink:auto;text-decoration-skip-ink:auto;position:relative;-webkit-transition:var(--transition);transition:var(--transition);color:var(--green);}
+--- BLOCK 57 ---
+/*!sc*/
+a.inline-link:hover,a.inline-link:focus,a.inline-link:active{color:var(--green);outline:0;}
+--- BLOCK 58 ---
+/*!sc*/
+a.inline-link:hover:after,a.inline-link:focus:after,a.inline-link:active:after{width:100%;}
+--- BLOCK 59 ---
+/*!sc*/
+a.inline-link:hover > *,a.inline-link:focus > *,a.inline-link:active > *{color:var(--green) !important;-webkit-transition:var(--transition);transition:var(--transition);}
+--- BLOCK 60 ---
+/*!sc*/
+a.inline-link:after{content:'';display:block;width:0;height:1px;position:relative;bottom:0.37em;background-color:var(--green);-webkit-transition:var(--transition);transition:var(--transition);opacity:0.5;}
+--- BLOCK 64 ---
+/*!sc*/
+input:focus::-webkit-input-placeholder,textarea:focus::-webkit-input-placeholder,input:active::-webkit-input-placeholder,textarea:active::-webkit-input-placeholder{opacity:0.5;}
+--- BLOCK 65 ---
+/*!sc*/
+input:focus::-moz-placeholder,textarea:focus::-moz-placeholder,input:active::-moz-placeholder,textarea:active::-moz-placeholder{opacity:0.5;}
+--- BLOCK 66 ---
+/*!sc*/
+input:focus:-ms-input-placeholder,textarea:focus:-ms-input-placeholder,input:active:-ms-input-placeholder,textarea:active:-ms-input-placeholder{opacity:0.5;}
+--- BLOCK 67 ---
+/*!sc*/
+input:focus::placeholder,textarea:focus::placeholder,input:active::placeholder,textarea:active::placeholder{opacity:0.5;}
+--- BLOCK 70 ---
+/*!sc*/
+p > a{display:inline-block;-webkit-text-decoration:none;text-decoration:none;-webkit-text-decoration-skip-ink:auto;text-decoration-skip-ink:auto;position:relative;-webkit-transition:var(--transition);transition:var(--transition);color:var(--green);}
+--- BLOCK 71 ---
+/*!sc*/
+p > a:hover,p > a:focus,p > a:active{color:var(--green);outline:0;}
+--- BLOCK 72 ---
+/*!sc*/
+p > a:hover:after,p > a:focus:after,p > a:active:after{width:100%;}
+--- BLOCK 73 ---
+/*!sc*/
+p > a:hover > *,p > a:focus > *,p > a:active > *{color:var(--green) !important;-webkit-transition:var(--transition);transition:var(--transition);}
+--- BLOCK 74 ---
+/*!sc*/
+p > a:after{content:'';display:block;width:0;height:1px;position:relative;bottom:0.37em;background-color:var(--green);-webkit-transition:var(--transition);transition:var(--transition);opacity:0.5;}
+--- BLOCK 83 ---
+/*!sc*/
+.skip-to-content{color:var(--green);background-color:transparent;border:1px solid var(--green);border-radius:var(--border-radius);font-size:var(--fz-xs);font-family:var(--font-mono);line-height:1;-webkit-text-decoration:none;text-decoration:none;cursor:pointer;-webkit-transition:var(--transition);transition:var(--transition);padding:1.25rem 1.75rem;position:absolute;top:auto;left:-999px;width:1px;height:1px;overflow:hidden;z-index:-99;}
+--- BLOCK 84 ---
+/*!sc*/
+.skip-to-content:hover,.skip-to-content:focus,.skip-to-content:active{background-color:var(--green-tint);outline:none;}
+--- BLOCK 92 ---
+/*!sc*/
+.subtitle a{display:inline-block;-webkit-text-decoration:none;text-decoration:none;-webkit-text-decoration-skip-ink:auto;text-decoration-skip-ink:auto;position:relative;-webkit-transition:var(--transition);transition:var(--transition);color:var(--green);line-height:1.5;}
+--- BLOCK 93 ---
+/*!sc*/
+.subtitle a:hover,.subtitle a:focus,.subtitle a:active{color:var(--green);outline:0;}
+--- BLOCK 94 ---
+/*!sc*/
+.subtitle a:hover:after,.subtitle a:focus:after,.subtitle a:active:after{width:100%;}
+--- BLOCK 95 ---
+/*!sc*/
+.subtitle a:hover > *,.subtitle a:focus > *,.subtitle a:active > *{color:var(--green) !important;-webkit-transition:var(--transition);transition:var(--transition);}
+--- BLOCK 96 ---
+/*!sc*/
+.subtitle a:after{content:'';display:block;width:0;height:1px;position:relative;bottom:0.37em;background-color:var(--green);-webkit-transition:var(--transition);transition:var(--transition);opacity:0.5;}
+--- BLOCK 99 ---
+/*!sc*/
+.breadcrumb a{display:inline-block;-webkit-text-decoration:none;text-decoration:none;-webkit-text-decoration-skip-ink:auto;text-decoration-skip-ink:auto;position:relative;-webkit-transition:var(--transition);transition:var(--transition);color:var(--green);font-family:var(--font-mono);font-size:var(--fz-sm);font-weight:600;line-height:1.5;text-transform:uppercase;-webkit-letter-spacing:0.1em;-moz-letter-spacing:0.1em;-ms-letter-spacing:0.1em;letter-spacing:0.1em;}
+--- BLOCK 100 ---
+/*!sc*/
+.breadcrumb a:hover,.breadcrumb a:focus,.breadcrumb a:active{color:var(--green);outline:0;}
+--- BLOCK 101 ---
+/*!sc*/
+.breadcrumb a:hover:after,.breadcrumb a:focus:after,.breadcrumb a:active:after{width:100%;}
+--- BLOCK 102 ---
+/*!sc*/
+.breadcrumb a:hover > *,.breadcrumb a:focus > *,.breadcrumb a:active > *{color:var(--green) !important;-webkit-transition:var(--transition);transition:var(--transition);}
+--- BLOCK 103 ---
+/*!sc*/
+.breadcrumb a:after{content:'';display:block;width:0;height:1px;position:relative;bottom:0.37em;background-color:var(--green);-webkit-transition:var(--transition);transition:var(--transition);opacity:0.5;}
+--- BLOCK 105 ---
+/*!sc*/
+.fadeup-enter{opacity:0.01;-webkit-transform:translateY(20px);-ms-transform:translateY(20px);transform:translateY(20px);-webkit-transition:opacity 300ms var(--easing),-webkit-transform 300ms var(--easing);-webkit-transition:opacity 300ms var(--easing),transform 300ms var(--easing);transition:opacity 300ms var(--easing),transform 300ms var(--easing);}
+--- BLOCK 106 ---
+/*!sc*/
+.fadeup-enter-active{opacity:1;-webkit-transform:translateY(0px);-ms-transform:translateY(0px);transform:translateY(0px);-webkit-transition:opacity 300ms var(--easing),-webkit-transform 300ms var(--easing);-webkit-transition:opacity 300ms var(--easing),transform 300ms var(--easing);transition:opacity 300ms var(--easing),transform 300ms var(--easing);}
+--- BLOCK 107 ---
+/*!sc*/
+.fadedown-enter{opacity:0.01;-webkit-transform:translateY(-20px);-ms-transform:translateY(-20px);transform:translateY(-20px);-webkit-transition:opacity 300ms var(--easing),-webkit-transform 300ms var(--easing);-webkit-transition:opacity 300ms var(--easing),transform 300ms var(--easing);transition:opacity 300ms var(--easing),transform 300ms var(--easing);}
+--- BLOCK 108 ---
+/*!sc*/
+.fadedown-enter-active{opacity:1;-webkit-transform:translateY(0px);-ms-transform:translateY(0px);transform:translateY(0px);-webkit-transition:opacity 300ms var(--easing),-webkit-transform 300ms var(--easing);-webkit-transition:opacity 300ms var(--easing),transform 300ms var(--easing);transition:opacity 300ms var(--easing),transform 300ms var(--easing);}
+--- BLOCK 109 ---
+/*!sc*/
+.fade-enter{opacity:0;}
+--- BLOCK 110 ---
+/*!sc*/
+.fade-enter-active{opacity:1;-webkit-transition:opacity 300ms var(--easing);transition:opacity 300ms var(--easing);}
+--- BLOCK 111 ---
+/*!sc*/
+.fade-exit{opacity:1;}
+--- BLOCK 112 ---
+/*!sc*/
+.fade-exit-active{opacity:0;-webkit-transition:opacity 300ms var(--easing);transition:opacity 300ms var(--easing);}
+--- BLOCK 119 ---
+/*!sc*/
+.gatsby-highlight pre[class*='language-']::before{background:var(--lightest-navy);color:var(--white);font-size:var(--fz-xxs);font-family:var(--font-mono);line-height:1.5;-webkit-letter-spacing:0.1em;-moz-letter-spacing:0.1em;-ms-letter-spacing:0.1em;letter-spacing:0.1em;text-transform:uppercase;border-radius:0 0 3px 3px;position:absolute;top:0;left:1.25rem;padding:0.25rem 0.5rem;}
+--- BLOCK 148 ---
+/*!sc*/
+.namespace{opacity:0.7;}
+--- BLOCK 151 ---
+/*!sc*/
+.cewHnZ .logo-wrapper{width:-webkit-max-content;width:-moz-max-content;width:max-content;max-width:100px;-webkit-transition:var(--transition);transition:var(--transition);opacity:0;}
+--- BLOCK 153 ---
+/*!sc*/
+.cewHnZ .logo-wrapper svg #B{opacity:0;}

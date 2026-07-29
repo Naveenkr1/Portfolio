@@ -184,4 +184,17 @@ module.exports = {
 
     `gatsby-plugin-netlify`,
   ],
+  developMiddleware: app => {
+    const { createProxyMiddleware } = require('http-proxy-middleware');
+    app.use(
+      createProxyMiddleware({
+        pathFilter: (pathname, req) => {
+          return pathname.startsWith('/admin') || pathname.startsWith('/login') || pathname.startsWith('/api');
+        },
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      })
+    );
+  },
 };
+

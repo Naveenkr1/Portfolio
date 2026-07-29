@@ -2,8 +2,6 @@ module.exports = {
   email: 'nnaveen.8527@gmail.com',
 
   socialMedia: [
-    
-    
     {
       name: 'GitHub',
       url: 'https://www.behance.net/naveenkumar76',
@@ -13,7 +11,7 @@ module.exports = {
       name: 'Instagram',
       url: 'https://www.instagram.com/naveeu/',
     },
-    
+
     {
       name: 'Linkedin',
       url: 'https://www.linkedin.com/in/naveeu/',
@@ -30,16 +28,16 @@ module.exports = {
       url: '/#projects',
     },
     {
-      name: 'Experience',
-      url: '/#jobs',
-    },
-    {
       name: 'About',
       url: '/#about',
     },
     {
-      name: 'Contact',
-      url: '/#contact',
+      name: 'Experience',
+      url: '/#jobs',
+    },
+    {
+      name: 'AI Playground',
+      url: '/ai-play',
     },
   ],
 

@@ -1,30 +1,26 @@
 ---
-title: Spotify Moments
-slug: bbbjbjbj
+title: 'WeWork On-Demand'
+slug: ''
 date: '2026-05-02'
 published: true
-summary: ''
-role: ''
-results: ''
-methods: Figma
-banner: /uploads/case-studies/bbbjbjbj/banner.png
+summary: 'B2C App || '
+role: 'UX/UI Designer || 3 Months'
+results: 'Mobile App · Desktop Web'
+methods: ''
+banner: '/uploads/case-studies/bbbjbjbj/img-1785217720856-359.png'
 tocEnabled: true
 tocItems:
-  - text: n builder
-    anchor: n-builder
-  - text: Research
-    anchor: research
-  - text: bjbjbj
-    anchor: bjbjbj
+  - text: 'n builder'
+    anchor: 'n-builder'
+  - text: 'Research'
+    anchor: 'research'
+  - text: 'bjbjbj'
+    anchor: 'bjbjbj'
 ---
 
-<div class="grid grid-3">
+<div class="grid grid-1">
 
 ![Image](/uploads/case-studies/bbbjbjbj/img-1777702915508-0.webp)
-
-![Image](/uploads/case-studies/bbbjbjbj/img-1777702915508-1.webp)
-
-![Image](/uploads/case-studies/bbbjbjbj/img-1777702915508-2.gif)
 
 </div>
 
@@ -154,4 +150,3 @@ When a user selects text and clicks on the hyperlink icon, a popover should appe
 <div class="grid grid-1">
 
 </div>
-

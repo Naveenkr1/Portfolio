@@ -9,6 +9,9 @@ let jobsData = [];
 let caseStudies = [];
 let deleteTarget = null;
 
+let aiProjectsData = [];
+let aiCoverAction = 'keep';
+
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', async () => {
   bindNavigation();
@@ -23,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadJobs();
     await loadCaseStudies();
     await loadResume();
+    await loadAiProjects();
   } catch (e) {
     if (e.message === 'Unauthorized') {
       window.location.href = '/login';
@@ -79,6 +83,9 @@ function switchSection(section) {
   } else if (section === 'resume') {
     document.getElementById('page-title').textContent = 'Resume Management';
     document.getElementById('page-subtitle').textContent = 'Update your external resume link or upload a PDF';
+  } else if (section === 'ai-projects') {
+    document.getElementById('page-title').textContent = 'AI Projects';
+    document.getElementById('page-subtitle').textContent = 'Manage your AI Playground projects';
   }
 }
 
@@ -156,8 +163,9 @@ function showToast(message, type = 'success') {
 }
 
 // ─── DEPLOY ───
-async function deployToLive() {
-  const btn = document.getElementById('btn-deploy');
+async function deployToLive(e) {
+  const btn = (e && e.currentTarget) || document.getElementById('btn-deploy');
+  if (!btn) return;
   const originalText = btn.innerHTML;
   btn.innerHTML = `<svg class="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span>Publishing...</span>`;
   btn.disabled = true;
@@ -435,6 +443,15 @@ function bindModals() {
       openModal('modal-job');
     } else if (currentSection === 'case-studies') {
       builder.openNew();
+    } else if (currentSection === 'ai-projects') {
+      document.getElementById('form-ai-project').reset();
+      document.getElementById('ai-editing-slug').value = '';
+      document.getElementById('modal-ai-project-title').textContent = 'New Play Project';
+      document.getElementById('ai-type').removeAttribute('data-original-type');
+      document.getElementById('ai-cover-name').textContent = 'Upload new image or GIF...';
+      document.getElementById('ai-cover-preview-container').style.display = 'none';
+      aiCoverAction = 'none';
+      openModal('modal-ai-project');
     }
   });
 
@@ -443,6 +460,8 @@ function bindModals() {
   document.getElementById('btn-feat-cancel').addEventListener('click', () => closeModal('modal-featured'));
   document.getElementById('modal-job-close').addEventListener('click', () => closeModal('modal-job'));
   document.getElementById('btn-job-cancel').addEventListener('click', () => closeModal('modal-job'));
+  document.getElementById('modal-ai-project-close').addEventListener('click', () => closeModal('modal-ai-project'));
+  document.getElementById('btn-ai-cancel').addEventListener('click', () => closeModal('modal-ai-project'));
   document.getElementById('modal-delete-close').addEventListener('click', () => closeModal('modal-delete'));
   document.getElementById('btn-delete-cancel').addEventListener('click', () => closeModal('modal-delete'));
 
@@ -786,8 +805,9 @@ function copyCaseStudyLink(slug) {
 // ═══════════════════════════════════════════
 
 function bindDragAndDrop(section) {
-  const listId = section === 'featured' ? 'featured-list' : 'jobs-list';
+  const listId = section === 'featured' ? 'featured-list' : section === 'jobs' ? 'jobs-list' : 'ai-projects-list';
   const list = document.getElementById(listId);
+  if (!list) return;
   const cards = list.querySelectorAll('.project-card');
   let draggedEl = null;
 
@@ -846,10 +866,22 @@ function bindDragAndDrop(section) {
       list.querySelectorAll('.drop-indicator').forEach(d => d.remove());
 
       // Collect new order
-      const newOrder = [...list.querySelectorAll('.project-card')].map(c => c.dataset.slug);
+      let newOrder;
+      if (section === 'ai-projects') {
+        newOrder = [...list.querySelectorAll('.project-card')].map(c => {
+          const item = aiProjectsData.find(x => x.slug === c.dataset.slug);
+          return { slug: c.dataset.slug, type: item ? item.type : 'ai' };
+        });
+      } else {
+        newOrder = [...list.querySelectorAll('.project-card')].map(c => c.dataset.slug);
+      }
 
       try {
-        const endpoint = section === 'featured' ? '/api/featured/reorder' : '/api/jobs/reorder';
+        let endpoint = '';
+        if (section === 'featured') endpoint = '/api/featured/reorder';
+        else if (section === 'jobs') endpoint = '/api/jobs/reorder';
+        else if (section === 'ai-projects') endpoint = '/api/play-projects/reorder';
+
         await fetch(`${API}${endpoint}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -857,7 +889,8 @@ function bindDragAndDrop(section) {
         });
 
         if (section === 'featured') await loadFeatured();
-        else await loadJobs();
+        else if (section === 'jobs') await loadJobs();
+        else if (section === 'ai-projects') await loadAiProjects();
         showToast('Order updated');
       } catch (err) {
         showToast('Reorder failed', 'error');
@@ -865,3 +898,273 @@ function bindDragAndDrop(section) {
     });
   });
 }
+
+/* ═══════════════════════════════════════════
+   AI PROJECTS
+   ═══════════════════════════════════════════ */
+
+async function loadAiProjects() {
+  try {
+    const res = await fetch('/api/play-projects');
+    if (!res.ok) throw new Error('Failed to load AI Projects');
+    aiProjectsData = await res.json();
+    document.getElementById('ai-projects-count').textContent = aiProjectsData.length;
+    renderAiProjects();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function renderAiProjects() {
+  const list = document.getElementById('ai-projects-list');
+  const empty = document.getElementById('ai-projects-empty');
+
+  if (!list) return;
+
+  if (!aiProjectsData.length) {
+    list.innerHTML = '';
+    if (empty) empty.style.display = 'flex';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  // Sort: Published first, then unpublished
+  const sortedProjects = [...aiProjectsData].sort((a, b) => {
+    if (a.published === b.published) return 0;
+    return a.published ? -1 : 1;
+  });
+
+  list.innerHTML = sortedProjects.map((p, i) => `
+    <div class="project-card" draggable="true" data-slug="${p.slug}" data-index="${i}">
+      <div class="drag-handle" title="Drag to reorder">
+        <div class="drag-dots"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="card-order">${i + 1}</div>
+      <div class="card-cover">
+        <img src="${p.cover ? (p.cover.startsWith('http') ? p.cover : '/' + p.cover) : '/uploads/ai-play-default.png'}" alt="${p.title}" />
+      </div>
+      <div class="card-info">
+        <div class="card-title">${p.title}</div>
+        <div class="card-meta">
+          <span class="card-meta-tag" style="background: var(--lightest-navy); color: var(--green); text-transform: uppercase; font-size: 10px;">${p.type === 'ai' ? 'AI Project' : 'Other Project'}</span>
+          ${p.tech && p.tech.length ? p.tech.map(t => `<span class="card-meta-tag">${t}</span>`).join('') : ''}
+        </div>
+      </div>
+      <div class="status-badge ${p.published ? 'published' : 'draft'}">
+        <span class="status-dot"></span>
+        ${p.published ? 'Published' : 'Draft'}
+      </div>
+      <div class="card-actions">
+        <label class="switch" title="${p.published ? 'Unpublish' : 'Publish'}">
+          <input type="checkbox" ${p.published ? 'checked' : ''} onchange="toggleAiProjectPublish('${esc(p.slug)}', '${esc(p.type)}')">
+          <span class="slider"></span>
+        </label>
+        <button class="card-action-btn" title="Edit" onclick="editAiProject('${esc(p.slug)}')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="card-action-btn btn-delete" title="Delete" onclick="confirmDeleteAiProject('${esc(p.slug)}', '${esc(p.type)}')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  bindDragAndDrop('ai-projects');
+}
+
+function editAiProject(slug) {
+  const p = aiProjectsData.find(x => x.slug === slug);
+  if (!p) return;
+
+  document.getElementById('form-ai-project').reset();
+  
+  document.getElementById('ai-editing-slug').value = p.slug;
+  document.getElementById('ai-type').value = p.type || 'ai';
+  document.getElementById('ai-type').setAttribute('data-original-type', p.type || 'ai');
+  document.getElementById('ai-title').value = p.title;
+  document.getElementById('ai-date').value = p.date;
+  document.getElementById('ai-external').value = p.external || '';
+  document.getElementById('ai-tech').value = (p.tech || []).join(', ');
+  document.getElementById('ai-description').value = p.description || '';
+
+  const label = document.getElementById('ai-cover-name');
+  const preview = document.getElementById('ai-cover-preview');
+  const container = document.getElementById('ai-cover-preview-container');
+
+  if (p.cover) {
+    label.textContent = 'Change image or GIF...';
+    preview.src = p.cover;
+    container.style.display = 'block';
+    aiCoverAction = 'keep';
+  } else {
+    label.textContent = 'Upload new image or GIF...';
+    container.style.display = 'none';
+    aiCoverAction = 'none';
+  }
+
+  document.getElementById('modal-ai-project-title').textContent = 'Edit Play Project';
+  openModal('modal-ai-project');
+}
+
+async function toggleAiProjectPublish(slug, type) {
+  try {
+    const res = await fetch(`/api/play-projects/${type}/${slug}/toggle-publish`, { method: 'POST' });
+    if (res.ok) await loadAiProjects();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function confirmDeleteAiProject(slug, projectType) {
+  deleteTarget = { type: 'ai-project', slug, projectType };
+  document.getElementById('modal-delete-title').textContent = 'Delete Play Project';
+  document.getElementById('modal-delete-text').textContent = 'Are you sure you want to delete this project? This action cannot be undone.';
+  openModal('modal-delete');
+}
+
+// Bind the form submission
+document.addEventListener('DOMContentLoaded', () => {
+  const formAiProject = document.getElementById('form-ai-project');
+  if (formAiProject) {
+    formAiProject.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const slug = document.getElementById('ai-editing-slug').value;
+      const isEdit = !!slug;
+      
+      const fd = new FormData();
+      fd.append('title', document.getElementById('ai-title').value);
+      fd.append('external', document.getElementById('ai-external').value);
+      fd.append('date', document.getElementById('ai-date').value);
+      fd.append('tech', document.getElementById('ai-tech').value);
+      fd.append('description', document.getElementById('ai-description').value);
+      fd.append('type', document.getElementById('ai-type').value || 'ai');
+      
+      if (aiCoverAction === 'delete') {
+        fd.append('deleteCover', 'true');
+      } else if (aiCoverAction === 'upload') {
+        const coverFile = document.getElementById('ai-cover').files[0];
+        if (coverFile) {
+          fd.append('cover', coverFile);
+        }
+      }
+      
+      try {
+        let res;
+        if (isEdit) {
+          const origType = document.getElementById('ai-type').getAttribute('data-original-type') || 'ai';
+          res = await fetch(`/api/play-projects/${origType}/${slug}`, { method: 'PUT', body: fd });
+        } else {
+          res = await fetch('/api/play-projects', { method: 'POST', body: fd });
+        }
+        
+        if (!res.ok) throw new Error(await res.text());
+        
+        closeModal('modal-ai-project');
+        await loadAiProjects();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+  }
+
+  // Bind the global delete confirmation handler for AI projects
+  const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
+  if (btnDeleteConfirm) {
+    const origOnclick = btnDeleteConfirm.onclick;
+    btnDeleteConfirm.onclick = async function(e) {
+      if (deleteTarget && deleteTarget.type === 'ai-project') {
+        try {
+          const res = await fetch(`/api/play-projects/${deleteTarget.projectType}/${deleteTarget.slug}`, { method: 'DELETE' });
+          if (!res.ok) throw new Error(await res.text());
+          closeModal('modal-delete');
+          await loadAiProjects();
+        } catch (err) {
+          alert(err.message);
+        }
+      } else if (origOnclick) {
+        origOnclick(e);
+      }
+    };
+  }
+
+  // Play Projects Cover image preview
+  const aiCoverInput = document.getElementById('ai-cover');
+  if (aiCoverInput) {
+    aiCoverInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const preview = document.getElementById('ai-cover-preview');
+        const container = document.getElementById('ai-cover-preview-container');
+        if (preview && container) {
+          preview.src = ev.target.result;
+          container.style.display = 'block';
+          aiCoverAction = 'upload';
+        }
+      };
+      reader.readAsDataURL(file);
+      
+      const label = document.getElementById('ai-cover-name');
+      if (label) {
+        label.textContent = file.name;
+      }
+    });
+  }
+
+  // Play Projects Delete cover image button
+  const btnDeleteAiCover = document.getElementById('btn-delete-ai-cover');
+  if (btnDeleteAiCover) {
+    btnDeleteAiCover.addEventListener('click', () => {
+      const input = document.getElementById('ai-cover');
+      if (input) input.value = '';
+      
+      const label = document.getElementById('ai-cover-name');
+      if (label) label.textContent = 'Upload new image or GIF...';
+      
+      const container = document.getElementById('ai-cover-preview-container');
+      if (container) container.style.display = 'none';
+      
+      const editingSlug = document.getElementById('ai-editing-slug').value;
+      if (editingSlug) {
+        aiCoverAction = 'delete';
+      } else {
+        aiCoverAction = 'none';
+      }
+    });
+  }
+});
+
+// ─── AI PLAY TAB TOGGLE ───
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('/api/settings/ai-play');
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById('global-ai-play-toggle').checked = data.showTab;
+    }
+  } catch (err) {
+    console.error('Failed to load AI play toggle status', err);
+  }
+
+  document.getElementById('global-ai-play-toggle').addEventListener('change', async (e) => {
+    try {
+      const res = await fetch('/api/settings/ai-play', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ showTab: e.target.checked })
+      });
+      if (res.ok) {
+        showToast('AI Play Tab visibility updated');
+      } else {
+        e.target.checked = !e.target.checked; // revert
+        showToast('Failed to update visibility', 'error');
+      }
+    } catch (err) {
+      e.target.checked = !e.target.checked; // revert
+      showToast('Network error', 'error');
+    }
+  });
+});

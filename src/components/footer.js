@@ -67,7 +67,7 @@ const StyledCredit = styled.div`
   }
 `;
 
-const Footer = () => {
+const Footer = ({ isCaseStudy }) => {
   const [githubInfo, setGitHubInfo] = useState({
     stars: null,
     forks: null,
@@ -104,19 +104,20 @@ const Footer = () => {
         </ul>
       </StyledSocialLinks>
 
-      <StyledCredit tabindex="-1">
-        <a href="https://www.naveenkr.me">
-          <div>Designed &amp; Built by Naveen Kumar</div>
-
-        
-        </a>
-      </StyledCredit>
+      {!isCaseStudy && (
+        <StyledCredit tabIndex="-1">
+          <a href="https://www.naveenkr.me">
+            <div>Designed &amp; Built by Naveen Kumar</div>
+          </a>
+        </StyledCredit>
+      )}
     </StyledFooter>
   );
 };
 
 Footer.propTypes = {
   githubInfo: PropTypes.object,
+  isCaseStudy: PropTypes.bool,
 };
 
 export default Footer;

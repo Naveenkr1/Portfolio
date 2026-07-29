@@ -28,12 +28,19 @@ const StyledAboutSection = styled.section`
 const StyledText = styled.div`
   ul.skills-list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(140px, 200px));
+    grid-template-columns: repeat(3, minmax(140px, 200px));
     grid-gap: 0 10px;
     padding: 0;
     margin: 20px 0 0 0;
     overflow: hidden;
     list-style: none;
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, minmax(140px, 200px));
+    }
+    @media (max-width: 480px) {
+      grid-template-columns: repeat(1, minmax(140px, 200px));
+    }
 
     li {
       position: relative;
@@ -41,6 +48,7 @@ const StyledText = styled.div`
       padding-left: 20px;
       font-family: var(--font-mono);
       font-size: var(--fz-xs);
+      white-space: nowrap;
 
       &:before {
         content: '▹';
@@ -150,6 +158,15 @@ const About = () => {
 
   const { title, description, skills } = aboutData;
 
+  const formattedDescription = description
+    ? description
+        .split('\n')
+        .map(p => p.trim())
+        .filter(p => p.length > 0)
+        .map(p => `<p>${p}</p>`)
+        .join('')
+    : '';
+
   return (
     <StyledAboutSection id="about" ref={revealContainer}>
       <h2 className="numbered-heading">{title}</h2>
@@ -157,7 +174,7 @@ const About = () => {
       <div className="inner">
         <StyledText>
           <div>
-            <div dangerouslySetInnerHTML={{ __html: description }} />
+            <div dangerouslySetInnerHTML={{ __html: formattedDescription }} />
             <br />
             <p>Here are a few technologies I’ve been working with recently:</p>
           </div>

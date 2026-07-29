@@ -25,6 +25,9 @@ cloudinary.config({
 // Paths
 const PORTFOLIO_ROOT = path.resolve(__dirname, '..');
 const FEATURED_DIR = path.join(PORTFOLIO_ROOT, 'content', 'featured');
+const AI_PROJECTS_DIR = path.join(PORTFOLIO_ROOT, 'content', 'ai-projects');
+const PROJECTS_DIR = path.join(PORTFOLIO_ROOT, 'content', 'projects');
+const SETTINGS_DIR = path.join(PORTFOLIO_ROOT, 'content', 'settings');
 const CASE_STUDIES_DIR = path.join(PORTFOLIO_ROOT, 'content', 'case-studies');
 const JOBS_DIR = path.join(PORTFOLIO_ROOT, 'content', 'jobs');
 const RESUME_DIR = path.join(PORTFOLIO_ROOT, 'content', 'resume');
@@ -33,7 +36,20 @@ const ABOUT_DIR = path.join(PORTFOLIO_ROOT, 'content', 'about');
 const STATIC_DIR = path.join(PORTFOLIO_ROOT, 'static');
 const UPLOADS_DIR = path.join(STATIC_DIR, 'uploads', 'case-studies');
 
+const triggerLocalGatsbyRefresh = async () => {
+  try {
+    const res = await fetch('http://localhost:3000/__refresh', { method: 'POST' });
+    console.log(`[Refresh] Local Gatsby refresh sent. Status: ${res.status}`);
+  } catch (err) {
+    console.warn(`[Refresh] Local Gatsby refresh skipped: ${err.message}`);
+  }
+};
+
 // Middleware
+app.use((req, res, next) => {
+  console.log('[API Server] Received request:', req.method, req.url);
+  next();
+});
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
@@ -60,11 +76,8 @@ app.get('/login', (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { password } = req.body;
   try {
-    const { data: admin } = await supabase.from('admin').select('*').eq('username', 'admin').single();
-    if (!admin) return res.status(401).json({ error: 'Admin not initialized' });
-
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (isMatch) {
+    const expectedPassword = process.env.ADMIN_PASSWORD || 'admin';
+    if (password === expectedPassword) {
       res.cookie('admin_auth', 'valid', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
       res.json({ success: true });
     } else {
@@ -178,6 +191,32 @@ function parseJob(slug) {
   };
 }
 
+function parsePlayProject(slug, type) {
+  const baseDir = type === 'other' ? PROJECTS_DIR : AI_PROJECTS_DIR;
+  const dir = path.join(baseDir, slug);
+  if (!fs.statSync(dir).isDirectory()) return null;
+
+  const mdFile = findMarkdownFile(dir);
+  if (!mdFile) return null;
+
+  const raw = fs.readFileSync(mdFile.path, 'utf-8');
+  const { data: frontmatter, content } = matter(raw);
+  const coverImage = findCoverImage(dir);
+
+  return {
+    slug,
+    type,
+    title: frontmatter.title || slug,
+    date: frontmatter.date || '0',
+    cover: frontmatter.coverUrl || '',
+    coverImage: coverImage || null,
+    external: frontmatter.external || '',
+    tech: frontmatter.tech || [],
+    description: content.trim(),
+    published: mdFile.published !== false,
+  };
+}
+
 // Helper: escape a value for YAML single-quoting
 function yq(val) {
   if (val === undefined || val === null) return "''";
@@ -222,6 +261,34 @@ function writeFeaturedMarkdown(dir, data) {
   fs.writeFileSync(filePath, lines.join('\n'));
 }
 
+function writePlayMarkdown(dir, data) {
+  const ext = data.published !== false ? '.md' : '.xxmd';
+  const filePath = path.join(dir, `index${ext}`);
+
+  // Remove old index files
+  ['index.md', 'index.xxmd'].forEach(f => {
+    const p = path.join(dir, f);
+    if (fs.existsSync(p)) fs.unlinkSync(p);
+  });
+
+  // Build frontmatter manually to preserve URL quoting
+  const lines = [
+    '---',
+    `date: ${yq(data.date || '1')}`,
+    `title: ${yq(data.title)}`,
+    `coverUrl: ${yq(data.cover || '')}`,
+    `external: ${yq(data.external || '')}`,
+    `showInProjects: true`,
+    yamlTechList(data.tech),
+    '---',
+    '',
+    (data.description || '').trim(),
+    '',
+  ];
+
+  fs.writeFileSync(filePath, lines.join('\n'));
+}
+
 function writeJobMarkdown(dir, data) {
   const ext = data.published !== false ? '.md' : '.xxmd';
   const filePath = path.join(dir, `index${ext}`);
@@ -249,8 +316,271 @@ function writeJobMarkdown(dir, data) {
 
   fs.writeFileSync(filePath, lines.join('\n'));
 }
+function parseCaseStudy(slug) {
+  const dir = path.join(CASE_STUDIES_DIR, slug);
+  if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) return null;
 
+  const mdFile = findMarkdownFile(dir);
+  if (!mdFile) return null;
+
+  const raw = fs.readFileSync(mdFile.path, 'utf-8');
+  const { data: frontmatter, content } = matter(raw);
+
+  let details = frontmatter.details;
+  if (!details) {
+    details = [];
+    if (frontmatter.role) details.push({ label: 'My Role', value: frontmatter.role });
+    if (frontmatter.results) details.push({ label: 'Project Type', value: frontmatter.results });
+    if (frontmatter.methods) details.push({ label: 'Timeline', value: frontmatter.methods });
+  }
+
+  return {
+    slug,
+    title: frontmatter.title || slug,
+    date: frontmatter.date || '0',
+    summary: frontmatter.summary || '',
+    details: details,
+    role: frontmatter.role || '',
+    results: frontmatter.results || '',
+    methods: frontmatter.methods || '',
+    banner: frontmatter.banner || '',
+    toc_enabled: !!frontmatter.tocEnabled,
+    toc_items: frontmatter.tocItems || [],
+    markdown: content.trim(),
+    published: mdFile.published,
+  };
+}
+
+function writeCaseStudyMarkdown(dir, data) {
+  const ext = data.published !== false ? '.md' : '.xxmd';
+  const filePath = path.join(dir, `index${ext}`);
+
+  ['index.md', 'index.xxmd'].forEach(f => {
+    const p = path.join(dir, f);
+    if (fs.existsSync(p)) fs.unlinkSync(p);
+  });
+
+  let tocItemsStr = 'tocItems: []';
+  if (data.toc_items && data.toc_items.length) {
+    tocItemsStr = 'tocItems:\n' + data.toc_items.map(item => `  - text: ${yq(item.text)}\n    anchor: ${yq(item.anchor)}`).join('\n');
+  }
+
+  let detailsStr = '';
+  if (data.details && data.details.length > 0) {
+    detailsStr = 'details:\n' + data.details.map(item => `  - label: ${yq(item.label)}\n    value: ${yq(item.value)}`).join('\n');
+  }
+
+  const lines = [
+    '---',
+    `title: ${yq(data.title)}`,
+    `slug: ${yq(data.slug)}`,
+    `date: ${yq(data.date || new Date().toISOString().split('T')[0])}`,
+    `published: ${data.published !== false}`,
+    `summary: ${yq(data.summary || '')}`,
+    detailsStr,
+    `banner: ${yq(data.banner || '')}`,
+    `tocEnabled: ${!!data.toc_enabled}`,
+    tocItemsStr,
+    '---',
+    '',
+    (data.markdown || '').trim(),
+    '',
+  ];
+
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(filePath, lines.join('\n'));
+}
 const { exec } = require('child_process');
+
+// ─────────────────────────────────────────────
+// PLAY PROJECTS (AI & OTHER)
+// ─────────────────────────────────────────────
+
+app.get('/api/play-projects', async (req, res) => {
+  try {
+    if (!fs.existsSync(AI_PROJECTS_DIR)) fs.mkdirSync(AI_PROJECTS_DIR, { recursive: true });
+    if (!fs.existsSync(PROJECTS_DIR)) fs.mkdirSync(PROJECTS_DIR, { recursive: true });
+    
+    const aiSlugs = fs.readdirSync(AI_PROJECTS_DIR).filter(f => fs.statSync(path.join(AI_PROJECTS_DIR, f)).isDirectory());
+    const otherSlugs = fs.readdirSync(PROJECTS_DIR).filter(f => fs.statSync(path.join(PROJECTS_DIR, f)).isDirectory());
+    
+    const aiProjects = aiSlugs.map(slug => parsePlayProject(slug, 'ai')).filter(Boolean);
+    const otherProjects = otherSlugs.map(slug => parsePlayProject(slug, 'other')).filter(Boolean);
+    
+    const projects = [...aiProjects, ...otherProjects];
+    // Sort by date desc
+    projects.sort((a, b) => new Date(b.date) - new Date(a.date));
+    res.json(projects);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/play-projects/reorder', async (req, res) => {
+  try {
+    const { order } = req.body;
+    if (!order || !Array.isArray(order)) return res.status(400).json({ error: 'order array required' });
+
+    const baseDate = new Date('2030-01-01');
+    for (let i = 0; i < order.length; i++) {
+      const { slug, type } = order[i];
+      const baseDir = type === 'other' ? PROJECTS_DIR : AI_PROJECTS_DIR;
+      const dir = path.join(baseDir, slug);
+      if (!fs.existsSync(dir)) continue;
+
+      const d = new Date(baseDate);
+      d.setDate(d.getDate() - i);
+      const newDate = d.toISOString().split('T')[0];
+
+      const existing = parsePlayProject(slug, type);
+      if (existing) {
+        existing.date = newDate;
+        writePlayMarkdown(dir, existing);
+      }
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/play-projects', upload.single('cover'), async (req, res) => {
+  try {
+    const { title, description, external, tech, date, type } = req.body;
+    const pType = type === 'other' ? 'other' : 'ai';
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    
+    const baseDir = pType === 'other' ? PROJECTS_DIR : AI_PROJECTS_DIR;
+    if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true });
+    
+    const dir = path.join(baseDir, slug);
+    if (fs.existsSync(dir)) return res.status(400).json({ error: 'Project already exists' });
+    fs.mkdirSync(dir);
+
+    const coverUrl = req.file ? req.file.path : '';
+    const techArray = tech ? tech.split(',').map(t => t.trim()) : [];
+
+    const data = {
+      title,
+      description,
+      external,
+      tech: techArray,
+      date: date || new Date().toISOString().split('T')[0],
+      cover: coverUrl,
+      published: true
+    };
+
+    writePlayMarkdown(dir, data);
+    res.json({ success: true, slug, type: pType });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/play-projects/:type/:slug', upload.single('cover'), async (req, res) => {
+  try {
+    const { slug, type } = req.params;
+    const baseDir = type === 'other' ? PROJECTS_DIR : AI_PROJECTS_DIR;
+    const dir = path.join(baseDir, slug);
+    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
+
+    const existing = parsePlayProject(slug, type);
+    const { title, description, external, tech, date, type: newType, deleteCover } = req.body;
+    
+    let coverUrl = req.file ? req.file.path : existing.cover;
+    if (deleteCover === 'true') {
+      coverUrl = '';
+    }
+    const techArray = tech ? tech.split(',').map(t => t.trim()) : existing.tech;
+
+    const data = {
+      title: title || existing.title,
+      description: description !== undefined ? description : existing.description,
+      external: external !== undefined ? external : existing.external,
+      tech: techArray,
+      date: date || existing.date,
+      cover: coverUrl,
+      published: existing.published
+    };
+    
+    const pNewType = newType === 'other' ? 'other' : 'ai';
+
+    if (pNewType !== type) {
+      // Type changed, move directory
+      const newBaseDir = pNewType === 'other' ? PROJECTS_DIR : AI_PROJECTS_DIR;
+      if (!fs.existsSync(newBaseDir)) fs.mkdirSync(newBaseDir, { recursive: true });
+      const newDir = path.join(newBaseDir, slug);
+      if (fs.existsSync(newDir)) return res.status(400).json({ error: 'Project already exists in new type' });
+      
+      writePlayMarkdown(dir, data); // update in old location first
+      fs.renameSync(dir, newDir); // then move
+    } else {
+      writePlayMarkdown(dir, data);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/play-projects/:type/:slug', async (req, res) => {
+  try {
+    const { slug, type } = req.params;
+    const baseDir = type === 'other' ? PROJECTS_DIR : AI_PROJECTS_DIR;
+    const dir = path.join(baseDir, slug);
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/play-projects/:type/:slug/toggle-publish', async (req, res) => {
+  try {
+    const { slug, type } = req.params;
+    const baseDir = type === 'other' ? PROJECTS_DIR : AI_PROJECTS_DIR;
+    const dir = path.join(baseDir, slug);
+    if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
+
+    const data = parsePlayProject(slug, type);
+    data.published = !data.published;
+    writePlayMarkdown(dir, data);
+    res.json({ success: true, published: data.published });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────
+// SETTINGS API
+// ─────────────────────────────────────────────
+
+app.get('/api/settings/ai-play', (req, res) => {
+  try {
+    const filePath = path.join(SETTINGS_DIR, 'aiPlay.json');
+    if (!fs.existsSync(filePath)) {
+      return res.json({ showTab: true });
+    }
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/settings/ai-play', (req, res) => {
+  try {
+    if (!fs.existsSync(SETTINGS_DIR)) fs.mkdirSync(SETTINGS_DIR, { recursive: true });
+    const { showTab } = req.body;
+    const filePath = path.join(SETTINGS_DIR, 'aiPlay.json');
+    fs.writeFileSync(filePath, JSON.stringify({ showTab: !!showTab }, null, 2));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ─────────────────────────────────────────────
 // DEPLOY API
@@ -260,10 +590,13 @@ app.post('/api/deploy', async (req, res) => {
   try {
     const webhookUrl = process.env.DEPLOY_WEBHOOK_URL;
     
+    // Always trigger local Gatsby hot-refresh
+    await triggerLocalGatsbyRefresh();
+    
     if (!webhookUrl) {
       return res.json({ 
-        success: false, 
-        message: 'Deployment webhook URL is not configured. Please add DEPLOY_WEBHOOK_URL to your admin/.env file.' 
+        success: true, 
+        message: 'Local Gatsby cache updated successfully!' 
       });
     }
 
@@ -285,65 +618,62 @@ app.post('/api/deploy', async (req, res) => {
 // FEATURED PROJECTS API
 // ─────────────────────────────────────────────
 
-// GET all featured projects
 app.get('/api/featured', async (req, res) => {
   try {
-    const { data: projects, error } = await supabase.from('projects').select('*').order('date', { ascending: true }); if(error) throw error;
+    if (!fs.existsSync(FEATURED_DIR)) fs.mkdirSync(FEATURED_DIR, { recursive: true });
+    const slugs = fs.readdirSync(FEATURED_DIR).filter(f => fs.statSync(path.join(FEATURED_DIR, f)).isDirectory());
+    const projects = slugs.map(slug => parseFeaturedProject(slug)).filter(Boolean);
+    projects.sort((a, b) => Number(a.date) - Number(b.date));
     res.json(projects);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// PUT reorder featured projects — MUST be before /:slug routes
 app.put('/api/featured/reorder', async (req, res) => {
   try {
     const { order } = req.body;
-    if (!order || !Array.isArray(order)) {
-      return res.status(400).json({ error: 'order array required' });
-    }
-
+    if (!order || !Array.isArray(order)) return res.status(400).json({ error: 'order array required' });
     for (let i = 0; i < order.length; i++) {
-      await supabase.from('projects').update({ date: String(i + 1) }).eq('slug', order[i]);
+      const slug = order[i];
+      const project = parseFeaturedProject(slug);
+      if (project) {
+        project.date = String(i + 1);
+        writeFeaturedMarkdown(path.join(FEATURED_DIR, slug), project);
+      }
     }
-
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET single project cover image
 app.get('/api/featured/:slug/cover', (req, res) => {
   try {
     const dir = path.join(FEATURED_DIR, req.params.slug);
     if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
-
     const coverImage = findCoverImage(dir);
     if (!coverImage) return res.status(404).json({ error: 'No cover image' });
-
     res.sendFile(path.join(dir, coverImage));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST create a new featured project
 app.post('/api/featured', upload.single('cover'), async (req, res) => {
   try {
     const { title, role, description, tech, cta, external, button } = req.body;
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
-    // Determine cover path
+    const dir = path.join(FEATURED_DIR, slug);
+    if (fs.existsSync(dir)) return res.status(400).json({ error: 'Already exists' });
+    fs.mkdirSync(dir, { recursive: true });
+    
     let coverPath = './cover.webp';
-    if (req.file) {
-      coverPath = req.file.path || req.file.secure_url;
-    }
-
-    // Calculate next order number
-    const { count } = await supabase.from('projects').select('*', { count: 'exact', head: true });
-
-    const { data: project, error } = await supabase.from('projects').insert([{
+    if (req.file) coverPath = req.file.path || req.file.secure_url;
+    
+    const count = fs.readdirSync(FEATURED_DIR).filter(f => fs.statSync(path.join(FEATURED_DIR, f)).isDirectory()).length;
+    
+    const data = {
       date: String(count + 1),
       title,
       slug,
@@ -355,28 +685,27 @@ app.post('/api/featured', upload.single('cover'), async (req, res) => {
       tech: tech ? (typeof tech === 'string' ? JSON.parse(tech) : tech) : [],
       description: description || '',
       published: true,
-    }]).select().single(); if(error) throw error;
-    res.json({ success: true, project });
+    };
+    
+    writeFeaturedMarkdown(dir, data);
+    res.json({ success: true, project: data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// PUT update a featured project
 app.put('/api/featured/:slug', upload.single('cover'), async (req, res) => {
   try {
     const { slug } = req.params;
-    const { data: project } = await supabase.from('projects').select('*').eq('slug', slug).single();
+    const dir = path.join(FEATURED_DIR, slug);
+    const project = parseFeaturedProject(slug);
     if (!project) return res.status(404).json({ error: 'Not found' });
-
+    
     let coverPath = project.cover;
-    if (req.file) {
-      coverPath = req.file.path || req.file.secure_url;
-    }
-
+    if (req.file) coverPath = req.file.path || req.file.secure_url;
+    
     const { title, role, description, tech, cta, external, button } = req.body;
-    console.log('Updating project:', slug, { title, role, description, tech, cta, external, button });
-
+    
     const update = {
       title: title || project.title,
       cover: coverPath,
@@ -386,90 +715,100 @@ app.put('/api/featured/:slug', upload.single('cover'), async (req, res) => {
       role: role !== undefined ? role : project.role,
       tech: tech ? (typeof tech === 'string' ? JSON.parse(tech) : tech) : project.tech,
       description: description !== undefined ? description : project.description,
+      date: project.date,
+      published: project.published,
     };
-
-    if (title && title !== project.title) {
-      update.slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    
+    let newSlug = slug;
+    if (title && title !== project.title) newSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    
+    if (newSlug !== slug) {
+      const newDir = path.join(FEATURED_DIR, newSlug);
+      writeFeaturedMarkdown(dir, update);
+      fs.renameSync(dir, newDir);
+    } else {
+      writeFeaturedMarkdown(dir, update);
     }
-
-    const { data: updatedProject, error } = await supabase.from('projects').update(update).eq('slug', slug).select().single(); if(error) throw error;
-    console.log('Project updated in MongoDB:', updatedProject.slug);
-    res.json({ success: true, project: updatedProject });
+    
+    update.slug = newSlug;
+    res.json({ success: true, project: update });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// DELETE a featured project
 app.delete('/api/featured/:slug', async (req, res) => {
   try {
-    const { data: result, error } = await supabase.from('projects').delete().eq('slug', req.params.slug).select().single(); if(error) throw error;
-    if (!result) return res.status(404).json({ error: 'Not found' });
-    res.json({ success: true });
+    const dir = path.join(FEATURED_DIR, req.params.slug);
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      res.json({ success: true });
+    } else res.status(404).json({ error: 'Not found' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST toggle publish/unpublish
 app.post('/api/featured/:slug/toggle-publish', async (req, res) => {
   try {
-    const { slug } = req.params;
-    const { data: project } = await supabase.from('projects').select('*').eq('slug', slug).single();
+    const dir = path.join(FEATURED_DIR, req.params.slug);
+    const project = parseFeaturedProject(req.params.slug);
     if (!project) return res.status(404).json({ error: 'Not found' });
-
-    const { data: p2, error } = await supabase.from('projects').update({ published: !project.published }).eq('slug', slug).select().single(); if(error) throw error; Object.assign(project, p2);
-
+    project.published = !project.published;
+    writeFeaturedMarkdown(dir, project);
     res.json({ success: true, project });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// (reorder route moved above /:slug routes)
 
 // ─────────────────────────────────────────────
 // JOBS API
 // ─────────────────────────────────────────────
 
-// GET all jobs
 app.get('/api/jobs', async (req, res) => {
   try {
-    const { data: jobs, error } = await supabase.from('jobs').select('*').order('date', { ascending: false }); if(error) throw error;
+    if (!fs.existsSync(JOBS_DIR)) fs.mkdirSync(JOBS_DIR, { recursive: true });
+    const slugs = fs.readdirSync(JOBS_DIR).filter(f => fs.statSync(path.join(JOBS_DIR, f)).isDirectory());
+    const jobs = slugs.map(slug => parseJob(slug)).filter(Boolean);
+    jobs.sort((a, b) => new Date(b.date) - new Date(a.date));
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// PUT reorder jobs — MUST be before /:slug routes
 app.put('/api/jobs/reorder', async (req, res) => {
   try {
     const { order } = req.body;
-    if (!order || !Array.isArray(order)) {
-      return res.status(400).json({ error: 'order array required' });
-    }
-
+    if (!order || !Array.isArray(order)) return res.status(400).json({ error: 'order array required' });
     const baseDate = new Date('2025-01-01');
     for (let i = 0; i < order.length; i++) {
-      const d = new Date(baseDate);
-      d.setDate(d.getDate() - i);
-      await supabase.from('jobs').update({ date: d.toISOString().split('T')[0] }).eq('slug', order[i]);
+      const slug = order[i];
+      const job = parseJob(slug);
+      if (job) {
+        const d = new Date(baseDate);
+        d.setDate(d.getDate() - i);
+        job.date = d.toISOString().split('T')[0];
+        writeJobMarkdown(path.join(JOBS_DIR, slug), job);
+      }
     }
-
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST create a new job
 app.post('/api/jobs', async (req, res) => {
   try {
     const { title, company, location, range, url, description, date } = req.body;
     const slug = (company || title).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const dir = path.join(JOBS_DIR, slug);
+    if (fs.existsSync(dir)) return res.status(400).json({ error: 'Already exists' });
+    fs.mkdirSync(dir, { recursive: true });
 
-    const { data: job, error } = await supabase.from('jobs').insert([{
+    const data = {
       date: date || new Date().toISOString().split('T')[0],
       title,
       company: company || slug,
@@ -479,23 +818,23 @@ app.post('/api/jobs', async (req, res) => {
       url: url || '#',
       description: description || '',
       published: true,
-    }]).select().single(); if(error) throw error;
-    res.json({ success: true, job });
+    };
+    writeJobMarkdown(dir, data);
+    res.json({ success: true, job: data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// PUT update a job
 app.put('/api/jobs/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const { data: job } = await supabase.from('jobs').select('*').eq('slug', slug).single();
+    const dir = path.join(JOBS_DIR, slug);
+    const job = parseJob(slug);
     if (!job) return res.status(404).json({ error: 'Not found' });
 
     const { title, company, location, range, url, description, date } = req.body;
-    console.log('Updating job:', slug, { title, company, location, range, url, description, date });
-
+    
     const update = {
       date: date || job.date,
       title: title !== undefined ? title : job.title,
@@ -504,47 +843,51 @@ app.put('/api/jobs/:slug', async (req, res) => {
       range: range !== undefined ? range : job.range,
       url: url !== undefined ? url : job.url,
       description: description !== undefined ? description : job.description,
+      published: job.published,
     };
-
-    if (company && company !== job.company) {
-      update.slug = company.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    
+    let newSlug = slug;
+    if (company && company !== job.company) newSlug = company.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    
+    if (newSlug !== slug) {
+      const newDir = path.join(JOBS_DIR, newSlug);
+      writeJobMarkdown(dir, update);
+      fs.renameSync(dir, newDir);
+    } else {
+      writeJobMarkdown(dir, update);
     }
-
-    const { data: updatedJob, error } = await supabase.from('jobs').update(update).eq('slug', slug).select().single(); if(error) throw error;
-    console.log('Job updated in MongoDB:', updatedJob.slug);
-    res.json({ success: true, job: updatedJob });
+    
+    update.slug = newSlug;
+    res.json({ success: true, job: update });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// DELETE a job
 app.delete('/api/jobs/:slug', async (req, res) => {
   try {
-    const { data: result, error } = await supabase.from('jobs').delete().eq('slug', req.params.slug).select().single(); if(error) throw error;
-    if (!result) return res.status(404).json({ error: 'Not found' });
-    res.json({ success: true });
+    const dir = path.join(JOBS_DIR, req.params.slug);
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      res.json({ success: true });
+    } else res.status(404).json({ error: 'Not found' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST toggle publish/unpublish for jobs
 app.post('/api/jobs/:slug/toggle-publish', async (req, res) => {
   try {
-    const { slug } = req.params;
-    const { data: job } = await supabase.from('jobs').select('*').eq('slug', slug).single();
+    const dir = path.join(JOBS_DIR, req.params.slug);
+    const job = parseJob(req.params.slug);
     if (!job) return res.status(404).json({ error: 'Not found' });
-
-    const { data: j2, error } = await supabase.from('jobs').update({ published: !job.published }).eq('slug', slug).select().single(); if(error) throw error; Object.assign(job, j2);
-
+    job.published = !job.published;
+    writeJobMarkdown(dir, job);
     res.json({ success: true, job });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
-// (reorder route moved above /:slug routes)
 
 // ─────────────────────────────────────────────
 // RESUME API
@@ -567,6 +910,7 @@ app.post('/api/resume', (req, res) => {
   try {
     const { type, value } = req.body;
     const filePath = path.join(RESUME_DIR, 'resume.json');
+    if (!fs.existsSync(RESUME_DIR)) fs.mkdirSync(RESUME_DIR, { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify({ type, value }, null, 2));
     res.json({ success: true });
   } catch (err) {
@@ -577,32 +921,30 @@ app.post('/api/resume', (req, res) => {
 app.post('/api/resume/upload', uploadResume.single('resume'), async (req, res) => {
   try {
     const resumeUrl = req.file.path || req.file.secure_url;
-    // We can store this in a setting or update the Hero/About if needed
-    // For now, let's just return it or save to a small collection if you want
     res.json({ success: true, url: resumeUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ─── HOMEPAGE API ───
+// ─────────────────────────────────────────────
+// HERO & ABOUT API
+// ─────────────────────────────────────────────
+
 app.get('/api/homepage/hero', async (req, res) => {
   try {
-    const { data: hero } = await supabase.from('hero').select('*').limit(1).single();
-    res.json(hero || {});
+    const filePath = path.join(HERO_DIR, 'hero.json');
+    if (!fs.existsSync(filePath)) return res.json({});
+    res.json(JSON.parse(fs.readFileSync(filePath, 'utf-8')));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/homepage/hero', async (req, res) => {
+app.put('/api/homepage/hero', async (req, res) => {
   try {
-    const { data: existing } = await supabase.from('hero').select('id').limit(1).maybeSingle();
-    if (existing) {
-      await supabase.from('hero').update(req.body).eq('id', existing.id);
-    } else {
-      await supabase.from('hero').insert([req.body]);
-    }
+    if (!fs.existsSync(HERO_DIR)) fs.mkdirSync(HERO_DIR, { recursive: true });
+    fs.writeFileSync(path.join(HERO_DIR, 'hero.json'), JSON.stringify(req.body, null, 2));
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -611,21 +953,18 @@ app.post('/api/homepage/hero', async (req, res) => {
 
 app.get('/api/homepage/about', async (req, res) => {
   try {
-    const { data: about } = await supabase.from('about').select('*').limit(1).single();
-    res.json(about || {});
+    const filePath = path.join(ABOUT_DIR, 'about.json');
+    if (!fs.existsSync(filePath)) return res.json({});
+    res.json(JSON.parse(fs.readFileSync(filePath, 'utf-8')));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/homepage/about', async (req, res) => {
+app.put('/api/homepage/about', async (req, res) => {
   try {
-    const { data: existing } = await supabase.from('about').select('id').limit(1).maybeSingle();
-    if (existing) {
-      await supabase.from('about').update(req.body).eq('id', existing.id);
-    } else {
-      await supabase.from('about').insert([req.body]);
-    }
+    if (!fs.existsSync(ABOUT_DIR)) fs.mkdirSync(ABOUT_DIR, { recursive: true });
+    fs.writeFileSync(path.join(ABOUT_DIR, 'about.json'), JSON.stringify(req.body, null, 2));
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -638,9 +977,32 @@ app.post('/api/homepage/about', async (req, res) => {
 
 app.get('/api/case-studies', async (req, res) => {
   try {
-    const { data: studies, error } = await supabase.from('case_studies').select('slug, title, date, published').order('date', { ascending: false });
-    if (error) throw error;
-    res.json(studies || []);
+    if (!fs.existsSync(CASE_STUDIES_DIR)) fs.mkdirSync(CASE_STUDIES_DIR, { recursive: true });
+    const slugs = fs.readdirSync(CASE_STUDIES_DIR).filter(f => fs.statSync(path.join(CASE_STUDIES_DIR, f)).isDirectory());
+    const studies = slugs.map(slug => parseCaseStudy(slug)).filter(Boolean);
+    studies.sort((a, b) => new Date(b.date) - new Date(a.date));
+    res.json(studies);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/case-studies/reorder', async (req, res) => {
+  try {
+    const { order } = req.body;
+    if (!order || !Array.isArray(order)) return res.status(400).json({ error: 'order array required' });
+    const baseDate = new Date('2025-01-01');
+    for (let i = 0; i < order.length; i++) {
+      const slug = order[i];
+      const study = parseCaseStudy(slug);
+      if (study) {
+        const d = new Date(baseDate);
+        d.setDate(d.getDate() - i);
+        study.date = d.toISOString().split('T')[0];
+        writeCaseStudyMarkdown(path.join(CASE_STUDIES_DIR, slug), study);
+      }
+    }
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -648,29 +1010,19 @@ app.get('/api/case-studies', async (req, res) => {
 
 app.post('/api/case-studies', async (req, res) => {
   try {
-    const { title, slug } = req.body;
-    const { data: existing, error: checkError } = await supabase.from('case_studies').select('id').eq('slug', slug).maybeSingle();
-    if (checkError) throw checkError;
-    if (existing) return res.status(400).json({ error: 'Slug already exists' });
+    const { title, date } = req.body;
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const dir = path.join(CASE_STUDIES_DIR, slug);
+    if (fs.existsSync(dir)) return res.status(400).json({ error: 'Already exists' });
     
-    const { error } = await supabase.from('case_studies').insert([{
+    const data = {
       title,
       slug,
-      date: new Date().toISOString().split('T')[0],
-      published: false
-    }]);
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.delete('/api/case-studies/:slug', async (req, res) => {
-  try {
-    const { error } = await supabase.from('case_studies').delete().eq('slug', req.params.slug);
-    if (error) throw error;
-    res.json({ success: true });
+      date: date || new Date().toISOString().split('T')[0],
+      published: true
+    };
+    writeCaseStudyMarkdown(dir, data);
+    res.json({ success: true, caseStudy: data });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -678,41 +1030,91 @@ app.delete('/api/case-studies/:slug', async (req, res) => {
 
 app.post('/api/case-studies/:slug', async (req, res) => {
   try {
-    const { slug } = req.params;
-    const { blocks, published, title, summary, role, results, methods, banner } = req.body;
+    let { slug } = req.params;
+    let dir = path.join(CASE_STUDIES_DIR, slug);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-    // Handle Banner Image via Cloudinary
+    let { blocks, published, title, summary, details, banner, newSlug } = req.body;
+
+    if (newSlug && newSlug !== slug) {
+      const newDir = path.join(CASE_STUDIES_DIR, newSlug);
+      if (fs.existsSync(newDir)) {
+        return res.status(400).json({ error: 'Case study with this slug already exists' });
+      }
+      fs.renameSync(dir, newDir);
+      
+      const mediaDir = path.join(STATIC_DIR, 'uploads', 'case-studies', slug);
+      const newMediaDir = path.join(STATIC_DIR, 'uploads', 'case-studies', newSlug);
+      if (fs.existsSync(mediaDir)) {
+        if (!fs.existsSync(path.dirname(newMediaDir))) fs.mkdirSync(path.dirname(newMediaDir), { recursive: true });
+        fs.renameSync(mediaDir, newMediaDir);
+      }
+      
+      const oldPath = `/uploads/case-studies/${slug}/`;
+      const newPath = `/uploads/case-studies/${newSlug}/`;
+      
+      if (banner && banner.includes(oldPath)) {
+        banner = banner.replace(oldPath, newPath);
+      }
+      if (blocks) {
+        const blocksStr = JSON.stringify(blocks).split(oldPath).join(newPath);
+        blocks = JSON.parse(blocksStr);
+      }
+      
+      slug = newSlug;
+      dir = newDir;
+    }
+
+    let study = parseCaseStudy(slug);
+    if (!study) {
+      study = { title: title || slug, slug, date: new Date().toISOString().split('T')[0] };
+    }
+
+    // Helper for base64
+    const saveBase64Image = (dataUri) => {
+      const match = dataUri.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+      if (!match) return dataUri;
+      let ext = 'png';
+      if (match[1].includes('jpeg') || match[1].includes('jpg')) ext = 'jpg';
+      else if (match[1].includes('gif')) ext = 'gif';
+      else if (match[1].includes('webp')) ext = 'webp';
+      else if (match[1].includes('mp4')) ext = 'mp4';
+      
+      const buffer = Buffer.from(match[2], 'base64');
+      const filename = `img-${Date.now()}-${Math.floor(Math.random()*1000)}.${ext}`;
+      const fullPath = path.join(STATIC_DIR, 'uploads', 'case-studies', slug);
+      if (!fs.existsSync(fullPath)) fs.mkdirSync(fullPath, { recursive: true });
+      fs.writeFileSync(path.join(fullPath, filename), buffer);
+      return `/uploads/case-studies/${slug}/${filename}`;
+    };
+
     let bannerPath = banner || '';
     if (bannerPath.startsWith('data:')) {
-      const uploadRes = await cloudinary.uploader.upload(bannerPath, { folder: `portfolio/case-studies/${slug}` });
-      bannerPath = uploadRes.secure_url;
+      bannerPath = saveBase64Image(bannerPath);
     }
 
     let markdown = ``;
-    const savedBlocks = JSON.parse(JSON.stringify(blocks)); 
-
+    const savedBlocks = JSON.parse(JSON.stringify(blocks || [])); 
     const derivedTocItems = [];
     
-    // Convert to for...of to allow async await for Cloudinary uploads
     for (let block of savedBlocks) {
       if (block.type === 'text') {
         let content = block.content;
         if (block.tocEntry) {
           const anchor = (block.tocName || 'section').toLowerCase().replace(/[^a-z0-9]+/g, '-');
           if (content.includes('<h2')) {
-            content = content.replace(/<h2([^>]*)>/, `<h2 id="${anchor}"$1>`);
+            const tocNameAttr = (block.tocName || 'Section').replace(/"/g, '&quot;');
+            content = content.replace(/<h2([^>]*)>/, `<h2 id="${anchor}" data-toc-name="${tocNameAttr}"$1>`);
           }
           derivedTocItems.push({ text: block.tocName || 'Section', anchor: anchor });
         }
         markdown += `${content.trim()}\n\n`;
       } else if (block.type === 'image') {
         markdown += `\n<div class="grid grid-${block.grid}">\n\n`;
-        
         for (let i = 0; i < block.images.length; i++) {
           let img = block.images[i];
           if (img.startsWith('data:')) {
-            const uploadRes = await cloudinary.uploader.upload(img, { folder: `portfolio/case-studies/${slug}` });
-            const publicPath = uploadRes.secure_url;
+            const publicPath = saveBase64Image(img);
             markdown += `![Image](${publicPath})\n\n`;
             block.images[i] = publicPath;
           } else {
@@ -720,69 +1122,123 @@ app.post('/api/case-studies/:slug', async (req, res) => {
           }
         }
         markdown += `</div>\n\n`;
+      } else if (block.type === 'cards') {
+        markdown += `\n<div class="cards-grid cards-grid-${block.grid}">\n`;
+        for (let card of block.cards) {
+          // Wrap heading in h3 and text in p
+          const colorStyle = card.color && card.color !== '#64ffda' ? ` style="color:${card.color};"` : '';
+          markdown += `  <div class="card">\n    <h3${colorStyle}>${card.heading}</h3>\n    <p>${card.text}</p>\n  </div>\n`;
+        }
+        markdown += `</div>\n\n`;
+      } else if (block.type === 'callout') {
+        markdown += `\n<div class="callout-block">\n  <h3>${block.heading}</h3>\n  <div class="callout-content">\n${block.content.trim()}\n  </div>\n</div>\n\n`;
       }
     }
 
-    const updateData = {
-      title,
-      slug,
-      date: new Date().toISOString().split('T')[0],
-      published,
+    const update = {
+      title: title || study.title,
+      date: study.date,
       summary: summary || '',
-      role: role || '',
-      results: results || '',
-      methods: methods || '',
+      details: details || study.details || [],
       banner: bannerPath,
       toc_enabled: derivedTocItems.length > 0,
       toc_items: derivedTocItems,
-      blocks: savedBlocks,
-      markdown: markdown
+      markdown: markdown,
+      published: published !== undefined ? published : study.published,
     };
-
-    const { data: existing } = await supabase.from('case_studies').select('id').eq('slug', slug).maybeSingle();
-    if (existing) {
-      const { error } = await supabase.from('case_studies').update(updateData).eq('id', existing.id);
-      if (error) throw error;
-    } else {
-      const { error } = await supabase.from('case_studies').insert([updateData]);
-      if (error) throw error;
-    }
     
-    res.json({ success: true });
+    writeCaseStudyMarkdown(dir, update);
+    
+    update.slug = newSlug || slug;
+    
+    // Save blocks.json to the NEW dir
+    const finalDir = path.join(CASE_STUDIES_DIR, newSlug || slug);
+    fs.writeFileSync(path.join(finalDir, 'blocks.json'), JSON.stringify(savedBlocks, null, 2));
+
+    res.json({ success: true, caseStudy: update });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
 app.get('/api/case-studies/:slug', async (req, res) => {
   try {
-    const { slug } = req.params;
-    const { data: study, error } = await supabase.from('case_studies').select('*').eq('slug', slug).single();
-    if (error || !study) return res.status(404).json({ error: 'Not found' });
+    const study = parseCaseStudy(req.params.slug);
+    if (!study) return res.status(404).json({ error: 'Not found' });
     
-    const frontmatter = {
-      title: study.title,
-      slug: study.slug,
-      date: study.date,
-      published: study.published,
-      summary: study.summary,
-      role: study.role,
-      results: study.results,
-      methods: study.methods,
-      banner: study.banner,
-      tocEnabled: study.toc_enabled,
-      tocItems: study.toc_items
-    };
+    const dir = path.join(CASE_STUDIES_DIR, req.params.slug);
+    let blocks = [];
+    const blocksFile = path.join(dir, 'blocks.json');
+    if (fs.existsSync(blocksFile)) {
+      const parsed = JSON.parse(fs.readFileSync(blocksFile, 'utf-8'));
+      blocks = Array.isArray(parsed) ? parsed : (parsed.blocks || []);
+    } else if (study.markdown) {
+      blocks = [{ id: Date.now().toString(), type: 'text', content: study.markdown }];
+    }
+    console.log("Blocks type before res.json:", Array.isArray(blocks));
 
-    res.json({ blocks: study.blocks || [], metadata: frontmatter, frontmatter });
+    res.json({ blocks, metadata: study, frontmatter: study });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ─────────────────────────────────────────────
-// START SERVER
-// ─────────────────────────────────────────────
+app.delete('/api/case-studies/:slug', async (req, res) => {
+  try {
+    const dir = path.join(CASE_STUDIES_DIR, req.params.slug);
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      res.json({ success: true });
+    } else res.status(404).json({ error: 'Not found' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-module.exports = app;
+app.post('/api/case-studies/:slug/toggle-publish', async (req, res) => {
+  try {
+    const dir = path.join(CASE_STUDIES_DIR, req.params.slug);
+    const study = parseCaseStudy(req.params.slug);
+    if (!study) return res.status(404).json({ error: 'Not found' });
+    study.published = !study.published;
+    writeCaseStudyMarkdown(dir, study);
+    res.json({ success: true, caseStudy: study });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+app.get('/api/case-studies/:slug/assets', async (req, res) => {
+  try {
+    const dir = path.join(CASE_STUDIES_DIR, req.params.slug);
+    if (!fs.existsSync(dir)) return res.json([]);
+    const files = fs.readdirSync(dir);
+    const images = files.filter(f => /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(f)).map(f => `/api/case-studies/${req.params.slug}/assets/${f}`);
+    res.json(images);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/case-studies/:slug/upload-asset', upload.single('asset'), async (req, res) => {
+  try {
+    const dir = path.join(CASE_STUDIES_DIR, req.params.slug);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    
+    // Using cloudinary from multer directly? Wait, the cloudinary storage is already configured.
+    // The req.file.path or secure_url is returned from Cloudinary!
+    if (req.file) {
+       res.json({ success: true, url: req.file.path || req.file.secure_url });
+    } else {
+       res.status(400).json({ error: 'No file uploaded' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+app.listen(PORT, () => console.log(`Admin API running on port ${PORT}`));
