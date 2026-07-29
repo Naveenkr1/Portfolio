@@ -523,7 +523,7 @@ function bindModals() {
       btn.disabled = true;
       btn.innerHTML = 'Saving...';
       const res = await fetch(`${API}/api/homepage/hero`, {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
@@ -564,7 +564,7 @@ function bindModals() {
       btn.disabled = true;
       btn.innerHTML = 'Saving...';
       const res = await fetch(`${API}/api/homepage/about`, {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });

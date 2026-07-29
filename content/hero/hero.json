@@ -1,7 +1,6 @@
 {
-  "intro": "Hi, my name is",
+  "title": "Hi, my name is ",
   "name": "Naveen Kumar.",
-  "title": "Product Designer",
-  "description": "I'm a d digital Product Designer focusing on crafting user experiences and design systems for software, web, and mobile products. I'm passionate about applying consumer psychology for an interactive science-backed approach.",
-  "buttonText": "Check out my Work"
+  "subtitle": "AI Product Designer",
+  "description": "Product Designer with 5+ years crafting AI-native experiences across B2B & B2C mobile apps, SaaS platforms, and everything in between where research meets pixel-perfect execution."
 }

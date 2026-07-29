@@ -1,17 +1,18 @@
 {
   "title": "About Me",
-  "paragraphs": [
-    "Hello, I'm Naveen Kumar, a UI/UX designer with an edge in digital product design, User experience, and interaction design.",
-    "I originally started off as a Computer Science major during undergrad but quickly realized that I was fascinated by the 'Why' behind the code I was writing. This led me to explore the field of UI/UX, and after a few side projects and freelance work, I fell in love with the art of problem-solving.",
-    "I like to think of myself as a full-stack product designer who can lead a project from research & design to the prototyping phase to ensure a smooth developer handoff."
-  ],
-  "skillsTitle": "Here are a few technologies I’ve been working with recently:",
+  "description": "Hi, I'm Naveen Kumar, a Product Designer based in India with 5+ years of experience creating digital products that solve real user problems. My work spans mobile applications, SaaS platforms, and AI-powered products across a range of industries. Over the years, I've led product design end-to-end, from user research and journey mapping to interaction design, design systems, prototyping, and developer handoff. Beyond designing interfaces, I help teams understand what to build, why it matters, and how it creates value for users and businesses. Over the past year, I've focused heavily on AI product design, an area I find both exciting and challenging. Designing AI experiences requires balancing uncertainty, transparency, and user trust while creating interactions that feel intelligent, helpful, and human. As AI continues to reshape digital products, I'm passionate about designing experiences that make advanced technology accessible and meaningful.",
   "skills": [
-    "UI/UX Design",
-    "Wireframing",
-    "prototyping",
-    "UX Research",
-    "Visual Design",
-    "Story Map"
+    "Product Design",
+    "AI UX Design",
+    "Interaction Design",
+    "Design Systems",
+    "User Research",
+    "Prototyping",
+    "Usability Testing",
+    "Mobile App Design",
+    "SaaS Product Design",
+    "Conversational UI",
+    "Prompt UX",
+    "AI Tools"
   ]
 }

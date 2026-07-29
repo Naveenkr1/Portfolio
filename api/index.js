@@ -593,21 +593,32 @@ app.post('/api/deploy', async (req, res) => {
     // Always trigger local Gatsby hot-refresh
     await triggerLocalGatsbyRefresh();
     
-    if (!webhookUrl) {
-      return res.json({ 
-        success: true, 
-        message: 'Local Gatsby cache updated successfully!' 
-      });
-    }
+    // Commit and push changes to git
+    exec('git add . && git commit -m "Content update from CMS" && git push', (error, stdout, stderr) => {
+      if (error) {
+         console.warn("Git push skipped or failed (might be no changes):", stderr);
+      }
+      
+      if (!webhookUrl) {
+        return res.json({ 
+          success: true, 
+          message: 'Local Gatsby cache updated successfully! (Git push completed)' 
+        });
+      }
 
-    console.log(`Triggering deploy webhook: ${webhookUrl}`);
-    const response = await fetch(webhookUrl, { method: 'POST' });
-    
-    if (response.ok) {
-      res.json({ success: true, message: 'Deployment triggered successfully! Your live site will update shortly.' });
-    } else {
-      res.status(500).json({ error: `Webhook failed with status: ${response.status}` });
-    }
+      console.log(`Triggering deploy webhook: ${webhookUrl}`);
+      fetch(webhookUrl, { method: 'POST' })
+        .then(response => {
+          if (response.ok) {
+            res.json({ success: true, message: 'Deployment triggered successfully! Your live site will update shortly.' });
+          } else {
+            res.status(500).json({ error: `Webhook failed with status: ${response.status}` });
+          }
+        })
+        .catch(err => {
+          res.status(500).json({ error: err.message });
+        });
+    });
   } catch (err) {
     console.error(`Deploy error: ${err.message}`);
     res.status(500).json({ error: err.message });
