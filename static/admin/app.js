@@ -1119,31 +1119,35 @@ document.addEventListener('DOMContentLoaded', () => {
 // ─── AI PLAY TAB TOGGLE ───
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const res = await fetch('/api/settings/ai-play');
+    const res = await fetch(`${API}/api/settings/ai-play`);
     if (res.ok) {
       const data = await res.json();
-      document.getElementById('global-ai-play-toggle').checked = data.showTab;
+      const toggle = document.getElementById('global-ai-play-toggle');
+      if (toggle) toggle.checked = data.showTab;
     }
   } catch (err) {
     console.error('Failed to load AI play toggle status', err);
   }
 
-  document.getElementById('global-ai-play-toggle').addEventListener('change', async (e) => {
-    try {
-      const res = await fetch('/api/settings/ai-play', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ showTab: e.target.checked })
-      });
-      if (res.ok) {
-        showToast('AI Play Tab visibility updated');
-      } else {
+  const toggleBtn = document.getElementById('global-ai-play-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('change', async (e) => {
+      try {
+        const res = await fetch(`${API}/api/settings/ai-play`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ showTab: e.target.checked })
+        });
+        if (res.ok) {
+          showToast('AI Play Tab visibility updated');
+        } else {
+          e.target.checked = !e.target.checked; // revert
+          showToast('Failed to update visibility', 'error');
+        }
+      } catch (err) {
         e.target.checked = !e.target.checked; // revert
-        showToast('Failed to update visibility', 'error');
+        showToast('Network error', 'error');
       }
-    } catch (err) {
-      e.target.checked = !e.target.checked; // revert
-      showToast('Network error', 'error');
-    }
-  });
+    });
+  }
 });

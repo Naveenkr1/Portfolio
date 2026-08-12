@@ -581,12 +581,13 @@ app.get('/api/settings/ai-play', (req, res) => {
   }
 });
 
-app.post('/api/settings/ai-play', (req, res) => {
+app.post('/api/settings/ai-play', async (req, res) => {
   try {
     if (!fs.existsSync(SETTINGS_DIR)) fs.mkdirSync(SETTINGS_DIR, { recursive: true });
     const { showTab } = req.body;
     const filePath = path.join(SETTINGS_DIR, 'aiPlay.json');
     fs.writeFileSync(filePath, JSON.stringify({ showTab: !!showTab }, null, 2));
+    await triggerLocalGatsbyRefresh();
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
