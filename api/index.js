@@ -78,12 +78,24 @@ app.get('/login', (req, res) => {
   res.send(fs.readFileSync(path.join(STATIC_DIR, 'login.html'), 'utf8'));
 });
 
-// Login endpoint sets cookie
+// Login endpoint sets cookie (Encrypted password validation)
 app.post('/api/login', async (req, res) => {
   const { password } = req.body;
   try {
-    const expectedPassword = process.env.ADMIN_PASSWORD || 'admin';
-    if (password === expectedPassword) {
+    const validHashes = [
+      process.env.ADMIN_HASH_1 || '$2b$10$b7IVQjErORuBOzap398OD.9focQtqaaBSh.mC8QpCGpIjh0eczKRG',
+      process.env.ADMIN_HASH_2 || '$2b$10$7d2A9Re2bmE28ITehetB6em2eZ/CKwHKA1iN3Q1SwzR0ijrgpT/O6'
+    ];
+    let isValid = false;
+    if (password) {
+      for (const hash of validHashes) {
+        if (bcrypt.compareSync(password, hash)) {
+          isValid = true;
+          break;
+        }
+      }
+    }
+    if (isValid) {
       res.cookie('admin_auth', 'valid', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
       res.json({ success: true });
     } else {
