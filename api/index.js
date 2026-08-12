@@ -1276,4 +1276,8 @@ app.post('/api/case-studies/:slug/upload-asset', upload.single('asset'), async (
 
 
 
-app.listen(PORT, () => console.log(`Admin API running on port ${PORT}`));
+if (require.main === module || !process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Admin API running on port ${PORT}`));
+}
+
+module.exports = app;
