@@ -7,8 +7,4 @@ range: 'Jan 2022 - Jul 2024'
 url: 'https://www.designbrewery.in/'
 ---
 
-- Conducting user research and usability testing
-- Creating prototypes, wireframes, and user flows
-- Collaborating with product, marketing, and Developers
-- Designing and maintaining style guides and design systems.
-- Utilizing various design tools and techniques
+Led UX for B2C brands like Nestlé, WeWork, Indigo, and Delhivery, Redesigning booking flows, build design systems, and delivering work that improved engagement and business ROI.

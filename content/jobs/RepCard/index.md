@@ -9,6 +9,6 @@ url: 'https://www.repcard.com/'
 
 - Conducting user research and usability testing
 - Creating prototypes, wireframes, and user flows
-- Collaborating with stakeholders, product, Developers
+- Collaborating with stakeholders, product, and developers
 - Designing and maintaining style guides and design systems.
-- Utilizing various design tools and techniques 
+- Utilizing various design tools and techniques
