@@ -2,10 +2,10 @@
     "name": "personal-website",
     "description": "Personal Website",
     "version": "1.0.0",
-    "author": "Hichem Fantar <hichemfantar2049@gmail.com>",
+    "author": "Naveen",
     "repository": {
         "type": "git",
-        "url": "https://github.com/hichemfantar/bc-portfolio"
+        "url": "https://github.com/Naveenkr1/Portfolio-2.0.git"
     },
     "keywords": [
         "gatsby"
