@@ -94,6 +94,33 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Settings API (Public & Admin)
+app.get('/api/settings/ai-play', (req, res) => {
+  try {
+    const filePath = path.join(SETTINGS_DIR, 'aiPlay.json');
+    if (!fs.existsSync(filePath)) {
+      return res.json({ showTab: true });
+    }
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/settings/ai-play', async (req, res) => {
+  try {
+    if (!fs.existsSync(SETTINGS_DIR)) fs.mkdirSync(SETTINGS_DIR, { recursive: true });
+    const { showTab } = req.body;
+    const filePath = path.join(SETTINGS_DIR, 'aiPlay.json');
+    fs.writeFileSync(filePath, JSON.stringify({ showTab: !!showTab }, null, 2));
+    await triggerLocalGatsbyRefresh();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Auth Middleware for everything else
 app.use((req, res, next) => {
   if (req.cookies && req.cookies.admin_auth === 'valid') {
@@ -568,31 +595,6 @@ app.post('/api/play-projects/:type/:slug/toggle-publish', async (req, res) => {
 // SETTINGS API
 // ─────────────────────────────────────────────
 
-app.get('/api/settings/ai-play', (req, res) => {
-  try {
-    const filePath = path.join(SETTINGS_DIR, 'aiPlay.json');
-    if (!fs.existsSync(filePath)) {
-      return res.json({ showTab: true });
-    }
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/settings/ai-play', async (req, res) => {
-  try {
-    if (!fs.existsSync(SETTINGS_DIR)) fs.mkdirSync(SETTINGS_DIR, { recursive: true });
-    const { showTab } = req.body;
-    const filePath = path.join(SETTINGS_DIR, 'aiPlay.json');
-    fs.writeFileSync(filePath, JSON.stringify({ showTab: !!showTab }, null, 2));
-    await triggerLocalGatsbyRefresh();
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // ─────────────────────────────────────────────
 // DEPLOY API
