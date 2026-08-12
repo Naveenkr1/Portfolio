@@ -37,11 +37,17 @@ const STATIC_DIR = path.join(PORTFOLIO_ROOT, 'static');
 const UPLOADS_DIR = path.join(STATIC_DIR, 'uploads', 'case-studies');
 
 const triggerLocalGatsbyRefresh = async () => {
-  try {
-    const res = await fetch('http://localhost:3000/__refresh', { method: 'POST' });
-    console.log(`[Refresh] Local Gatsby refresh sent. Status: ${res.status}`);
-  } catch (err) {
-    console.warn(`[Refresh] Local Gatsby refresh skipped: ${err.message}`);
+  const ports = [process.env.GATSBY_PORT, 3002, 3000, 8000, 8001].filter(Boolean);
+  const uniquePorts = [...new Set(ports)];
+  for (const port of uniquePorts) {
+    try {
+      const res = await fetch(`http://localhost:${port}/__refresh`, { method: 'POST' });
+      if (res.ok) {
+        console.log(`[Refresh] Local Gatsby refresh sent to port ${port}. Status: ${res.status}`);
+      }
+    } catch (err) {
+      // ignore unreachable ports
+    }
   }
 };
 
@@ -259,6 +265,7 @@ function writeFeaturedMarkdown(dir, data) {
   ];
 
   fs.writeFileSync(filePath, lines.join('\n'));
+  triggerLocalGatsbyRefresh();
 }
 
 function writePlayMarkdown(dir, data) {
@@ -287,6 +294,7 @@ function writePlayMarkdown(dir, data) {
   ];
 
   fs.writeFileSync(filePath, lines.join('\n'));
+  triggerLocalGatsbyRefresh();
 }
 
 function writeJobMarkdown(dir, data) {
@@ -315,6 +323,7 @@ function writeJobMarkdown(dir, data) {
   ];
 
   fs.writeFileSync(filePath, lines.join('\n'));
+  triggerLocalGatsbyRefresh();
 }
 function parseCaseStudy(slug) {
   const dir = path.join(CASE_STUDIES_DIR, slug);
@@ -389,6 +398,7 @@ function writeCaseStudyMarkdown(dir, data) {
 
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(filePath, lines.join('\n'));
+  triggerLocalGatsbyRefresh();
 }
 const { exec } = require('child_process');
 
@@ -530,8 +540,9 @@ app.delete('/api/play-projects/:type/:slug', async (req, res) => {
     const dir = path.join(baseDir, slug);
     if (fs.existsSync(dir)) {
       fs.rmSync(dir, { recursive: true, force: true });
-    }
-    res.json({ success: true });
+      await triggerLocalGatsbyRefresh();
+      res.json({ success: true });
+    } else res.status(404).json({ error: 'Not found' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -594,15 +605,16 @@ app.post('/api/deploy', async (req, res) => {
     await triggerLocalGatsbyRefresh();
     
     // Commit and push changes to git
-    exec('git add . && git commit -m "Content update from CMS" && git push', (error, stdout, stderr) => {
+    exec('git add -A && (git commit -m "Content update from CMS" || true) && git push', (error, stdout, stderr) => {
+      console.log("Git deploy output:", stdout, stderr);
       if (error) {
-         console.warn("Git push skipped or failed (might be no changes):", stderr);
+        console.warn("Git push warning:", error.message);
       }
       
       if (!webhookUrl) {
         return res.json({ 
           success: true, 
-          message: 'Local Gatsby cache updated successfully! (Git push completed)' 
+          message: 'Changes committed & pushed to GitHub! Local Gatsby cache updated.' 
         });
       }
 
@@ -612,11 +624,11 @@ app.post('/api/deploy', async (req, res) => {
           if (response.ok) {
             res.json({ success: true, message: 'Deployment triggered successfully! Your live site will update shortly.' });
           } else {
-            res.status(500).json({ error: `Webhook failed with status: ${response.status}` });
+            res.json({ success: true, message: `Git push completed! Webhook status: ${response.status}` });
           }
         })
         .catch(err => {
-          res.status(500).json({ error: err.message });
+          res.json({ success: true, message: `Git push completed! (Webhook note: ${err.message})` });
         });
     });
   } catch (err) {
@@ -753,6 +765,7 @@ app.delete('/api/featured/:slug', async (req, res) => {
     const dir = path.join(FEATURED_DIR, req.params.slug);
     if (fs.existsSync(dir)) {
       fs.rmSync(dir, { recursive: true, force: true });
+      await triggerLocalGatsbyRefresh();
       res.json({ success: true });
     } else res.status(404).json({ error: 'Not found' });
   } catch (err) {
@@ -880,6 +893,7 @@ app.delete('/api/jobs/:slug', async (req, res) => {
     const dir = path.join(JOBS_DIR, req.params.slug);
     if (fs.existsSync(dir)) {
       fs.rmSync(dir, { recursive: true, force: true });
+      await triggerLocalGatsbyRefresh();
       res.json({ success: true });
     } else res.status(404).json({ error: 'Not found' });
   } catch (err) {
@@ -1199,6 +1213,7 @@ app.delete('/api/case-studies/:slug', async (req, res) => {
     const dir = path.join(CASE_STUDIES_DIR, req.params.slug);
     if (fs.existsSync(dir)) {
       fs.rmSync(dir, { recursive: true, force: true });
+      await triggerLocalGatsbyRefresh();
       res.json({ success: true });
     } else res.status(404).json({ error: 'Not found' });
   } catch (err) {

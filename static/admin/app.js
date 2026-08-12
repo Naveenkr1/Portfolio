@@ -1068,25 +1068,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Bind the global delete confirmation handler for AI projects
-  const btnDeleteConfirm = document.getElementById('btn-delete-confirm');
-  if (btnDeleteConfirm) {
-    const origOnclick = btnDeleteConfirm.onclick;
-    btnDeleteConfirm.onclick = async function(e) {
-      if (deleteTarget && deleteTarget.type === 'ai-project') {
-        try {
-          const res = await fetch(`/api/play-projects/${deleteTarget.projectType}/${deleteTarget.slug}`, { method: 'DELETE' });
-          if (!res.ok) throw new Error(await res.text());
-          closeModal('modal-delete');
-          await loadAiProjects();
-        } catch (err) {
-          alert(err.message);
-        }
-      } else if (origOnclick) {
-        origOnclick(e);
-      }
-    };
-  }
+
 
   // Play Projects Cover image preview
   const aiCoverInput = document.getElementById('ai-cover');
