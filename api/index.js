@@ -673,8 +673,17 @@ app.put('/api/featured/reorder', async (req, res) => {
 
 app.get('/api/featured/:slug/cover', (req, res) => {
   try {
-    const dir = path.join(FEATURED_DIR, req.params.slug);
+    const slug = req.params.slug;
+    const dir = path.join(FEATURED_DIR, slug);
     if (!fs.existsSync(dir)) return res.status(404).json({ error: 'Not found' });
+    const project = parseFeaturedProject(slug);
+    let coverFile = project && project.cover ? project.cover : null;
+    if (coverFile && coverFile.startsWith('./')) {
+      coverFile = coverFile.slice(2);
+    }
+    if (coverFile && fs.existsSync(path.join(dir, coverFile))) {
+      return res.sendFile(path.join(dir, coverFile));
+    }
     const coverImage = findCoverImage(dir);
     if (!coverImage) return res.status(404).json({ error: 'No cover image' });
     res.sendFile(path.join(dir, coverImage));

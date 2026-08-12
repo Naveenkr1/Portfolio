@@ -212,11 +212,8 @@ function renderFeatured() {
   }
   empty.style.display = 'none';
 
-  // Sort: Published first, then unpublished (maintaining relative order)
-  const sortedFeatured = [...featuredProjects].sort((a, b) => {
-    if (a.published === b.published) return 0;
-    return a.published ? -1 : 1;
-  });
+  // Keep order matching date sequence
+  const sortedFeatured = [...featuredProjects];
 
   list.innerHTML = sortedFeatured.map((p, i) => `
     <div class="project-card" draggable="true" data-slug="${p.slug}" data-index="${i}">

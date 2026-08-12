@@ -96,9 +96,23 @@ const StyledPic = styled.div`
     .img {
       position: relative;
       border-radius: var(--border-radius);
-      mix-blend-mode: multiply;
-      filter: grayscale(100%) contrast(1);
       transition: var(--transition);
+      z-index: 1;
+    }
+
+    &:hover,
+    &:focus {
+      outline: 0;
+
+      &:after {
+        top: 15px;
+        left: 15px;
+      }
+
+      .img {
+        filter: none;
+        mix-blend-mode: normal;
+      }
     }
 
     &:before,
@@ -115,18 +129,16 @@ const StyledPic = styled.div`
     &:before {
       top: 0;
       left: 0;
-      background-color: var(--navy);
-      mix-blend-mode: screen;
+      background-color: transparent;
     }
 
     &:after {
       border: 2px solid var(--green);
       top: 20px;
       left: 20px;
-      z-index: -1;
+      z-index: 0;
     }
   }
-  
 `;
 
 const About = () => {

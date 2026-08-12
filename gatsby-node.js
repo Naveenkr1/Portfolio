@@ -8,7 +8,6 @@ const path = require('path');
 const _ = require('lodash');
 const fs = require('fs');
 const matter = require('gray-matter');
-const { marked } = require('marked');
 
 exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => {
   const { createNode } = actions;
@@ -66,8 +65,7 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => 
       item.published = !!md;
       
       if (typeName === 'MongodbPortfolioProjects' || typeName === 'MongodbPortfolioJobs') {
-        const rawDesc = content.trim();
-        item.description = (rawDesc && !rawDesc.startsWith('<')) ? marked.parse(rawDesc) : rawDesc;
+        item.description = content.trim();
       } else if (typeName === 'MongodbPortfolioCaseStudies') {
         item.markdown = content;
         item.toc_enabled = item.tocEnabled;
