@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useStaticQuery, graphql } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
+import MeImg from '../../images/me.jpg';
 import styled from 'styled-components';
 import { srConfig } from '@config';
 import sr from '@utils/sr';
@@ -198,13 +199,11 @@ const About = () => {
 
         <StyledPic>
           <div className="wrapper">
-            <StaticImage
-              className="img"
-              src="../../images/me.jpg"
-              width={500}
-              quality={95}
-              formats={['AUTO', 'WEBP', 'AVIF']}
+            <img
+              src={MeImg || '/me.jpg'}
               alt="Headshot"
+              className="img"
+              style={{ width: '100%', height: 'auto', borderRadius: 'var(--border-radius)', display: 'block', position: 'relative', zIndex: 1 }}
             />
           </div>
         </StyledPic>
