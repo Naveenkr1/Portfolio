@@ -6,6 +6,7 @@ import { srConfig } from '@config';
 import { KEY_CODES } from '@utils';
 import sr from '@utils/sr';
 import { usePrefersReducedMotion } from '@hooks';
+import { marked } from 'marked';
 
 const StyledJobsSection = styled.section`
   max-width: 700px;
@@ -293,7 +294,7 @@ const Jobs = () => {
 
                     <p className="range">{range}</p>
 
-                    <div dangerouslySetInnerHTML={{ __html: description }} />
+                    <div dangerouslySetInnerHTML={{ __html: description && !description.trim().startsWith('<') ? marked.parse(description) : description }} />
                   </StyledTabPanel>
                 </CSSTransition>
               );
