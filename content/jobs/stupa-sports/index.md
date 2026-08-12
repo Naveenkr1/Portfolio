@@ -7,4 +7,6 @@ range: 'Jun 2024 - Present'
 url: 'https://www.stupasports.ai'
 ---
 
-Led end to end UX design for sports-focused AI digital products, building OTT streaming platforms that contributed to ~$250K in revenue by improving content discovery and viewing experience, while also implementing brand guidelines and a design system integrated with AI tools to reduce design time and streamline workflows across web and mobile.
+- Designed AI-powered UX for a sports OTT platform, contributing to $250K in revenue growth.
+- Used AI tools to speed up design workflows and iteration across web and mobile.
+- Led end to end UX from research to final design, including interactions and developer handoff.

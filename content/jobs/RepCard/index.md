@@ -7,8 +7,5 @@ range: 'Aug 2024 - Present'
 url: 'https://www.repcard.com/'
 ---
 
-- Conducting user research and usability testing
-- Creating prototypes, wireframes, and user flows
-- Collaborating with stakeholders, product, and developers
-- Designing and maintaining style guides and design systems.
-- Utilizing various design tools and techniques
+- Built RepCard’s design system from scratch for consistent web and mobile experiences.
+- Designed gamification features like badges, streaks, and scoring, increasing engagement by 32% and retention by 22%.

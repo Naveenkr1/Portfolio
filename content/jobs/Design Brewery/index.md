@@ -7,4 +7,6 @@ range: 'Jan 2022 - Jul 2024'
 url: 'https://www.designbrewery.in/'
 ---
 
-Led UX for B2C brands like Nestlé, WeWork, Indigo, and Delhivery, Redesigning booking flows, build design systems, and delivering work that improved engagement and business ROI.
+- Improved WeWork booking with a simpler, mobile-first experience, reducing drop-offs.
+- Led UX design for brands like Nestlé, Indigo, Delhivery, and Glance, improving engagement.
+- Built design systems, icons, and illustration libraries for consistent brand experiences.
