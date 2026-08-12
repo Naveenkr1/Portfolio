@@ -214,7 +214,7 @@ const Nav = ({ isHome, isCaseStudy }) => {
   `);
 
   const resumeData = data.allResumeJson.edges[0]?.node || { type: 'url', value: '#' };
-  const showAiPlay = data.allSettingsJson?.edges[0]?.node?.showTab !== false; // defaults to true
+  const showAiPlay = !data.allSettingsJson?.edges?.some(edge => edge.node?.showTab === false);
 
   const visibleNavLinks = navLinks.filter(link => {
     if ((link.name === 'AI Play' || link.name === 'AI Playground') && !showAiPlay) return false;
