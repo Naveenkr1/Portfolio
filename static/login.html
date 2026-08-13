@@ -105,6 +105,8 @@
   </div>
 
   <script>
+    const API = (typeof window !== 'undefined' && (window.location.port === '3000' || window.location.port === '3002' || window.location.port === '8000')) ? 'http://localhost:3001' : '';
+
     document.getElementById('form-login').addEventListener('submit', async (e) => {
       e.preventDefault();
       const password = document.getElementById('login-password').value;
@@ -112,9 +114,10 @@
       errorEl.style.display = 'none';
 
       try {
-        const res = await fetch('/api/login', {
+        const res = await fetch(`${API}/api/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ password })
         });
         const data = await res.json();
@@ -126,7 +129,8 @@
           errorEl.style.display = 'block';
         }
       } catch (err) {
-        errorEl.textContent = 'Connection error';
+        console.error('Login error:', err);
+        errorEl.textContent = 'Connection error. Please try again.';
         errorEl.style.display = 'block';
       }
     });

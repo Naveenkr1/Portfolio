@@ -2,7 +2,7 @@
    PORTFOLIO ADMIN — CLIENT APP
    ═══════════════════════════════════════════ */
 
-const API = '';
+const API = (typeof window !== 'undefined' && (window.location.port === '3000' || window.location.port === '3002' || window.location.port === '8000')) ? 'http://localhost:3001' : '';
 let currentSection = 'featured';
 let featuredProjects = [];
 let jobsData = [];

@@ -56,7 +56,7 @@ app.use((req, res, next) => {
   console.log('[API Server] Received request:', req.method, req.url);
   next();
 });
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
@@ -96,7 +96,7 @@ app.post('/api/login', async (req, res) => {
       }
     }
     if (isValid) {
-      res.cookie('admin_auth', 'valid', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
+      res.cookie('admin_auth', 'valid', { httpOnly: true, maxAge: 24 * 60 * 60 * 1000, sameSite: 'lax', path: '/' });
       res.json({ success: true });
     } else {
       res.status(401).json({ error: 'Incorrect password' });
