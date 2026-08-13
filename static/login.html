@@ -120,12 +120,18 @@
           credentials: 'include',
           body: JSON.stringify({ password })
         });
-        const data = await res.json();
         
-        if (data.success) {
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (jsonErr) {
+          // Response wasn't JSON
+        }
+        
+        if (res.ok && data.success) {
           window.location.href = '/admin'; // Redirect on success
         } else {
-          errorEl.textContent = data.error || 'Incorrect password';
+          errorEl.textContent = data.error || (res.status === 401 ? 'Incorrect password' : 'Server error. Please try again.');
           errorEl.style.display = 'block';
         }
       } catch (err) {
