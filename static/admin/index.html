@@ -10,6 +10,26 @@
   <link rel="stylesheet" href="/admin/styles.css" />
 </head>
 <body>
+  <!-- ─── LOGIN OVERLAY ─── -->
+  <div id="admin-login-screen" class="login-screen-overlay" style="display: flex;">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-brand-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h2>Admin Panel</h2>
+        <p>Enter password to access dashboard</p>
+      </div>
+      <form id="admin-login-form">
+        <div class="form-group">
+          <input type="password" id="admin-login-password" placeholder="Enter password" required autocomplete="current-password" />
+        </div>
+        <button type="submit">Sign In</button>
+      </form>
+      <div id="admin-login-error" class="login-error-alert" style="display: none;"></div>
+    </div>
+  </div>
+
   <!-- ─── MOBILE HEADER ─── -->
   <div class="mobile-header">
     <div class="sidebar-brand">

@@ -14,35 +14,76 @@ let aiCoverAction = 'keep';
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', async () => {
-  // First verify session authentication status
-  try {
-    const authRes = await fetch(`${API}/api/auth/check`, { credentials: 'include' });
-    if (!authRes.ok) {
-      window.location.href = '/login';
-      return;
+  const loginOverlay = document.getElementById('admin-login-screen');
+  const loginForm = document.getElementById('admin-login-form');
+  const loginError = document.getElementById('admin-login-error');
+
+  const showDashboard = async () => {
+    if (loginOverlay) loginOverlay.style.display = 'none';
+    bindNavigation();
+    bindMobileNav();
+    bindModals();
+    bindForms();
+    try {
+      await loadHomepage();
+      await loadFeatured();
+      await loadJobs();
+      await loadCaseStudies();
+      await loadResume();
+      await loadAiProjects();
+    } catch (e) {
+      if (e.message === 'Unauthorized' && loginOverlay) {
+        loginOverlay.style.display = 'flex';
+      }
     }
-  } catch (err) {
-    window.location.href = '/login';
-    return;
+  };
+
+  const showLogin = () => {
+    if (loginOverlay) loginOverlay.style.display = 'flex';
+  };
+
+  // Bind embedded login form
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('admin-login-password').value;
+      if (loginError) loginError.style.display = 'none';
+      try {
+        const res = await fetch(`${API}/api/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ password })
+        });
+        let data = {};
+        try { data = await res.json(); } catch (err) {}
+        if (res.ok && data.success) {
+          await showDashboard();
+        } else {
+          if (loginError) {
+            loginError.textContent = data.error || (res.status === 401 ? 'Incorrect password' : 'Server error. Please try again.');
+            loginError.style.display = 'block';
+          }
+        }
+      } catch (err) {
+        if (loginError) {
+          loginError.textContent = 'Connection error. Please try again.';
+          loginError.style.display = 'block';
+        }
+      }
+    });
   }
 
-  bindNavigation();
-  bindMobileNav();
-  bindModals();
-  bindForms();
-  
-  // Try to load initial data
+  // Check authentication status on startup
   try {
-    await loadHomepage();
-    await loadFeatured();
-    await loadJobs();
-    await loadCaseStudies();
-    await loadResume();
-    await loadAiProjects();
-  } catch (e) {
-    if (e.message === 'Unauthorized') {
-      window.location.href = '/login';
+    const authRes = await fetch(`${API}/api/auth/check`, { credentials: 'include' });
+    if (authRes.ok) {
+      await showDashboard();
+    } else {
+      showLogin();
     }
+  } catch (err) {
+    showLogin();
   }
 });
 
