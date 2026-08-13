@@ -14,6 +14,18 @@ let aiCoverAction = 'keep';
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', async () => {
+  // First verify session authentication status
+  try {
+    const authRes = await fetch(`${API}/api/auth/check`, { credentials: 'include' });
+    if (!authRes.ok) {
+      window.location.href = '/login';
+      return;
+    }
+  } catch (err) {
+    window.location.href = '/login';
+    return;
+  }
+
   bindNavigation();
   bindMobileNav();
   bindModals();

@@ -106,6 +106,14 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Auth Status Check Endpoint
+app.get('/api/auth/check', (req, res) => {
+  if (req.cookies && req.cookies.admin_auth === 'valid') {
+    return res.json({ authenticated: true });
+  }
+  return res.status(401).json({ authenticated: false, error: 'Unauthorized' });
+});
+
 // Settings API (Public & Admin)
 app.get('/api/settings/ai-play', (req, res) => {
   try {
