@@ -11,7 +11,7 @@
 </head>
 <body>
   <!-- ─── LOGIN OVERLAY ─── -->
-  <div id="admin-login-screen" class="login-screen-overlay" style="display: flex;">
+  <div id="admin-login-screen" class="login-screen-overlay" style="display: none;">
     <div class="login-card">
       <div class="login-header">
         <div class="login-brand-icon">
@@ -101,8 +101,8 @@
     <!-- HEADER -->
     <header class="content-header">
       <div class="header-left">
-        <h1 class="page-title" id="page-title">Selected Work</h1>
-        <p class="page-subtitle" id="page-subtitle">Manage your featured portfolio projects</p>
+        <h1 class="page-title" id="page-title">Homepage Management</h1>
+        <p class="page-subtitle" id="page-subtitle">Update your hero section and about me content</p>
       </div>
       <div class="header-right">
         <div class="header-toggle-container" style="display:flex; align-items:center; gap:8px; margin-right:15px;">
@@ -270,7 +270,10 @@
   <div class="modal-overlay" id="modal-ai-project">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modal-ai-project-title">New AI Project</h2>
+        <div class="modal-title-wrapper" style="display: flex; align-items: center; gap: 10px;">
+          <svg class="setting-gear-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <h2 id="modal-ai-project-title">New AI Project</h2>
+        </div>
         <button class="modal-close" id="modal-ai-project-close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -280,7 +283,7 @@
 
         <div class="form-group">
           <label>Project Type</label>
-          <select id="ai-type" required style="width:100%; padding:10px; background:var(--light-navy); border:1px solid var(--lightest-navy); color:var(--white); border-radius:var(--border-radius);">
+          <select id="ai-type" required>
             <option value="ai">AI Project</option>
             <option value="other">Other Project</option>
           </select>
@@ -293,7 +296,7 @@
 
         <div class="form-group">
           <label>External Link</label>
-          <input type="url" id="ai-external" placeholder="https://..." />
+          <input type="text" id="ai-external" placeholder="https://... (optional)" />
         </div>
 
         <div class="form-group">
@@ -337,7 +340,10 @@
   <div class="modal-overlay" id="modal-featured">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modal-featured-title">New Project</h2>
+        <div class="modal-title-wrapper" style="display: flex; align-items: center; gap: 10px;">
+          <svg class="setting-gear-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <h2 id="modal-featured-title">New Project</h2>
+        </div>
         <button class="modal-close" id="modal-featured-close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -364,11 +370,11 @@
         <div class="form-row">
           <div class="form-group">
             <label for="feat-cta">Case Study URL</label>
-            <input type="url" id="feat-cta" placeholder="https://..." />
+            <input type="text" id="feat-cta" placeholder="https://... (optional)" />
           </div>
           <div class="form-group">
             <label for="feat-external">External Link</label>
-            <input type="url" id="feat-external" placeholder="https://..." />
+            <input type="text" id="feat-external" placeholder="https://... (optional)" />
           </div>
         </div>
 
@@ -411,7 +417,10 @@
   <div class="modal-overlay" id="modal-job">
     <div class="modal">
       <div class="modal-header">
-        <h2 id="modal-job-title">New Job</h2>
+        <div class="modal-title-wrapper" style="display: flex; align-items: center; gap: 10px;">
+          <svg class="setting-gear-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <h2 id="modal-job-title">New Job</h2>
+        </div>
         <button class="modal-close" id="modal-job-close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -444,7 +453,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="job-url">Company URL</label>
-            <input type="url" id="job-url" placeholder="https://..." />
+            <input type="text" id="job-url" placeholder="https://... (optional)" />
           </div>
           <div class="form-group">
             <label for="job-date">Sort Date</label>

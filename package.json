@@ -18,7 +18,8 @@
         "build": "gatsby build",
         "develop": "gatsby develop -p 3000",
         "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
-        "start": "npm run develop",
+        "dev": "concurrently -n \"gatsby,api\" -c \"cyan,magenta\" \"npm run develop\" \"npm run api\"",
+        "start": "concurrently -n \"gatsby,api\" -c \"cyan,magenta\" \"npm run develop\" \"npm run api\"",
         "serve": "gatsby serve",
         "clean": "gatsby clean",
         "lint-staged": "lint-staged",
@@ -90,6 +91,7 @@
         "@upstatement/eslint-config": "^1.0.1",
         "@upstatement/prettier-config": "^1.0.0",
         "babel-preset-gatsby": "^1.14.0",
+        "concurrently": "^9.2.5",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-jsx-a11y": "^6.6.1",
@@ -99,6 +101,9 @@
         "prettier": "^2.7.1"
     },
     "resolutions": {
+        "webpack": "^5.61.0"
+    },
+    "overrides": {
         "webpack": "^5.61.0"
     },
     "proxy": "http://localhost:3001"

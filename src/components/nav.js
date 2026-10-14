@@ -213,7 +213,20 @@ const Nav = ({ isHome, isCaseStudy }) => {
     }
   `);
 
-  const resumeData = data.allResumeJson.edges[0]?.node || { type: 'url', value: '#' };
+  const initialResumeUrl = data.allResumeJson.edges[0]?.node?.value || '#';
+  const [resumeUrl, setResumeUrl] = useState(initialResumeUrl);
+
+  useEffect(() => {
+    fetch('/api/resume')
+      .then(res => res.json())
+      .then(d => {
+        if (d && d.value) {
+          setResumeUrl(d.value);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const showAiPlay = !data.allSettingsJson?.edges?.some(edge => edge.node?.showTab === false);
 
   const visibleNavLinks = navLinks.filter(link => {
@@ -266,7 +279,7 @@ const Nav = ({ isHome, isCaseStudy }) => {
   );
 
   const ResumeLink = (
-    <a className="resume-button" href={resumeData.value} target="_blank" rel="noopener noreferrer">
+    <a className="resume-button" href={resumeUrl} target="_blank" rel="noopener noreferrer">
       Resume
     </a>
   );
@@ -351,7 +364,7 @@ const Nav = ({ isHome, isCaseStudy }) => {
             <TransitionGroup component={null}>
               {isMounted && (
                 <CSSTransition classNames={fadeClass} timeout={timeout}>
-                  <Menu />
+                  <Menu resumeUrl={resumeUrl} />
                 </CSSTransition>
               )}
             </TransitionGroup>

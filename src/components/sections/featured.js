@@ -334,15 +334,18 @@ const Featured = () => {
           featuredProjects.map(({ node }, i) => {
             const { external, button, role, title, tech, cover, cta, description } = node;
             const isGif = cover && cover.toLowerCase().endsWith('.gif');
+            const projectLink = (external || cta || '').trim();
 
             return (
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
                 <div className="project-content">
                   <div>
                     <h3 className="project-title">
-                      <a href={external}>{title}</a>
-                      {/* <a href="/case-study">{title}</a> */} 
-                      {/* I have changed here */}
+                      {projectLink ? (
+                        <a href={projectLink}>{title}</a>
+                      ) : (
+                        <span>{title}</span>
+                      )}
                     </h3>
 
                     <ul className="project-tech-list">
@@ -357,16 +360,23 @@ const Featured = () => {
                     />
                   </div>
                  
-                  <a href={external}>  {/* I have changed here */}
-
-                  <button className='project-study' >{button}</button>
-                  </a>
+                  {projectLink ? (
+                    <a href={projectLink}>
+                      <button className='project-study'>{button}</button>
+                    </a>
+                  ) : (
+                    button && <button className='project-study'>{button}</button>
+                  )}
                 </div>
 
                 <div className="project-image">
-                  <a href={external}>
+                  {projectLink ? (
+                    <a href={projectLink}>
+                      <img src={cover} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />
+                    </a>
+                  ) : (
                     <img src={cover} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />
-                  </a>
+                  )}
                 </div>
               </StyledProject>
             );

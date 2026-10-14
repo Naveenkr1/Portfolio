@@ -2,8 +2,8 @@
    PORTFOLIO ADMIN — CLIENT APP
    ═══════════════════════════════════════════ */
 
-const API = (typeof window !== 'undefined' && (window.location.port === '3000' || window.location.port === '3002' || window.location.port === '8000')) ? 'http://localhost:3001' : '';
-let currentSection = 'featured';
+const API = '';
+let currentSection = 'homepage';
 let featuredProjects = [];
 let jobsData = [];
 let caseStudies = [];
@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const showDashboard = async () => {
     if (loginOverlay) loginOverlay.style.display = 'none';
+    switchSection('homepage');
     bindNavigation();
     bindMobileNav();
     bindModals();
@@ -91,8 +92,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
   const res = await originalFetch(...args);
-  if (res.status === 401 && !args[0].includes('/api/login')) {
-    window.location.href = '/login';
+  const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url ? args[0].url : '');
+  if (res.status === 401 && !url.includes('/api/login') && !url.includes('/api/auth/check')) {
+    const loginOverlay = document.getElementById('admin-login-screen');
+    if (loginOverlay) {
+      loginOverlay.style.display = 'flex';
+    } else {
+      window.location.href = '/login';
+    }
     throw new Error('Unauthorized');
   }
   return res;
@@ -648,8 +655,22 @@ function bindForms() {
     formData.append('title', document.getElementById('feat-title').value);
     formData.append('role', document.getElementById('feat-role').value);
     formData.append('description', document.getElementById('feat-description').value);
-    formData.append('cta', document.getElementById('feat-cta').value);
-    formData.append('external', document.getElementById('feat-external').value);
+
+    // External and Case Study URLs are optional
+    const rawCta = (document.getElementById('feat-cta').value || '').trim();
+    let ctaVal = rawCta;
+    if (ctaVal && !/^https?:\/\//i.test(ctaVal) && !ctaVal.startsWith('/') && !ctaVal.startsWith('#') && !ctaVal.startsWith('mailto:')) {
+      ctaVal = `https://${ctaVal}`;
+    }
+    formData.append('cta', ctaVal);
+
+    const rawExternal = (document.getElementById('feat-external').value || '').trim();
+    let externalVal = rawExternal;
+    if (externalVal && !/^https?:\/\//i.test(externalVal) && !externalVal.startsWith('/') && !externalVal.startsWith('#') && !externalVal.startsWith('mailto:')) {
+      externalVal = `https://${externalVal}`;
+    }
+    formData.append('external', externalVal);
+
     formData.append('button', document.getElementById('feat-button').value);
 
     const techStr = document.getElementById('feat-tech').value;
@@ -683,12 +704,18 @@ function bindForms() {
     const slug = document.getElementById('job-editing-slug').value;
     const isEdit = !!slug;
 
+    const rawJobUrl = (document.getElementById('job-url').value || '').trim();
+    let jobUrlVal = rawJobUrl;
+    if (jobUrlVal && !/^https?:\/\//i.test(jobUrlVal) && !jobUrlVal.startsWith('/') && !jobUrlVal.startsWith('#') && !jobUrlVal.startsWith('mailto:')) {
+      jobUrlVal = `https://${jobUrlVal}`;
+    }
+
     const body = {
       title: document.getElementById('job-title').value,
       company: document.getElementById('job-company').value,
       location: document.getElementById('job-location').value,
       range: document.getElementById('job-range').value,
-      url: document.getElementById('job-url').value,
+      url: jobUrlVal,
       date: document.getElementById('job-date').value,
       description: document.getElementById('job-description').value,
     };
@@ -1084,7 +1111,12 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const fd = new FormData();
       fd.append('title', document.getElementById('ai-title').value);
-      fd.append('external', document.getElementById('ai-external').value);
+      const rawAiExternal = (document.getElementById('ai-external').value || '').trim();
+      let aiExternalVal = rawAiExternal;
+      if (aiExternalVal && !/^https?:\/\//i.test(aiExternalVal) && !aiExternalVal.startsWith('/') && !aiExternalVal.startsWith('#') && !aiExternalVal.startsWith('mailto:')) {
+        aiExternalVal = `https://${aiExternalVal}`;
+      }
+      fd.append('external', aiExternalVal);
       fd.append('date', document.getElementById('ai-date').value);
       fd.append('tech', document.getElementById('ai-tech').value);
       fd.append('description', document.getElementById('ai-description').value);

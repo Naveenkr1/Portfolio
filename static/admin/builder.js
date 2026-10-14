@@ -498,9 +498,24 @@ class CaseStudyBuilder {
           <div style="background:var(--navy); padding:15px; border-radius:8px; border:1px solid var(--lightest-navy);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
               <label style="font-size:12px; color:var(--light-slate);">Heading</label>
-              <input type="color" value="${card.color || '#64ffda'}" onchange="builder.updateCardContent('${block.id}', ${i}, 'color', this.value)" style="width:24px; height:24px; padding:0; border:none; background:transparent; cursor:pointer;" title="Heading Color">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <select onchange="builder.updateCardContent('${block.id}', ${i}, 'fontSize', this.value)" style="background:var(--light-navy); border:1px solid var(--lightest-navy); color:var(--white); border-radius:4px; padding:2px 4px; font-size:11px; cursor:pointer;" title="Heading Text Size">
+                  <option value="" ${!card.fontSize ? 'selected' : ''}>Size (Default 36px)</option>
+                  <option value="14px" ${card.fontSize === '14px' ? 'selected' : ''}>14px</option>
+                  <option value="16px" ${card.fontSize === '16px' ? 'selected' : ''}>16px</option>
+                  <option value="18px" ${card.fontSize === '18px' ? 'selected' : ''}>18px</option>
+                  <option value="20px" ${card.fontSize === '20px' ? 'selected' : ''}>20px</option>
+                  <option value="24px" ${card.fontSize === '24px' ? 'selected' : ''}>24px</option>
+                  <option value="28px" ${card.fontSize === '28px' ? 'selected' : ''}>28px</option>
+                  <option value="32px" ${card.fontSize === '32px' ? 'selected' : ''}>32px</option>
+                  <option value="36px" ${card.fontSize === '36px' ? 'selected' : ''}>36px</option>
+                  <option value="40px" ${card.fontSize === '40px' ? 'selected' : ''}>40px</option>
+                  <option value="48px" ${card.fontSize === '48px' ? 'selected' : ''}>48px</option>
+                </select>
+                <input type="color" value="${card.color || '#64ffda'}" onchange="builder.updateCardContent('${block.id}', ${i}, 'color', this.value)" style="width:24px; height:24px; padding:0; border:none; background:transparent; cursor:pointer;" title="Heading Color">
+              </div>
             </div>
-            <input type="text" value="${card.heading || ''}" oninput="builder.updateCardContent('${block.id}', ${i}, 'heading', this.value)" style="width:100%; background:var(--light-navy); border:1px solid var(--lightest-navy); color:${card.color || 'var(--green)'}; border-radius:4px; padding:8px; margin-bottom:10px; font-weight:bold; font-size:18px;">
+            <input type="text" value="${card.heading || ''}" oninput="builder.updateCardContent('${block.id}', ${i}, 'heading', this.value)" style="width:100%; background:var(--light-navy); border:1px solid var(--lightest-navy); color:${card.color || 'var(--green)'}; border-radius:4px; padding:8px; margin-bottom:10px; font-weight:bold; font-size:${card.fontSize || '24px'};">
             <label style="display:block; font-size:12px; color:var(--light-slate); margin-bottom:5px;">Subtext</label>
             <textarea oninput="builder.updateCardContent('${block.id}', ${i}, 'text', this.value)" style="width:100%; background:var(--light-navy); border:1px solid var(--lightest-navy); color:var(--white); border-radius:4px; padding:8px; font-size:14px; min-height:80px; resize:vertical;">${card.text || ''}</textarea>
           </div>
@@ -527,7 +542,7 @@ class CaseStudyBuilder {
     const block = this.blocks.find(b => b.id === id);
     if (!block || !block.cards[index]) return;
     block.cards[index][field] = value;
-    if (field === 'color') {
+    if (field === 'color' || field === 'fontSize') {
       this.render();
     }
   }

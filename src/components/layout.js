@@ -13,47 +13,14 @@ const StyledContent = styled.div`
 const Layout = ({ children, location, hideSocialAndEmail, hideNav }) => {
   const isHome = location.pathname === '/';
   const [isLoading, setIsLoading] = useState(isHome);
-  const [themeMode, setThemeMode] = useState('dark');
   const isCaseStudy = location && location.pathname && location.pathname.includes('case-study');
 
   useEffect(() => {
-    const isCaseStudy = location && location.pathname && location.pathname.includes('case-study');
-
-    if (isCaseStudy) {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        setThemeMode(savedTheme);
-        if (savedTheme === 'light') {
-          document.documentElement.classList.add('light-theme');
-        } else {
-          document.documentElement.classList.remove('light-theme');
-        }
-      } else {
-        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-        if (prefersLight) {
-          setThemeMode('light');
-          document.documentElement.classList.add('light-theme');
-        } else {
-          setThemeMode('dark');
-          document.documentElement.classList.remove('light-theme');
-        }
-      }
-    } else {
-      setThemeMode('dark');
-      document.documentElement.classList.remove('light-theme');
-    }
+    document.documentElement.classList.remove('light-theme');
+    try {
+      localStorage.removeItem('theme');
+    } catch (e) {}
   }, [location.pathname]);
-
-  const toggleTheme = () => {
-    const nextTheme = themeMode === 'dark' ? 'light' : 'dark';
-    setThemeMode(nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    if (nextTheme === 'light') {
-      document.documentElement.classList.add('light-theme');
-    } else {
-      document.documentElement.classList.remove('light-theme');
-    }
-  };
 
   // Sets target="_blank" rel="noopener noreferrer" on external links
   const handleExternalLinks = () => {

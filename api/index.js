@@ -60,13 +60,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-// Serve Admin UIs directly to bypass Gatsby
-app.use('/admin', (req, res, next) => {
-  if (req.cookies && req.cookies.admin_auth === 'valid') {
-    return next();
-  }
-  res.redirect('/login');
-});
+// Serve Admin static files directly (index.html contains embedded login overlay)
 app.use('/admin', express.static(path.join(STATIC_DIR, 'admin')));
 
 app.get('/login', (req, res) => {
@@ -136,6 +130,20 @@ app.post('/api/settings/ai-play', async (req, res) => {
     fs.writeFileSync(filePath, JSON.stringify({ showTab: !!showTab }, null, 2));
     await triggerLocalGatsbyRefresh();
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Public Resume Endpoint
+app.get('/api/resume', (req, res) => {
+  try {
+    const filePath = path.join(RESUME_DIR, 'resume.json');
+    if (!fs.existsSync(filePath)) {
+      return res.json({ type: 'url', value: '' });
+    }
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -950,25 +958,13 @@ app.post('/api/jobs/:slug/toggle-publish', async (req, res) => {
 // RESUME API
 // ─────────────────────────────────────────────
 
-app.get('/api/resume', (req, res) => {
-  try {
-    const filePath = path.join(RESUME_DIR, 'resume.json');
-    if (!fs.existsSync(filePath)) {
-      return res.json({ type: 'url', value: '' });
-    }
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/resume', (req, res) => {
+app.post('/api/resume', async (req, res) => {
   try {
     const { type, value } = req.body;
     const filePath = path.join(RESUME_DIR, 'resume.json');
     if (!fs.existsSync(RESUME_DIR)) fs.mkdirSync(RESUME_DIR, { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify({ type, value }, null, 2));
+    await triggerLocalGatsbyRefresh();
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1183,8 +1179,15 @@ app.post('/api/case-studies/:slug', async (req, res) => {
         markdown += `\n<div class="cards-grid cards-grid-${block.grid}">\n`;
         for (let card of block.cards) {
           // Wrap heading in h3 and text in p
-          const colorStyle = card.color && card.color !== '#64ffda' ? ` style="color:${card.color};"` : '';
-          markdown += `  <div class="card">\n    <h3${colorStyle}>${card.heading}</h3>\n    <p>${card.text}</p>\n  </div>\n`;
+          const styles = [];
+          if (card.color && card.color !== '#64ffda') {
+            styles.push(`color:${card.color}`);
+          }
+          if (card.fontSize) {
+            styles.push(`font-size:${card.fontSize}`);
+          }
+          const inlineStyle = styles.length > 0 ? ` style="${styles.join('; ')}"` : '';
+          markdown += `  <div class="card">\n    <h3${inlineStyle}>${card.heading}</h3>\n    <p>${card.text}</p>\n  </div>\n`;
         }
         markdown += `</div>\n\n`;
       } else if (block.type === 'callout') {
@@ -1300,7 +1303,14 @@ app.post('/api/case-studies/:slug/upload-asset', upload.single('asset'), async (
 
 
 if (require.main === module || !process.env.VERCEL) {
-  app.listen(PORT, () => console.log(`Admin API running on port ${PORT}`));
+  const server = app.listen(PORT, () => console.log(`Admin API running on port ${PORT}`));
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`[Admin API] Port ${PORT} is already in use by another process.`);
+    } else {
+      console.error('[Admin API] Server error:', err);
+    }
+  });
 }
 
 module.exports = app;

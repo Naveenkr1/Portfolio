@@ -198,7 +198,7 @@ const StyledSidebar = styled.aside`
   }
 `;
 
-const Menu = () => {
+const Menu = ({ resumeUrl }) => {
   const data = useStaticQuery(graphql`
     query {
       allSettingsJson {
@@ -330,7 +330,9 @@ const Menu = () => {
             )}
 
             <a
-              href="https://drive.google.com/file/d/1SLFleGOp7NflafhEWJtOF6-eRUUTBUgE/view?usp=drive_link"
+              href={resumeUrl || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
               className="resume-link"
             >
               Resume

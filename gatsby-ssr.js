@@ -7,19 +7,8 @@ exports.onRenderBody = ({ setHeadComponents }) => {
       dangerouslySetInnerHTML: {
         __html: `
           (function() {
-            var pathname = window.location.pathname;
-            if (pathname && pathname.indexOf('case-study') !== -1) {
-              var theme = localStorage.getItem('theme');
-              if (theme === 'light') {
-                document.documentElement.classList.add('light-theme');
-              } else if (theme === 'dark') {
-                document.documentElement.classList.remove('light-theme');
-              } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-                document.documentElement.classList.add('light-theme');
-              }
-            } else {
-              document.documentElement.classList.remove('light-theme');
-            }
+            document.documentElement.classList.remove('light-theme');
+            try { localStorage.removeItem('theme'); } catch(e) {}
           })();
         `,
       },

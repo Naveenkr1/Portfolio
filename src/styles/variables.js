@@ -55,30 +55,6 @@ const variables = css`
     --ham-after-active: bottom 0.1s ease-out,
       transform 0.22s cubic-bezier(0.215, 0.61, 0.355, 1) 0.12s;
   }
-
-  html.light-theme {
-    --dark-navy: #F5EFE0;
-    --navy: #FFFBF0;
-    --light-navy: #ffffff;
-    --lightest-navy: #EFE7D2;
-    --navy-shadow: rgba(43, 37, 20, 0.05);
-    --dark-slate: #64748b;
-    --slate: #334155;
-    --light-slate: #1e293b;
-    --lightest-slate: #0f172a;
-    --white: #0f172a;
-    --green: #0d9488;
-    --green-tint: rgba(13, 148, 136, 0.1);
-    --pink: #c026d3;
-    --blue: #2563eb;
-
-    --card-bg: rgba(255, 255, 255, 0.85);
-    --card-border: rgba(13, 148, 136, 0.15);
-    --sidebar-border: rgba(15, 23, 42, 0.15);
-    --tech-bg: rgba(15, 23, 42, 0.05);
-    --tech-border: rgba(15, 23, 42, 0.1);
-    --tech-img-filter: none;
-  }
 `;
 
 export default variables;

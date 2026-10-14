@@ -1,0 +1,79 @@
+---
+title: 'Letting 5 million fans vote for their mentor'
+slug: ''
+date: '2026-10-01'
+published: false
+summary: 'I led design for the iPop Star 2026 voting feature on Alright: a daily habit loop for fans and a fair, high-converting membership upsell for the business. || '
+details:
+  - label: 'Role'
+    value: 'Senior Product Designer (lead)'
+  - label: 'Scope'
+    value: 'Strategy, UX, UI, experimentation'
+  - label: 'Scale'
+    value: '5M+ users, live-show peak traffic'
+  - label: 'Team'
+    value: '1 PM, 5 Eng, Marketing'
+banner: '/uploads/case-studies/alright-app/img-1790867060469-184.jpg'
+tocEnabled: true
+tocItems:
+  - text: 'Summary'
+    anchor: 'summary'
+  - text: 'Context'
+    anchor: 'context'
+  - text: 'Problem Framing'
+    anchor: 'problem-framing'
+  - text: 'My Role'
+    anchor: 'my-role'
+---
+
+<h2 id="summary" data-toc-name="Summary">Summary</h2><p>Alright's audience watched iPop Star 2026 but had no reason to return daily or to pay. I designed a daily voting loop where fans back a favourite mentor, win prizes and see their impact on a live leaderboard. An optional membership multiplier lets fans give their mentor extra votes, which tied revenue to something fans already cared about.</p>
+
+
+<div class="callout-block">
+  <h3>My contribution: </h3>
+  <div class="callout-content">
+I framed the problem with product and business leads, set the monetization guardrails (free vote stays free, no pay-to-win feel), designed the end-to-end experience, and ran testing and a staged rollout with data.
+  </div>
+</div>
+
+<h2 id="context" data-toc-name="Context">Context</h2><div><p>Alright is an entertainment app with 5M+ users. iPop Star 2026 was a flagship music show and the company's biggest moment of the year for acquisition. Leadership wanted two outcomes from one feature: <b>grow the app</b> and <b>grow revenue</b>.</p></div>
+
+
+<div class="cards-grid cards-grid-2">
+  <div class="card">
+    <h3 style="font-size:18px">Constraints</h3>
+    <p>Fixed show calendar, live-night traffic spikes, a short build window and a need to keep the free experience fair.</p>
+  </div>
+  <div class="card">
+    <h3 style="font-size:18px">Stakeholders</h3>
+    <p>Product, Engineering, Data, Marketing, the show's content team and Finance.</p>
+  </div>
+</div>
+
+<h2 id="problem-framing" data-toc-name="Problem Framing">Problem framing</h2><div>The brief was "add voting." I reframed it, because voting alone does not create growth or revenue. The real problems were behavioural and commercial.</div>
+
+
+<div class="cards-grid cards-grid-3">
+  <div class="card">
+    <h3 style="font-size:18px">User</h3>
+    <p>Fans watch passively and cannot show support for their favourite mentor.</p>
+  </div>
+  <div class="card">
+    <h3 style="font-size:18px">Behaviour</h3>
+    <p>No daily trigger, so viewers leave after each episode.</p>
+  </div>
+  <div class="card">
+    <h3 style="font-size:18px">Business</h3>
+    <p>Low upgrade intent. Membership offered no value tied to the show.</p>
+  </div>
+</div>
+
+
+<div class="callout-block">
+  <h3>How might we</h3>
+  <div class="callout-content">
+Make supporting a mentor a daily habit, and make upgrading feel like a natural way to support them more?
+  </div>
+</div>
+
+<h2 id="my-role" data-toc-name="My Role">My role and ownership<br></h2><div><ul><li><b>Led design</b> across voting, leaderboard, rewards and membership, working with one other designer on UI.</li><li><b>Shaped the roadmap</b> with the PM: what ships for the first live episode and what follows.</li><li><b>Set monetization principles</b> and aligned Finance, Marketing and Engineering on them.</li><li><b>Defined success metrics</b> and the experiment plan with Data.</li><li><b>Handed off</b> specs, states and components to Engineering, and stayed in QA through launch.</li></ul></div>

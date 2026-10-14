@@ -1,0 +1,81 @@
+[
+  {
+    "id": "1790866847412",
+    "type": "text",
+    "content": "\n        <h2>Summary</h2><p>Alright's audience watched iPop Star 2026 but had no reason to return daily or to pay. I designed a daily voting loop where fans back a favourite mentor, win prizes and see their impact on a live leaderboard. An optional membership multiplier lets fans give their mentor extra votes, which tied revenue to something fans already cared about.</p>\n      ",
+    "tocEntry": true,
+    "tocName": "Summary"
+  },
+  {
+    "id": "1790866878311",
+    "type": "callout",
+    "heading": "My contribution: ",
+    "content": "I framed the problem with product and business leads, set the monetization guardrails (free vote stays free, no pay-to-win feel), designed the end-to-end experience, and ran testing and a staged rollout with data."
+  },
+  {
+    "id": "1790866900911",
+    "type": "text",
+    "content": "\n        <h2>Context</h2><div><p>Alright is an entertainment app with 5M+ users. iPop Star 2026 was a flagship music show and the company's biggest moment of the year for acquisition. Leadership wanted two outcomes from one feature: <b>grow the app</b> and <b>grow revenue</b>.</p></div>\n      ",
+    "tocEntry": true,
+    "tocName": "Context"
+  },
+  {
+    "id": "1790866922577",
+    "type": "cards",
+    "grid": 2,
+    "cards": [
+      {
+        "heading": "Constraints",
+        "text": "Fixed show calendar, live-night traffic spikes, a short build window and a need to keep the free experience fair.",
+        "fontSize": "18px"
+      },
+      {
+        "heading": "Stakeholders",
+        "text": "Product, Engineering, Data, Marketing, the show's content team and Finance.",
+        "fontSize": "18px"
+      }
+    ]
+  },
+  {
+    "id": "1790866948243",
+    "type": "text",
+    "content": "\n        \n        <h2>Problem framing</h2><div>The brief was \"add voting.\" I reframed it, because voting alone does not create growth or revenue. The real problems were behavioural and commercial.</div>\n      \n      ",
+    "tocEntry": true,
+    "tocName": "Problem Framing"
+  },
+  {
+    "id": "1790866974977",
+    "type": "cards",
+    "grid": 3,
+    "cards": [
+      {
+        "heading": "User",
+        "text": "Fans watch passively and cannot show support for their favourite mentor.",
+        "fontSize": "18px"
+      },
+      {
+        "heading": "Behaviour",
+        "text": "No daily trigger, so viewers leave after each episode.",
+        "fontSize": "18px"
+      },
+      {
+        "heading": "Business",
+        "text": "Low upgrade intent. Membership offered no value tied to the show.",
+        "fontSize": "18px"
+      }
+    ]
+  },
+  {
+    "id": "1790867001761",
+    "type": "callout",
+    "heading": "How might we",
+    "content": "Make supporting a mentor a daily habit, and make upgrading feel like a natural way to support them more?"
+  },
+  {
+    "id": "1790867023294",
+    "type": "text",
+    "content": "\n        <h2>My role and ownership<br></h2><div><ul><li><b>Led design</b> across voting, leaderboard, rewards and membership, working with one other designer on UI.</li><li><b>Shaped the roadmap</b> with the PM: what ships for the first live episode and what follows.</li><li><b>Set monetization principles</b> and aligned Finance, Marketing and Engineering on them.</li><li><b>Defined success metrics</b> and the experiment plan with Data.</li><li><b>Handed off</b> specs, states and components to Engineering, and stayed in QA through launch.</li></ul></div>\n      ",
+    "tocEntry": true,
+    "tocName": "My Role"
+  }
+]

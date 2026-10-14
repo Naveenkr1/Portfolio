@@ -18,7 +18,7 @@ module.exports = {
     },
     {
       name: 'External',
-      url: '/admin',
+      url: '/admin/',
     },
   ],
 
