@@ -659,8 +659,15 @@ function bindForms() {
     // External and Case Study URLs are optional
     const rawCta = (document.getElementById('feat-cta').value || '').trim();
     let ctaVal = rawCta;
-    if (ctaVal && !/^https?:\/\//i.test(ctaVal) && !ctaVal.startsWith('/') && !ctaVal.startsWith('#') && !ctaVal.startsWith('mailto:')) {
-      ctaVal = `https://${ctaVal}`;
+    const csMatch = ctaVal.match(/^(?:https?:\/\/[^\/]+)?(\/case-study\/[^\/\s]+(?:\/)?.*)$/i);
+    if (csMatch) {
+      ctaVal = csMatch[1].startsWith('/') ? csMatch[1] : `/${csMatch[1]}`;
+    } else if (ctaVal && !/^https?:\/\//i.test(ctaVal) && !ctaVal.startsWith('/') && !ctaVal.startsWith('#') && !ctaVal.startsWith('mailto:')) {
+      if (ctaVal.startsWith('case-study/')) {
+        ctaVal = `/${ctaVal}`;
+      } else {
+        ctaVal = `https://${ctaVal}`;
+      }
     }
     formData.append('cta', ctaVal);
 

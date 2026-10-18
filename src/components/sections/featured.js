@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useStaticQuery, graphql } from 'gatsby';
+import { useStaticQuery, graphql, Link } from 'gatsby';
 import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
 import sr from '@utils/sr';
@@ -343,18 +343,45 @@ const Featured = () => {
           featuredProjects.map(({ node }, i) => {
             const { external, button, role, title, tech, cover, cta, description } = node;
             const isGif = cover && cover.toLowerCase().endsWith('.gif');
-            const projectLink = (external || cta || '').trim();
+            
+            // Prioritize cta (Case Study URL) over external
+            const rawLink = (cta || external || '').trim();
+            const caseStudyMatch = rawLink.match(/^(?:https?:\/\/[^\/]+)?(\/case-study\/[^\/\s]+(?:\/)?.*)$/i);
+            const isCaseStudy = Boolean(cta && cta.trim()) || Boolean(caseStudyMatch) || rawLink.includes('/case-study/') || rawLink.includes('case-study');
+            const projectLink = caseStudyMatch
+              ? (caseStudyMatch[1].startsWith('/') ? caseStudyMatch[1] : `/${caseStudyMatch[1]}`)
+              : rawLink;
+            const isInternal = projectLink.startsWith('/');
+
+            const renderLink = (children, className = '') => {
+              if (!projectLink) return children;
+              if (isCaseStudy && isInternal) {
+                return (
+                  <Link
+                    to={projectLink}
+                    className={`case-study-link ${className}`.trim()}
+                    data-same-tab="true">
+                    {children}
+                  </Link>
+                );
+              }
+              return (
+                <a
+                  href={projectLink}
+                  target={isCaseStudy ? '_self' : undefined}
+                  data-same-tab={isCaseStudy ? 'true' : undefined}
+                  className={isCaseStudy ? `case-study-link ${className}`.trim() : className || undefined}>
+                  {children}
+                </a>
+              );
+            };
 
             return (
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
                 <div className="project-content">
                   <div>
                     <h3 className="project-title">
-                      {projectLink ? (
-                        <a href={projectLink}>{title}</a>
-                      ) : (
-                        <span>{title}</span>
-                      )}
+                      {projectLink ? renderLink(title) : <span>{title}</span>}
                     </h3>
 
                     <ul className="project-tech-list">
@@ -370,22 +397,14 @@ const Featured = () => {
                   </div>
                  
                   {projectLink ? (
-                    <a href={projectLink}>
-                      <button className='project-study'>{button}</button>
-                    </a>
+                    renderLink(<button className='project-study'>{button}</button>)
                   ) : (
                     button && <button className='project-study'>{button}</button>
                   )}
                 </div>
 
                 <div className="project-image">
-                  {projectLink ? (
-                    <a href={projectLink}>
-                      <img src={cover} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />
-                    </a>
-                  ) : (
-                    <img src={cover} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />
-                  )}
+                  {renderLink(<img src={cover} alt={title} className={`img ${isGif ? 'is-gif' : ''}`} />)}
                 </div>
               </StyledProject>
             );

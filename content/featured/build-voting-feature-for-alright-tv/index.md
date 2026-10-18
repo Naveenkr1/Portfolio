@@ -2,7 +2,7 @@
 date: '1'
 title: 'Build Voting Feature for Alright TV'
 cover: 'https://res.cloudinary.com/duxol6zvd/image/upload/v1792342326/portfolio/featured/qwpokdxp7w7tu1ukmp5n.webp'
-cta: 'https://naveens.design/case-study/alright-app'
+cta: '/case-study/alright-app'
 external: ''
 button: 'Read More'
 role: 'Sr. Product Designer'

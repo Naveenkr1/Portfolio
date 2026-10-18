@@ -27,6 +27,22 @@ const Layout = ({ children, location, hideSocialAndEmail, hideNav }) => {
     const allLinks = Array.from(document.querySelectorAll('a'));
     if (allLinks.length > 0) {
       allLinks.forEach(link => {
+        // Never open Case Study links in a new tab
+        const href = link.getAttribute('href') || '';
+        const isCaseStudyLink =
+          link.getAttribute('data-same-tab') === 'true' ||
+          link.getAttribute('target') === '_self' ||
+          link.classList.contains('case-study-link') ||
+          (link.pathname && link.pathname.includes('/case-study/')) ||
+          href.includes('/case-study/') ||
+          href.startsWith('/case-study');
+
+        if (isCaseStudyLink) {
+          link.removeAttribute('target');
+          link.removeAttribute('rel');
+          return;
+        }
+
         if (link.host !== window.location.host) {
           link.setAttribute('rel', 'noopener noreferrer');
           link.setAttribute('target', '_blank');
