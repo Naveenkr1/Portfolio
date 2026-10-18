@@ -352,18 +352,44 @@ const StyledContentArea = styled.div`
   }
 
   .grid {
-    display: grid;
-    gap: 12px;
-    margin: 40px 0;
+    display: grid !important;
+    margin: 40px 0 !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    grid-template-rows: auto !important;
+    grid-template-areas: none !important;
+    grid-auto-rows: auto !important;
   }
   .grid-1 {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    overflow: visible !important;
+    height: auto !important;
+    gap: 0 !important;
   }
   .grid-2 {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto !important;
+    overflow: visible !important;
+    height: auto !important;
+    gap: 16px !important;
   }
   .grid-3 {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    grid-template-rows: auto !important;
+    overflow: visible !important;
+    height: auto !important;
+    gap: 16px !important;
+  }
+
+  .grid p,
+  .image-grid p {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
   .grid img,

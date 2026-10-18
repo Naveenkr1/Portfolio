@@ -2754,7 +2754,7 @@ textarea.w-select {
     margin-left: 200px;
 }
 
-.grid {
+.legacy-webflow-grid {
     overflow: hidden;
     max-width: 1600px;
     margin-right: auto;
@@ -2766,7 +2766,7 @@ textarea.w-select {
     grid-template-rows: minmax(400px, 0.25fr) auto;
 }
 
-.grid-2 {
+.legacy-webflow-grid-2 {
     overflow: hidden;
     grid-template-areas: "Area";
     -ms-grid-columns: 1fr;
