@@ -2,7 +2,7 @@
 title: 'Build Voting Feature for Alright TV App'
 slug: ''
 date: '2026-10-01'
-published: false
+published: true
 summary: 'Alright is an entertainment app with over 5 million users. For iPop Star 2026, a music show streamed on the app, we added a daily voting feature. Viewers watch the show, vote for their favourite mentor, and get a chance to win exciting prizes. Users can also upgrade their membership to multiply their vote, giving their mentor extra votes. || '
 details:
   - label: 'Role'
@@ -13,7 +13,7 @@ details:
     value: '5M+ users, live-show peak traffic'
   - label: 'Team'
     value: '1 PM, 5 Eng, Marketing'
-banner: '/uploads/case-studies/alright-app/img-1790867060469-184.jpg'
+banner: '/uploads/case-studies/alright-app/img-1792340980972-759.webp'
 tocEnabled: true
 tocItems:
   - text: 'Problem'
@@ -56,7 +56,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792310452192-878.png)
+![Image](/uploads/case-studies/alright-app/img-1792340980984-287.webp)
 
 </div>
 
@@ -65,7 +65,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792310452193-825.webp)
+![Image](/uploads/case-studies/alright-app/img-1792340980984-219.webp)
 
 </div>
 
@@ -74,7 +74,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792310452193-4.webp)
+![Image](/uploads/case-studies/alright-app/img-1792340980985-865.webp)
 
 </div>
 
@@ -83,7 +83,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792310452194-104.webp)
+![Image](/uploads/case-studies/alright-app/img-1792340980985-718.webp)
 
 </div>
 
