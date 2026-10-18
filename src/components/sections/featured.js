@@ -33,6 +33,11 @@ const StyledProject = styled.li`
   align-items: center;
   border: solid 1px #45B09F;
   margin-bottom: 100px;
+  box-sizing: border-box;
+
+  @media (min-width: 769px) {
+    height: 374px;
+  }
 
   &:hover {
     background: rgba(69, 176, 159, 0.05);
@@ -49,6 +54,7 @@ const StyledProject = styled.li`
     border: solid 1px #45B09F;
     background: rgba(2, 12, 27, 0.4) !important;
     margin-bottom: 50px;
+    height: auto;
   }
 
   .project-content {
@@ -57,9 +63,11 @@ const StyledProject = styled.li`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    height: 100%;
 
     @media (max-width: 768px) {
       width: 100%;
+      height: auto;
       padding: 10px 0 0 0;
     }
   }
@@ -205,9 +213,11 @@ const StyledProject = styled.li`
     z-index: 1;
     border-radius: 4px;
     overflow: hidden;
+    height: 100%;
 
     @media (max-width: 768px) {
       width: 100%;
+      height: auto;
     }
 
     a {
@@ -255,7 +265,7 @@ const StyledProject = styled.li`
 
     .img {
       width: 100%;
-      height: auto;
+      height: 100%;
       display: block;
       border-radius: 4px;
       object-fit: cover;
@@ -268,10 +278,9 @@ const StyledProject = styled.li`
         filter: none !important;
       }
 
-      @media (max-width: 957px) {
+      @media (max-width: 957px) and (min-width: 769px) {
         width: 100%;
-        height: auto;
-        aspect-ratio: 3 / 2;
+        height: 100%;
       }
 
       @media (max-width: 768px) {

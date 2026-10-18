@@ -646,6 +646,11 @@ const StyledContentArea = styled.div`
       border: 1px solid var(--lightest-navy);
       border-radius: 12px;
       background: var(--light-navy);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      box-sizing: border-box;
       
       h3 {
         font-size: 36px;

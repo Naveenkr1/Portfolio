@@ -13,7 +13,7 @@ details:
     value: '5M+ users, live-show peak traffic'
   - label: 'Team'
     value: '1 PM, 5 Eng, Marketing'
-banner: '/uploads/case-studies/alright-app/img-1792340980972-759.webp'
+banner: '/uploads/case-studies/alright-app/img-1792341524633-200.webp'
 tocEnabled: true
 tocItems:
   - text: 'Problem'
@@ -56,7 +56,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792340980984-287.webp)
+![Image](/uploads/case-studies/alright-app/img-1792341524646-971.webp)
 
 </div>
 
@@ -65,7 +65,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792340980984-219.webp)
+![Image](/uploads/case-studies/alright-app/img-1792341524646-119.webp)
 
 </div>
 
@@ -74,7 +74,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792340980985-865.webp)
+![Image](/uploads/case-studies/alright-app/img-1792341524647-634.webp)
 
 </div>
 
@@ -83,7 +83,7 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792340980985-718.webp)
+![Image](/uploads/case-studies/alright-app/img-1792341524648-961.webp)
 
 </div>
 
