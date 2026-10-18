@@ -153,13 +153,14 @@ const StyledBanner = styled.div`
 
   img, video {
     width: 100%;
-    height: 680px;
-    object-fit: cover;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
     border-radius: 0;
+    display: block;
 
     @media (max-width: 900px) {
       height: auto;
-      aspect-ratio: 16/9;
     }
   }
 
@@ -365,10 +366,24 @@ const StyledContentArea = styled.div`
     grid-template-columns: 1fr 1fr 1fr;
   }
 
+  .grid img,
+  .image-grid img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    margin: 0 auto;
+    display: block;
+    border-radius: 16px;
+  }
+
   img {
     max-width: 100% !important;
-    width: auto !important;
+    width: 100% !important;
     height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
     display: block;
     margin: 40px auto;
     border-radius: 16px;

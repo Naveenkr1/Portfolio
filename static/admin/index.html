@@ -591,8 +591,8 @@
             <div class="form-group">
               <label>Banner Image / Video <span style="font-size: 11px; color: var(--slate); font-weight: normal; margin-left: 8px;">(Recommended: 16:9 ratio, e.g., 1920x1080px or 1280x720px)</span></label>
               <div class="banner-upload-container" onclick="document.getElementById('banner-upload').click()">
-                <img id="banner-preview" src="" style="display:none; width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:8px; margin-bottom:10px;" />
-                <video id="banner-video-preview" autoplay loop muted playsinline style="display:none; width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:8px; margin-bottom:10px;"></video>
+                <img id="banner-preview" src="" style="display:none; width:100%; height:auto; max-height:none; object-fit:contain; border-radius:8px; margin-bottom:10px;" />
+                <video id="banner-video-preview" autoplay loop muted playsinline style="display:none; width:100%; height:auto; max-height:none; object-fit:contain; border-radius:8px; margin-bottom:10px;"></video>
                 <div id="banner-placeholder" class="banner-placeholder">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                   <span>Upload Banner</span>
