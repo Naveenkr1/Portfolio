@@ -1,24 +1,5 @@
 [
   {
-    "id": "1785221784347",
-    "type": "cards",
-    "grid": 3,
-    "cards": [
-      {
-        "heading": "85%",
-        "text": "of mobile visitors were leaving without doing anything"
-      },
-      {
-        "heading": "92%",
-        "text": "of all visitors came from a phone yet the app wasn't built for mobile\n"
-      },
-      {
-        "heading": "94%",
-        "text": "of users who reached checkout did complete the booking"
-      }
-    ]
-  },
-  {
     "id": "1777698482679",
     "type": "text",
     "content": "\n        \n        \n        \n        \n        \n        \n        \n        <h2 style=\"\"><span style=\"font-size: 20px;\"><span style=\"font-weight: 700;\"><span style=\"font-size: 24px;\">Overview</span></span></span></h2><div><span style=\"font-size: 12px;\"><span style=\"font-size: 16px;\"><span style=\"font-weight: 400;\"><p>WeWork On-Demand lets people book flexible workspace by the day, the hour or the bundle: day passes, cabins and conference rooms. The product had strong traffic but a weak funnel. Visitors arrived, looked around and left without becoming customers, which held back growth for the whole on-demand line.</p><p>The brief was to redesign the experience on both mobile and desktop so that finding and booking a space felt easy and trustworthy, and so that more visitors completed a purchase.</p><p><br></p></span></span></span></div>\n      \n      \n      \n      \n      \n      \n      \n      ",
@@ -50,7 +31,7 @@
     "id": "1792397315239",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852169-998.webp"
+      "/uploads/case-studies/wework/img-1792413342906-659.webp"
     ],
     "grid": 1
   },
@@ -65,7 +46,7 @@
     "id": "1792397486340",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852170-989.webp"
+      "/uploads/case-studies/wework/img-1792413342907-551.webp"
     ],
     "grid": 1
   },
@@ -87,7 +68,7 @@
     "id": "1792397722151",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852170-708.webp"
+      "/uploads/case-studies/wework/img-1792413342907-807.webp"
     ],
     "grid": 1
   },
@@ -102,7 +83,7 @@
     "id": "1792397983220",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852171-281.webp"
+      "/uploads/case-studies/wework/img-1792413342908-318.webp"
     ],
     "grid": 1
   },
@@ -124,7 +105,7 @@
     "id": "1792410738457",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852171-314.webp"
+      "/uploads/case-studies/wework/img-1792413342908-709.webp"
     ],
     "grid": 1
   },
@@ -139,7 +120,7 @@
     "id": "1792411343930",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852171-59.webp"
+      "/uploads/case-studies/wework/img-1792413342909-707.webp"
     ],
     "grid": 1
   },
@@ -161,7 +142,7 @@
     "id": "1792411474512",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852172-222.webp"
+      "/uploads/case-studies/wework/img-1792413342909-489.webp"
     ],
     "grid": 1
   },
@@ -176,7 +157,7 @@
     "id": "1792412524715",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852173-580.webp"
+      "/uploads/case-studies/wework/img-1792413342911-436.webp"
     ],
     "grid": 1
   },
@@ -191,7 +172,7 @@
     "id": "1792412642462",
     "type": "image",
     "images": [
-      "/uploads/case-studies/wework/img-1792412852174-842.webp"
+      "/uploads/case-studies/wework/img-1792413342913-454.webp"
     ],
     "grid": 1
   },
