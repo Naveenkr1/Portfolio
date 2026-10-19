@@ -6,7 +6,7 @@ import { Layout } from '@components';
 import { Icon } from '@components/icons';
 
 const StyledAILabContainer = styled.main`
-  padding: 130px 40px 80px;
+  padding: 120px 40px 80px;
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
@@ -24,7 +24,7 @@ const StyledAILabContainer = styled.main`
 `;
 
 const StyledHeader = styled.header`
-  margin-bottom: 35px;
+  margin-bottom: 80px;
   text-align: left;
 
   .label {
@@ -33,9 +33,10 @@ const StyledHeader = styled.header`
     font-family: var(--font-mono);
     font-size: 14px;
     font-weight: 400;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     letter-spacing: 0;
     word-spacing: normal;
+    text-transform: uppercase;
   }
 
   .title {
@@ -43,28 +44,28 @@ const StyledHeader = styled.header`
     font-weight: 700;
     color: var(--lightest-slate);
     line-height: 1.15;
-    margin: 0 0 16px;
+    margin: 0 0 0px;
     letter-spacing: -0.5px;
   }
 
   .subtext {
     color: var(--slate);
-    font-size: clamp(15px, 2vw, 17px);
+    font-size: 20px;
     line-height: 1.6;
     max-width: 760px;
     margin: 0;
   }
 
   @media (max-width: 768px) {
-    margin-bottom: 25px;
+    margin-bottom: 40px;
 
     .title {
       font-size: clamp(24px, 6vw, 36px);
-      margin-bottom: 12px;
+      margin-bottom: 0px;
     }
 
     .subtext {
-      font-size: 15px;
+      font-size: clamp(16px, 4vw, 20px);
       line-height: 1.55;
     }
   }
@@ -107,18 +108,18 @@ const ProjectsGrid = styled.ul`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 20px;
-  margin: 20px 0 70px;
+  margin: 0 0 70px;
 
   @media (max-width: 1080px) {
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 18px;
-    margin: 18px 0 60px;
+    margin: 0 0 60px;
   }
 
   @media (max-width: 650px) {
     grid-template-columns: 1fr;
     grid-gap: 16px;
-    margin: 16px 0 50px;
+    margin: 0 0 50px;
   }
 `;
 
@@ -372,7 +373,6 @@ const ProjectCard = ({ node }) => {
 
 const AILabPage = ({ location, data }) => {
   const aiProjects = data.aiProjects.edges.filter(({ node }) => node);
-  const otherProjects = data.otherProjects.edges.filter(({ node }) => node);
 
   return (
     <Layout location={location} hideSocialAndEmail={true}>
@@ -389,16 +389,8 @@ const AILabPage = ({ location, data }) => {
           </p>
         </StyledHeader>
 
-        <SectionHeader>AI Projects</SectionHeader>
         <ProjectsGrid>
           {aiProjects.map(({ node }, i) => (
-            <ProjectCard key={i} node={node} />
-          ))}
-        </ProjectsGrid>
-
-        <SectionHeader>Other Projects</SectionHeader>
-        <ProjectsGrid>
-          {otherProjects.map(({ node }, i) => (
             <ProjectCard key={i} node={node} />
           ))}
         </ProjectsGrid>
