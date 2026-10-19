@@ -765,7 +765,11 @@ app.put('/api/featured/:slug', upload.single('cover'), async (req, res) => {
     if (!project) return res.status(404).json({ error: 'Not found' });
     
     let coverPath = project.cover;
-    if (req.file) coverPath = req.file.path || req.file.secure_url;
+    if (req.file) {
+      coverPath = req.file.path || req.file.secure_url;
+    } else if (req.body.deleteCover === 'true') {
+      coverPath = '';
+    }
     
     const { title, role, description, tech, cta, external, button } = req.body;
     

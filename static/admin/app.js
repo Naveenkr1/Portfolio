@@ -11,6 +11,7 @@ let deleteTarget = null;
 
 let aiProjectsData = [];
 let aiCoverAction = 'keep';
+let featCoverAction = 'keep';
 
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', async () => {
@@ -343,17 +344,27 @@ function editFeatured(slug) {
   document.getElementById('feat-button').value = p.button || 'Read More';
   document.getElementById('feat-tech').value = (p.tech || []).join(', ');
 
+  // Reset file input so previous uploads never leak
+  const featInput = document.getElementById('feat-cover');
+  if (featInput) featInput.value = '';
+
   // Show existing cover
   const preview = document.getElementById('feat-cover-preview');
+  const previewContainer = document.getElementById('feat-cover-preview-container');
   const placeholder = document.getElementById('feat-upload-placeholder');
   if (p.cover) {
     const coverUrl = p.cover.startsWith('http') ? p.cover : `${API}/api/featured/${encodeURIComponent(slug)}/cover`;
     preview.src = coverUrl;
-    preview.style.display = 'block';
+    if (previewContainer) previewContainer.style.display = 'block';
+    else preview.style.display = 'block';
     placeholder.style.display = 'none';
+    featCoverAction = 'keep';
   } else {
-    preview.style.display = 'none';
+    preview.src = '';
+    if (previewContainer) previewContainer.style.display = 'none';
+    else preview.style.display = 'none';
     placeholder.style.display = 'flex';
+    featCoverAction = 'none';
   }
 
   openModal('modal-featured');
@@ -490,8 +501,15 @@ function bindModals() {
       document.getElementById('feat-editing-slug').value = '';
       document.getElementById('feat-button').value = 'Read More';
       document.getElementById('modal-featured-title').textContent = 'New Project';
-      document.getElementById('feat-cover-preview').style.display = 'none';
+      const featCoverInput = document.getElementById('feat-cover');
+      if (featCoverInput) featCoverInput.value = '';
+      const preview = document.getElementById('feat-cover-preview');
+      const previewContainer = document.getElementById('feat-cover-preview-container');
+      if (preview) preview.src = '';
+      if (previewContainer) previewContainer.style.display = 'none';
+      else if (preview) preview.style.display = 'none';
       document.getElementById('feat-upload-placeholder').style.display = 'flex';
+      featCoverAction = 'none';
       openModal('modal-featured');
     } else if (currentSection === 'jobs') {
       document.getElementById('form-job').reset();
@@ -513,8 +531,19 @@ function bindModals() {
   });
 
   // Close buttons
-  document.getElementById('modal-featured-close').addEventListener('click', () => closeModal('modal-featured'));
-  document.getElementById('btn-feat-cancel').addEventListener('click', () => closeModal('modal-featured'));
+  const resetFeatModal = () => {
+    featCoverAction = 'none';
+    const featCoverInput = document.getElementById('feat-cover');
+    if (featCoverInput) featCoverInput.value = '';
+  };
+  document.getElementById('modal-featured-close').addEventListener('click', () => {
+    resetFeatModal();
+    closeModal('modal-featured');
+  });
+  document.getElementById('btn-feat-cancel').addEventListener('click', () => {
+    resetFeatModal();
+    closeModal('modal-featured');
+  });
   document.getElementById('modal-job-close').addEventListener('click', () => closeModal('modal-job'));
   document.getElementById('btn-job-cancel').addEventListener('click', () => closeModal('modal-job'));
   document.getElementById('modal-ai-project-close').addEventListener('click', () => closeModal('modal-ai-project'));
@@ -525,7 +554,10 @@ function bindModals() {
   // Click overlay to close
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) closeAllModals();
+      if (e.target === overlay) {
+        resetFeatModal();
+        closeAllModals();
+      }
     });
   });
 
@@ -546,21 +578,30 @@ function bindModals() {
   });
 
   // Cover image preview
-  document.getElementById('feat-cover').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      document.getElementById('feat-cover-preview').src = ev.target.result;
-      document.getElementById('feat-cover-preview').style.display = 'block';
-      document.getElementById('feat-upload-placeholder').style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-  });
+  const featCoverInput = document.getElementById('feat-cover');
+  if (featCoverInput) {
+    featCoverInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      featCoverAction = 'upload';
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const preview = document.getElementById('feat-cover-preview');
+        const previewContainer = document.getElementById('feat-cover-preview-container');
+        if (preview) preview.src = ev.target.result;
+        if (previewContainer) previewContainer.style.display = 'block';
+        else if (preview) preview.style.display = 'block';
+        document.getElementById('feat-upload-placeholder').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   // Initialize Drag and Drop
   if (window.bindFileDragAndDrop) {
-    window.bindFileDragAndDrop('feat-upload-container', 'feat-cover');
+    window.bindFileDragAndDrop('feat-image-upload', 'feat-cover', () => {
+      featCoverAction = 'upload';
+    });
     // window.bindFileDragAndDrop('resume-upload-container', 'resume-file-input'); // Disabled for URL-only mode
   }
 
@@ -684,8 +725,12 @@ function bindForms() {
     const techArr = techStr ? techStr.split(',').map(t => t.trim()).filter(Boolean) : [];
     formData.append('tech', JSON.stringify(techArr));
 
-    const coverFile = document.getElementById('feat-cover').files[0];
-    if (coverFile) formData.append('cover', coverFile);
+    if (featCoverAction === 'upload') {
+      const coverFile = document.getElementById('feat-cover').files[0];
+      if (coverFile) formData.append('cover', coverFile);
+    } else if (featCoverAction === 'delete') {
+      formData.append('deleteCover', 'true');
+    }
     if (!isEdit) formData.append('slug', document.getElementById('feat-title').value);
 
     try {
@@ -698,6 +743,9 @@ function bindForms() {
         return;
       }
       closeModal('modal-featured');
+      const featCoverInput = document.getElementById('feat-cover');
+      if (featCoverInput) featCoverInput.value = '';
+      featCoverAction = 'none';
       await loadFeatured();
       showToast(isEdit ? 'Project updated ✅' : 'Project created ✅');
     } catch (err) {
