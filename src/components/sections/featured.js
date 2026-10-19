@@ -141,7 +141,6 @@ const StyledProject = styled.li`
     color: var(--light-slate);
     font-size: var(--fz-lg);
     padding-right: 20px;
-    text-align: justify;
     box-shadow: none;
 
     &:hover {
@@ -343,7 +342,7 @@ const Featured = () => {
           featuredProjects.map(({ node }, i) => {
             const { external, button, role, title, tech, cover, cta, description } = node;
             const isGif = cover && cover.toLowerCase().endsWith('.gif');
-            
+
             // Prioritize cta (Case Study URL) over external
             const rawLink = (cta || external || '').trim();
             const caseStudyMatch = rawLink.match(/^(?:https?:\/\/[^\/]+)?(\/case-study\/[^\/\s]+(?:\/)?.*)$/i);
@@ -395,7 +394,7 @@ const Featured = () => {
                       dangerouslySetInnerHTML={{ __html: description }}
                     />
                   </div>
-                 
+
                   {projectLink ? (
                     renderLink(<button className='project-study'>{button}</button>)
                   ) : (

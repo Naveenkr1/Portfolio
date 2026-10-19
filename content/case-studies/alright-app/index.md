@@ -39,8 +39,6 @@ tocItems:
 
 <div class="grid grid-1">
 
-![Image](/uploads/case-studies/alright-app/img-1792310452190-494.webp)
-
 </div>
 
 

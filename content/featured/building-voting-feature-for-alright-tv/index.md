@@ -1,7 +1,7 @@
 ---
 date: '1'
-title: 'Build Voting Feature for Alright TV'
-cover: 'https://res.cloudinary.com/duxol6zvd/image/upload/v1792342326/portfolio/featured/qwpokdxp7w7tu1ukmp5n.webp'
+title: 'Building Voting Feature for Alright TV'
+cover: 'https://res.cloudinary.com/duxol6zvd/image/upload/v1792394001/portfolio/featured/yfsix2cwwuxktohjz6p5.webp'
 cta: '/case-study/alright-app'
 external: ''
 button: 'Read More'
