@@ -6,15 +6,84 @@ import { Layout } from '@components';
 import { Icon } from '@components/icons';
 
 const StyledAIPlayContainer = styled.main`
-  padding: 100px 0;
+  padding: 120px 0 80px;
   max-width: 1000px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 100px 0 60px;
+  }
+  @media (max-width: 480px) {
+    padding: 80px 0 40px;
+  }
+`;
+
+const StyledHeader = styled.header`
+  margin-bottom: 60px;
+  text-align: left;
+
+  .label {
+    display: inline-block;
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-size: clamp(var(--fz-sm), 2.5vw, var(--fz-md));
+    font-weight: 400;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .title {
+    font-size: clamp(32px, 6vw, 54px);
+    font-weight: 700;
+    color: var(--lightest-slate);
+    line-height: 1.15;
+    margin: 0 0 20px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtext {
+    color: var(--slate);
+    font-size: clamp(16px, 2.2vw, 18px);
+    line-height: 1.65;
+    max-width: 780px;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+  }
 `;
 
 const SectionHeader = styled.h2`
-  font-size: clamp(24px, 5vw, var(--fz-heading));
-  margin-bottom: 40px;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 10px 0 35px;
+  width: 100%;
+  font-size: clamp(22px, 4vw, var(--fz-heading));
+  white-space: nowrap;
+  color: var(--lightest-slate);
+
+  &:after {
+    content: '';
+    display: block;
+    position: relative;
+    top: -2px;
+    width: 300px;
+    height: 1px;
+    margin-left: 20px;
+    background-color: var(--lightest-navy);
+
+    @media (max-width: 1080px) {
+      width: 200px;
+    }
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+    @media (max-width: 600px) {
+      margin-left: 10px;
+    }
+  }
 `;
 
 const ProjectsGrid = styled.ul`
@@ -278,7 +347,17 @@ const AIPlayPage = ({ location, data }) => {
       <Helmet title="AI Lab" />
 
       <StyledAIPlayContainer>
-        <SectionHeader>AI Lab</SectionHeader>
+        <StyledHeader>
+          <span className="label">AI Lab</span>
+          <h1 className="title">Building ideas & experiments</h1>
+          <p className="subtext">
+            These are (a few) of my experiments in code and craft. Even as a design leader, I
+            believe the only way to master the medium is to build. This space is dedicated to
+            hands-on exploration, using AI to translate ideas into reality.
+          </p>
+        </StyledHeader>
+
+        <SectionHeader>AI Projects</SectionHeader>
         <ProjectsGrid>
           {aiProjects.map(({ node }, i) => (
             <ProjectCard key={i} node={node} />
