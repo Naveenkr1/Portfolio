@@ -275,10 +275,10 @@ const AIPlayPage = ({ location, data }) => {
 
   return (
     <Layout location={location} hideSocialAndEmail={true}>
-      <Helmet title="AI Play" />
+      <Helmet title="AI Lab" />
 
       <StyledAIPlayContainer>
-        <SectionHeader>AI Projects</SectionHeader>
+        <SectionHeader>AI Lab</SectionHeader>
         <ProjectsGrid>
           {aiProjects.map(({ node }, i) => (
             <ProjectCard key={i} node={node} />

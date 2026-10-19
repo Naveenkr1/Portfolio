@@ -144,8 +144,8 @@ function switchSection(section) {
     document.getElementById('page-title').textContent = 'Resume Management';
     document.getElementById('page-subtitle').textContent = 'Update your external resume link or upload a PDF';
   } else if (section === 'ai-projects') {
-    document.getElementById('page-title').textContent = 'AI Projects';
-    document.getElementById('page-subtitle').textContent = 'Manage your AI Playground projects';
+    document.getElementById('page-title').textContent = 'AI Lab';
+    document.getElementById('page-subtitle').textContent = 'Manage your AI Lab projects';
   }
 }
 
@@ -1231,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           body: JSON.stringify({ showTab: e.target.checked })
         });
         if (res.ok) {
-          showToast('AI Play Tab visibility updated');
+          showToast('AI Lab Tab visibility updated');
         } else {
           e.target.checked = !e.target.checked; // revert
           showToast('Failed to update visibility', 'error');

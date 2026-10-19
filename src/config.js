@@ -36,8 +36,8 @@ module.exports = {
       url: '/#jobs',
     },
     {
-      name: 'AI Playground',
-      url: '/ai-play',
+      name: 'AI Lab',
+      url: '/ai-lab',
     },
   ],
 

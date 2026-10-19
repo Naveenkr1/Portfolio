@@ -214,7 +214,7 @@ const Menu = ({ resumeUrl }) => {
   const showAiPlay = !data.allSettingsJson?.edges?.some(edge => edge.node?.showTab === false);
 
   const visibleNavLinks = navLinks.filter(link => {
-    if ((link.name === 'AI Play' || link.name === 'AI Playground') && !showAiPlay) return false;
+    if ((link.name === 'AI Play' || link.name === 'AI Playground' || link.name === 'AI Lab') && !showAiPlay) return false;
     return true;
   });
 
