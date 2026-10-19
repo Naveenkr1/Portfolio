@@ -9,8 +9,8 @@ const _ = require('lodash');
 const fs = require('fs');
 const matter = require('gray-matter');
 
-exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => {
-  const { createNode } = actions;
+exports.sourceNodes = async ({ actions, createNodeId, createContentDigest, getNodesByType }) => {
+  const { createNode, deleteNode } = actions;
   
   const contentDir = path.join(__dirname, 'content');
 
@@ -30,8 +30,9 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => 
       item.description = item.description || (item.paragraphs ? item.paragraphs.join('\n') : '');
     }
     
+    const nodeId = createNodeId(`${typeName}-${item.id}`);
     const nodeMeta = {
-      id: createNodeId(`${typeName}-${item.id}`),
+      id: nodeId,
       parent: null,
       children: [],
       internal: {
@@ -43,12 +44,20 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => 
     };
     const node = Object.assign({}, item, nodeMeta);
     createNode(node);
+
+    if (getNodesByType) {
+      const existing = getNodesByType(typeName);
+      existing.forEach(n => {
+        if (n.id !== nodeId) deleteNode(n);
+      });
+    }
   };
 
   const createMarkdownNodes = (dir, typeName) => {
     const dirPath = path.join(contentDir, dir);
     if (!fs.existsSync(dirPath)) return;
     const subdirs = fs.readdirSync(dirPath).filter(f => fs.statSync(path.join(dirPath, f)).isDirectory());
+    const validNodeIds = new Set();
     
     subdirs.forEach(subdir => {
       const itemDirPath = path.join(dirPath, subdir);
@@ -100,8 +109,10 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => 
       if (item.cover) item.cover = handleRelativeImage(item.cover, subdir);
       if (item.banner) item.banner = handleRelativeImage(item.banner, subdir);
 
+      const nodeId = createNodeId(`${typeName}-${item.id}`);
+      validNodeIds.add(nodeId);
       const nodeMeta = {
-        id: createNodeId(`${typeName}-${item.id}`),
+        id: nodeId,
         parent: null,
         children: [],
         internal: {
@@ -114,6 +125,15 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest }) => 
       const node = Object.assign({}, item, nodeMeta);
       createNode(node);
     });
+
+    if (getNodesByType) {
+      const existing = getNodesByType(typeName);
+      existing.forEach(n => {
+        if (!validNodeIds.has(n.id)) {
+          deleteNode(n);
+        }
+      });
+    }
   };
 
   try {
