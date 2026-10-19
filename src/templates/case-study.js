@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -12,7 +12,7 @@ const StyledCaseStudyContainer = styled.main`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 80px 50px;
+  padding: ${props => (props.$hasBanner ? '40px 50px 80px' : '120px 50px 80px')};
   display: grid;
   grid-template-columns: 250px 1fr;
   gap: 60px;
@@ -20,8 +20,12 @@ const StyledCaseStudyContainer = styled.main`
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
-    padding: 60px 25px;
-    gap: 40px;
+    padding: ${props => (props.$hasBanner ? '20px 25px 60px' : '100px 25px 60px')};
+    gap: 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: ${props => (props.$hasBanner ? '15px 16px 40px' : '100px 16px 40px')};
   }
 `;
 
@@ -57,6 +61,12 @@ const StyledLightbox = styled.div`
   cursor: zoom-out;
   padding: 40px;
   backdrop-filter: blur(5px);
+  user-select: none;
+  touch-action: pan-y;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
 
   .lightbox-content {
     position: relative;
@@ -65,51 +75,23 @@ const StyledLightbox = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: grab;
+    will-change: transform, opacity;
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   img {
     max-width: 100%;
-    max-height: 90vh;
+    max-height: 85vh;
     object-fit: contain;
     box-shadow: 0 30px 60px -12px rgba(2, 12, 27, 0.5), 0 18px 36px -18px rgba(2, 12, 27, 0.5);
     border-radius: var(--border-radius);
-    cursor: default;
-  }
-
-  .nav-btn {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(17, 34, 64, 0.7);
-    border: 1px solid var(--lightest-navy);
-    color: var(--green);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
-    z-index: 10001;
-
-    &:hover {
-      background: var(--green);
-      color: var(--navy);
-      border-color: var(--green);
-    }
-
-    svg {
-      width: 24px;
-      height: 24px;
-    }
-  }
-
-  .prev-btn {
-    left: 40px;
-  }
-  .next-btn {
-    right: 40px;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
   }
 
   .close-btn {
@@ -123,24 +105,75 @@ const StyledLightbox = styled.div`
     cursor: pointer;
     transition: var(--transition);
     z-index: 10001;
+    line-height: 1;
+    padding: 0;
 
     &:hover {
       color: var(--green);
       transform: rotate(90deg);
     }
+
+    @media (max-width: 768px) {
+      top: 20px;
+      right: 20px;
+      font-size: 34px;
+    }
   }
 
-  .counter {
+  .carousel-dots {
     position: fixed;
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    color: var(--slate);
-    font-family: var(--font-mono);
-    font-size: var(--fz-xs);
-    background: rgba(17, 34, 64, 0.7);
-    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(17, 34, 64, 0.85);
+    padding: 8px 16px;
     border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    z-index: 10001;
+    box-shadow: 0 10px 30px -10px var(--navy-shadow);
+
+    @media (max-width: 768px) {
+      bottom: 24px;
+      padding: 6px 12px;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+      outline: none;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: -8px;
+        bottom: -8px;
+        left: -6px;
+        right: -6px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      &.active {
+        background: var(--green);
+        width: 24px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
+      }
+    }
   }
 `;
 
@@ -165,8 +198,14 @@ const StyledBanner = styled.div`
   }
 
   @media (max-width: 900px) {
-    padding: 0;
+    padding: 100px 0 0 0;
     margin-top: 0;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 100px 0 0 0;
+    margin-bottom: 20px;
   }
 `;
 
@@ -185,10 +224,7 @@ const StyledSidebar = styled.aside`
   }
 
   @media (max-width: 900px) {
-    position: static;
-    margin-bottom: 40px;
-    height: auto;
-    padding-right: 0;
+    display: none !important;
   }
 
   .back-to-top {
@@ -939,6 +975,13 @@ const CaseStudyTemplate = ({ data, location }) => {
 
   const [activeSection, setActiveSection] = useState('');
   const [lightbox, setLightbox] = useState({ isOpen: false, currentIdx: 0, images: [] });
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const dragStartX = useRef(0);
+  const dragStartY = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const isDragging = useRef(false);
+  const hasMoved = useRef(false);
 
   const hasTOC = frontmatter.tocEnabled && frontmatter.tocItems && frontmatter.tocItems.length > 0;
 
@@ -947,17 +990,29 @@ const CaseStudyTemplate = ({ data, location }) => {
   };
 
   const openLightbox = (idx, images) => {
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
+    setIsSwiping(false);
+    isDragging.current = false;
+    hasMoved.current = false;
     setLightbox({ isOpen: true, currentIdx: idx, images });
     document.body.style.overflow = 'hidden';
   };
 
   const closeLightbox = () => {
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
+    setIsSwiping(false);
+    isDragging.current = false;
+    hasMoved.current = false;
     setLightbox(prev => ({ ...prev, isOpen: false }));
     document.body.style.overflow = '';
   };
 
   const nextImage = e => {
-    if (e) e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
     setLightbox(prev => ({
       ...prev,
       currentIdx: (prev.currentIdx + 1) % prev.images.length,
@@ -965,11 +1020,103 @@ const CaseStudyTemplate = ({ data, location }) => {
   };
 
   const prevImage = e => {
-    if (e) e.stopPropagation();
+    if (e && e.stopPropagation) e.stopPropagation();
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
     setLightbox(prev => ({
       ...prev,
       currentIdx: (prev.currentIdx - 1 + prev.images.length) % prev.images.length,
     }));
+  };
+
+  const handleTouchStart = e => {
+    if (e.touches.length !== 1) return;
+    dragStartX.current = e.touches[0].clientX;
+    dragStartY.current = e.touches[0].clientY;
+    dragOffsetRef.current = 0;
+    isDragging.current = true;
+    hasMoved.current = false;
+    setIsSwiping(true);
+  };
+
+  const handleTouchMove = e => {
+    if (!isDragging.current || e.touches.length !== 1) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - dragStartX.current;
+    const diffY = currentY - dragStartY.current;
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      if (e.cancelable) e.preventDefault();
+      dragOffsetRef.current = diffX;
+      setDragOffset(diffX);
+      if (Math.abs(diffX) > 8) {
+        hasMoved.current = true;
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    setIsSwiping(false);
+
+    const swipeThreshold = 40;
+    const offset = dragOffsetRef.current;
+    if (offset < -swipeThreshold && lightbox.images.length > 1) {
+      nextImage();
+    } else if (offset > swipeThreshold && lightbox.images.length > 1) {
+      prevImage();
+    }
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
+    setTimeout(() => {
+      hasMoved.current = false;
+    }, 100);
+  };
+
+  const handleMouseDown = e => {
+    if (e.button !== 0) return;
+    dragStartX.current = e.clientX;
+    dragStartY.current = e.clientY;
+    dragOffsetRef.current = 0;
+    isDragging.current = true;
+    hasMoved.current = false;
+    setIsSwiping(true);
+  };
+
+  const handleMouseMove = e => {
+    if (!isDragging.current) return;
+    const diffX = e.clientX - dragStartX.current;
+    dragOffsetRef.current = diffX;
+    setDragOffset(diffX);
+    if (Math.abs(diffX) > 8) {
+      hasMoved.current = true;
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    setIsSwiping(false);
+
+    const swipeThreshold = 40;
+    const offset = dragOffsetRef.current;
+    if (offset < -swipeThreshold && lightbox.images.length > 1) {
+      nextImage();
+    } else if (offset > swipeThreshold && lightbox.images.length > 1) {
+      prevImage();
+    }
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
+    setTimeout(() => {
+      hasMoved.current = false;
+    }, 100);
+  };
+
+  const handleBackdropClick = () => {
+    if (hasMoved.current) return;
+    closeLightbox();
   };
 
   useEffect(() => {
@@ -1102,7 +1249,7 @@ const CaseStudyTemplate = ({ data, location }) => {
         </StyledBanner>
       )}
 
-      <StyledCaseStudyContainer>
+      <StyledCaseStudyContainer $hasBanner={!!frontmatter.banner}>
         <StyledSidebar className="toc-reveal">
           {hasTOC && (
             <StyledTOCInner>
@@ -1223,34 +1370,64 @@ const CaseStudyTemplate = ({ data, location }) => {
       </StyledCaseStudyContainer>
 
       {lightbox.isOpen && (
-        <StyledLightbox onClick={closeLightbox}>
-          <button className="close-btn" onClick={closeLightbox}>
+        <StyledLightbox
+          onClick={handleBackdropClick}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <button
+            className="close-btn"
+            onClick={closeLightbox}
+            onMouseDown={e => e.stopPropagation()}
+            onTouchStart={e => e.stopPropagation()}
+            aria-label="Close preview"
+          >
             &times;
           </button>
 
-          <button className="nav-btn prev-btn" onClick={prevImage}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-
-          <div className="lightbox-content">
+          <div
+            className="lightbox-content"
+            style={{
+              transform: `translateX(${dragOffset}px)`,
+              transition: isSwiping ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
+              opacity: isSwiping ? Math.max(0.65, 1 - Math.abs(dragOffset) / 700) : 1,
+            }}
+            onClick={e => e.stopPropagation()}
+          >
             <img
               src={lightbox.images[lightbox.currentIdx]}
               alt="Fullscreen preview"
-              onClick={e => e.stopPropagation()}
+              draggable="false"
             />
           </div>
 
-          <button className="nav-btn next-btn" onClick={nextImage}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-
-          <div className="counter">
-            {lightbox.currentIdx + 1} / {lightbox.images.length}
-          </div>
+          {lightbox.images.length > 1 && (
+            <div
+              className="carousel-dots"
+              onClick={e => e.stopPropagation()}
+              onMouseDown={e => e.stopPropagation()}
+              onTouchStart={e => e.stopPropagation()}
+            >
+              {lightbox.images.map((_, idx) => (
+                <button
+                  key={idx}
+                  className={`dot ${idx === lightbox.currentIdx ? 'active' : ''}`}
+                  onClick={e => {
+                    e.stopPropagation();
+                    dragOffsetRef.current = 0;
+                    setDragOffset(0);
+                    setLightbox(prev => ({ ...prev, currentIdx: idx }));
+                  }}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </StyledLightbox>
       )}
     </Layout>
