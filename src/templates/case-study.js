@@ -376,6 +376,23 @@ const StyledContentArea = styled.div`
     margin-bottom: 0px !important;
   }
 
+  /* Ensure all content inside case study is always fully visible while scrolling */
+  #case-study-content {
+    width: 100%;
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    * {
+      content-visibility: visible !important;
+      contain-intrinsic-size: none !important;
+    }
+
+    > * {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  }
+
   ul {
     padding-left: 20px;
     color: var(--slate);
@@ -1164,33 +1181,36 @@ const CaseStudyTemplate = ({ data, location }) => {
     const overviewEl = document.getElementById('overview');
     if (overviewEl) observer.observe(overviewEl);
 
-    // Reveal animations
+    // Reveal animations for hero/header elements
     if (sr) {
       const fastConfig = delay => ({ ...srConfig(delay), duration: 400 });
       sr.reveal('.banner-reveal', fastConfig(100));
       sr.reveal('.header-details-reveal', fastConfig(150));
       sr.reveal('.toc-reveal', fastConfig(200));
-      sr.reveal('#case-study-content > *', fastConfig(300));
     }
 
-    const handleKeyDown = e => {
-      if (!lightbox.isOpen) return;
-      if (e.key === 'ArrowRight') nextImage();
-      if (e.key === 'ArrowLeft') prevImage();
-      if (e.key === 'Escape') closeLightbox();
-    };
-
     document.documentElement.style.scrollBehavior = 'smooth';
-    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       h2Elements.forEach(el => observer.unobserve(el));
       const overviewEl = document.getElementById('overview');
       if (overviewEl) observer.unobserve(overviewEl);
-      window.removeEventListener('keydown', handleKeyDown);
       document.documentElement.style.scrollBehavior = 'auto';
     };
-  }, [lightbox.isOpen, html]);
+  }, [html]);
+
+  useEffect(() => {
+    if (!lightbox.isOpen) return;
+
+    const handleKeyDown = e => {
+      if (e.key === 'ArrowRight') nextImage();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'Escape') closeLightbox();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightbox.isOpen]);
 
   useEffect(() => {
     // Collect all images for the gallery
