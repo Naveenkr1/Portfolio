@@ -627,9 +627,13 @@ const StyledContentArea = styled.div`
   }
 
   /* CTA Button Block */
-  .cta-button-container {
+  .cta-button-container,
+  .ai-lab-cta-container {
     margin: 40px 0 !important;
     width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    text-align: left !important;
 
     .case-study-cta-btn {
       display: inline-flex !important;
@@ -638,15 +642,18 @@ const StyledContentArea = styled.div`
       gap: 8px !important;
       text-decoration: none !important;
       font-family: var(--font-mono, monospace) !important;
+      font-size: 14px !important;
       font-weight: 500 !important;
       line-height: 1 !important;
       padding: 1.15rem 2.2rem !important;
       white-space: nowrap !important;
       cursor: pointer !important;
-      transition: var(--transition) !important;
+      transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
       box-sizing: border-box !important;
       max-width: 100% !important;
+      width: auto !important;
+      border-radius: 4px !important;
 
       &::before,
       &::after {
@@ -669,6 +676,7 @@ const StyledContentArea = styled.div`
         flex-shrink: 0 !important;
         fill: none !important;
         stroke: currentColor !important;
+        stroke-width: 2 !important;
         display: inline-block !important;
         vertical-align: middle !important;
         transition: transform 0.2s ease !important;
@@ -992,6 +1000,77 @@ const StyledAILabHeader = styled.header`
   .ai-lab-cta-container {
     margin: 24px 0 0;
     text-align: left;
+    display: flex;
+    align-items: center;
+
+    .case-study-cta-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      text-decoration: none !important;
+      font-family: var(--font-mono, monospace) !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      line-height: 1 !important;
+      padding: 1.15rem 2.2rem !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+      box-sizing: border-box !important;
+      max-width: 100% !important;
+      width: auto !important;
+      border-radius: 4px !important;
+
+      &::before,
+      &::after {
+        display: none !important;
+        content: none !important;
+      }
+
+      span {
+        white-space: nowrap !important;
+        display: inline-block !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+      }
+
+      svg {
+        width: 15px !important;
+        height: 15px !important;
+        min-width: 15px !important;
+        max-width: 15px !important;
+        flex-shrink: 0 !important;
+        fill: none !important;
+        stroke: currentColor !important;
+        stroke-width: 2 !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+        transition: transform 0.2s ease !important;
+      }
+
+      &:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35) !important;
+
+        svg {
+          transform: translate(2px, -2px) !important;
+        }
+      }
+
+      &.btn-outline:hover {
+        background-color: var(--green-tint) !important;
+      }
+
+      &.btn-filled:hover {
+        filter: brightness(1.12) !important;
+      }
+
+      &:active {
+        transform: translateY(0) !important;
+      }
+    }
   }
 
   .ai-lab-hero-media {
@@ -1183,7 +1262,7 @@ const CaseStudyTemplate = ({ data, location }) => {
 
   let processedHtml = html;
   if (isAILab && topCTA && topCTA.enabled) {
-    processedHtml = processedHtml.replace(/<div class="cta-button-container"[^>]*>[\s\S]*?<\/div>/i, '');
+    processedHtml = processedHtml.replace(/<div class="cta-button-container"[^>]*>[\s\S]*?<\/div>/gi, '');
   }
 
   const [activeSection, setActiveSection] = useState('');
@@ -1520,21 +1599,59 @@ const CaseStudyTemplate = ({ data, location }) => {
 
               {/* 5. Optional CTA Button */}
               {topCTA && topCTA.enabled && topCTA.text && (
-                <div className="ai-lab-cta-container">
+                <div className="ai-lab-cta-container cta-button-container" style={{ margin: '24px 0 0', display: 'flex', alignItems: 'center' }}>
                   <a
                     href={topCTA.url || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`case-study-cta-btn ${topCTA.styleVariant === 'filled' ? 'btn-filled' : 'btn-outline'}`}
                     style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '1.15rem 2.2rem',
+                      fontFamily: 'var(--font-mono, monospace)',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      lineHeight: 1,
+                      textDecoration: 'none',
                       color: topCTA.styleVariant === 'filled' ? '#0a192f' : (topCTA.color || '#64ffda'),
                       backgroundColor: topCTA.styleVariant === 'filled' ? (topCTA.color || '#64ffda') : 'transparent',
-                      borderColor: topCTA.color || '#64ffda',
+                      border: `1px solid ${topCTA.color || '#64ffda'}`,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
                       whiteSpace: 'nowrap',
+                      width: 'auto',
+                      maxWidth: '100%',
+                      boxSizing: 'border-box',
+                      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+                      transition: 'all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)',
                     }}
                   >
-                    <span>{topCTA.text}</span>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <span style={{ whiteSpace: 'nowrap', display: 'inline-block', lineHeight: 1, flexShrink: 0 }}>
+                      {topCTA.text}
+                    </span>
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      style={{
+                        width: '15px',
+                        height: '15px',
+                        minWidth: '15px',
+                        maxWidth: '15px',
+                        flexShrink: 0,
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        strokeWidth: 2,
+                        verticalAlign: 'middle',
+                        display: 'inline-block',
+                      }}
+                    >
                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                       <polyline points="15 3 21 3 21 9" />
                       <line x1="10" y1="14" x2="21" y2="3" />
