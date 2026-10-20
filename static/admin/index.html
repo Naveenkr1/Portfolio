@@ -760,33 +760,58 @@
         <!-- Builder Sidebar: Add Blocks -->
         <aside class="builder-sidebar">
           <div class="sidebar-group">
-            <h3>Add Blocks</h3>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px;">
+              <h3 style="margin: 0;">Add Blocks</h3>
+              <span style="font-size: 10px; color: var(--green); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px;">Drag & Drop</span>
+            </div>
+            <p style="font-size: 11px; color: var(--slate); margin: 0 0 12px 0; line-height: 1.4;">Click to add or drag directly into order</p>
             <div class="block-tools">
-              <button class="block-tool" onclick="builder.addBlock('text')">
+              <button class="block-tool" data-type="text" draggable="true" onclick="builder.addBlock('text')" title="Click to add or drag into order">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="4 7 4 4 20 4 20 7" />
                   <line x1="9" y1="20" x2="15" y2="20" />
                   <line x1="12" y1="4" x2="12" y2="20" />
                 </svg>
                 <span>Text Section</span>
+                <span class="tool-drag-handle" title="Drag to order">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
+                    <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                    <circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+                  </svg>
+                </span>
               </button>
-              <button class="block-tool" onclick="builder.addBlock('image')">
+              <button class="block-tool" data-type="image" draggable="true" onclick="builder.addBlock('image')" title="Click to add or drag into order">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <polyline points="21 15 16 10 5 21" />
                 </svg>
                 <span>Image Grid</span>
+                <span class="tool-drag-handle" title="Drag to order">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
+                    <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                    <circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+                  </svg>
+                </span>
               </button>
-              <button class="block-tool" onclick="builder.addBlock('cards')">
+              <button class="block-tool" data-type="cards" draggable="true" onclick="builder.addBlock('cards')" title="Click to add or drag into order">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                   <line x1="9" y1="3" x2="9" y2="21" />
                   <line x1="15" y1="3" x2="15" y2="21" />
                 </svg>
                 <span>Add Cards</span>
+                <span class="tool-drag-handle" title="Drag to order">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
+                    <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                    <circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+                  </svg>
+                </span>
               </button>
-              <button class="block-tool" onclick="builder.addBlock('callout')">
+              <button class="block-tool" data-type="callout" draggable="true" onclick="builder.addBlock('callout')" title="Click to add or drag into order">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
                   <line x1="8" y1="12" x2="16" y2="12" />
@@ -794,14 +819,28 @@
                   <line x1="8" y1="16" x2="12" y2="16" />
                 </svg>
                 <span>Callout (Pro Tips)</span>
+                <span class="tool-drag-handle" title="Drag to order">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
+                    <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                    <circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+                  </svg>
+                </span>
               </button>
-              <button class="block-tool" onclick="builder.addBlock('button')">
+              <button class="block-tool" data-type="button" draggable="true" onclick="builder.addBlock('button')" title="Click to add or drag into order">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="2" y="6" width="20" height="12" rx="4" />
                   <path d="M7 12h10" />
                   <polyline points="13 8 17 12 13 16" />
                 </svg>
                 <span>CTA Button</span>
+                <span class="tool-drag-handle" title="Drag to order">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
+                    <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                    <circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+                  </svg>
+                </span>
               </button>
             </div>
           </div>
@@ -846,55 +885,181 @@
                 </label>
               </div>
             </div>
-            <div class="form-group">
-              <label>Banner Image / Video <span
-                  style="font-size: 11px; color: var(--slate); font-weight: normal; margin-left: 8px;">(Recommended:
-                  16:9 ratio, e.g., 1920x1080px or 1280x720px)</span></label>
-              <div class="banner-upload-container" onclick="document.getElementById('banner-upload').click()">
-                <img id="banner-preview" src=""
-                  style="display:none; width:100%; height:auto; max-height:none; object-fit:contain; border-radius:8px; margin-bottom:10px;" />
-                <video id="banner-video-preview" autoplay loop muted playsinline
-                  style="display:none; width:100%; height:auto; max-height:none; object-fit:contain; border-radius:8px; margin-bottom:10px;"></video>
-                <div id="banner-placeholder" class="banner-placeholder">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <circle cx="8.5" cy="8.5" r="1.5" />
-                    <polyline points="21 15 16 10 5 21" />
-                  </svg>
-                  <span>Upload Banner</span>
+            <!-- CASE STUDY MODE CONTAINER -->
+            <div id="builder-meta-case-study">
+              <div class="form-group">
+                <label>Banner Image / Video <span
+                    style="font-size: 11px; color: var(--slate); font-weight: normal; margin-left: 8px;">(Recommended:
+                    16:9 ratio, e.g., 1920x1080px or 1280x720px)</span></label>
+                <div class="banner-upload-container" onclick="document.getElementById('banner-upload').click()">
+                  <img id="banner-preview" src=""
+                    style="display:none; width:100%; height:auto; max-height:none; object-fit:contain; border-radius:8px; margin-bottom:10px;" />
+                  <video id="banner-video-preview" autoplay loop muted playsinline
+                    style="display:none; width:100%; height:auto; max-height:none; object-fit:contain; border-radius:8px; margin-bottom:10px;"></video>
+                  <div id="banner-placeholder" class="banner-placeholder">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Upload Banner</span>
+                  </div>
+                </div>
+                <input type="file" id="banner-upload" accept="image/*,video/*" style="display:none"
+                  onchange="builder.handleBannerUpload(this.files)">
+              </div>
+              <div class="form-group">
+                <label for="builder-meta-slug">URL Slug <span
+                    style="font-size: 11px; color: var(--slate); font-weight: normal; margin-left: 8px;">(e.g.,
+                    my-project-name)</span></label>
+                <div style="display: flex; align-items: center; background: var(--dark-navy); border: 1px solid var(--border-color); border-radius: 6px; padding: 0 12px;">
+                  <span id="builder-meta-slug-prefix" style="color: var(--green); font-family: 'Space Mono', monospace; font-size: 13px; user-select: none;">/case-study/</span>
+                  <input type="text" id="builder-meta-slug" placeholder="e.g. my-project-name" style="border: none; background: transparent; padding-left: 4px; box-shadow: none; flex: 1;">
                 </div>
               </div>
-              <input type="file" id="banner-upload" accept="image/*,video/*" style="display:none"
-                onchange="builder.handleBannerUpload(this.files)">
-            </div>
-            <div class="form-group">
-              <label for="builder-meta-slug">URL Slug <span
-                  style="font-size: 11px; color: var(--slate); font-weight: normal; margin-left: 8px;">(e.g.,
-                  my-project-name)</span></label>
-              <div style="display: flex; align-items: center; background: var(--dark-navy); border: 1px solid var(--border-color); border-radius: 6px; padding: 0 12px;">
-                <span id="builder-meta-slug-prefix" style="color: var(--green); font-family: 'Space Mono', monospace; font-size: 13px; user-select: none;">/case-study/</span>
-                <input type="text" id="builder-meta-slug" placeholder="e.g. my-project-name" style="border: none; background: transparent; padding-left: 4px; box-shadow: none; flex: 1;">
+              <div class="form-group">
+                <label for="builder-meta-tagline">Tagline</label>
+                <input type="text" id="builder-meta-tagline"
+                  placeholder="e.g. Dual-currency wallet for B2B consulting teams">
+              </div>
+              <div class="form-group">
+                <label for="builder-meta-subtagline">Subtagline</label>
+                <input type="text" id="builder-meta-subtagline"
+                  placeholder="e.g. From 'Wait... do I still have money?' to confident decisions.">
+              </div>
+              <div class="form-group">
+                <label>Case Study Details</label>
+                <div id="builder-meta-details-list"
+                  style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px;">
+                  <!-- Dynamic details injected here -->
+                </div>
+                <button type="button" id="btn-add-meta-detail"
+                  style="padding: 8px 12px; background: var(--dark-navy); color: var(--green); border: 1px solid var(--green); border-radius: 4px; cursor: pointer; font-size: 13px;">+
+                  Add Detail Field</button>
               </div>
             </div>
-            <div class="form-group">
-              <label for="builder-meta-tagline">Tagline</label>
-              <input type="text" id="builder-meta-tagline"
-                placeholder="e.g. Dual-currency wallet for B2B consulting teams">
-            </div>
-            <div class="form-group">
-              <label for="builder-meta-subtagline">Subtagline</label>
-              <input type="text" id="builder-meta-subtagline"
-                placeholder="e.g. From 'Wait... do I still have money?' to confident decisions.">
-            </div>
-            <div class="form-group">
-              <label>Case Study Details</label>
-              <div id="builder-meta-details-list"
-                style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px;">
-                <!-- Dynamic details injected here -->
+
+            <!-- AI LAB MODE CONTAINER -->
+            <div id="builder-meta-ai-lab" style="display: none;">
+              <!-- 1. AI Lab Header Section (AI Label, Title, Subtext, Slug) -->
+              <div class="ai-lab-builder-card" style="background: var(--navy); border: 1px solid var(--lightest-navy); border-radius: 12px; padding: 24px; margin-bottom: 20px;">
+                <div style="margin-bottom: 12px;">
+                  <label style="display: block; font-size: 11px; color: var(--slate); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 600;">AI Label</label>
+                  <input type="text" id="builder-ai-label" value="AI LAB" placeholder="AI LAB" style="color: var(--green); font-family: var(--font-mono); font-size: 14px; font-weight: 500; text-transform: uppercase; background: var(--dark-navy); border: 1px solid var(--border-color); border-radius: 4px; padding: 6px 12px; width: 140px; box-sizing: border-box;" />
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                  <label style="display: block; font-size: 11px; color: var(--slate); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 600;">Project Title</label>
+                  <input type="text" id="builder-ai-title" placeholder="e.g. Annotate, Comment, and Collaborate on Any Website" style="font-size: clamp(20px, 3vw, 26px); font-weight: 700; color: var(--lightest-slate); line-height: 1.2; background: var(--dark-navy); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; width: 100%; box-sizing: border-box;" oninput="document.getElementById('builder-case-study-title').value = this.value;" />
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                  <label style="display: block; font-size: 11px; color: var(--slate); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; font-weight: 600;">Subtext / Summary</label>
+                  <textarea id="builder-ai-subtext" rows="3" placeholder="Comment.design lets you annotate websites, leave feedback, and share comments via a single link..." style="font-size: 16px; color: var(--slate); line-height: 1.6; background: var(--dark-navy); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 14px; width: 100%; box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 11px; color: var(--slate); font-family: var(--font-mono); font-weight: 600;">URL SLUG:</span>
+                  <div style="display: flex; align-items: center; background: var(--dark-navy); border: 1px solid var(--border-color); border-radius: 4px; padding: 2px 10px; flex: 1; max-width: 320px;">
+                    <span style="color: var(--green); font-family: var(--font-mono); font-size: 12px; user-select: none;">/ai-lab/</span>
+                    <input type="text" id="builder-ai-slug" placeholder="slug" style="border: none; background: transparent; color: var(--white); font-size: 12px; font-family: var(--font-mono); padding-left: 4px; outline: none; width: 100%;" oninput="if(document.getElementById('builder-meta-slug')) document.getElementById('builder-meta-slug').value = this.value; if(document.getElementById('builder-case-study-slug-header')) document.getElementById('builder-case-study-slug-header').value = this.value;" />
+                  </div>
+                </div>
               </div>
-              <button type="button" id="btn-add-meta-detail"
-                style="padding: 8px 12px; background: var(--dark-navy); color: var(--green); border: 1px solid var(--green); border-radius: 4px; cursor: pointer; font-size: 13px;">+
-                Add Detail Field</button>
+
+              <!-- 2. Labels / Tags Option (Single Line, Add/Remove) -->
+              <div class="ai-lab-builder-card" style="background: var(--navy); border: 1px solid var(--lightest-navy); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--slate); font-family: var(--font-mono); font-weight: 600; text-transform: uppercase; margin-bottom: 12px;">
+                  <span>Labels / Tags (Optional)</span>
+                  <span style="font-size: 10px; color: var(--slate); font-weight: normal; text-transform: none;">Shown in single line</span>
+                </label>
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                  <div id="ai-builder-labels-list" style="display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <!-- Rendered dynamic chips -->
+                  </div>
+                  <div style="display: inline-flex; align-items: center; gap: 6px;">
+                    <input type="text" id="ai-builder-new-label-input" placeholder="+ Add Label" style="background: rgba(100, 255, 218, 0.05); border: 1px dashed rgba(100, 255, 218, 0.4); color: var(--green); border-radius: 99px; padding: 4px 12px; font-size: 12px; font-family: var(--font-mono); outline: none; width: 120px;" onkeydown="if(event.key==='Enter'){event.preventDefault(); builder.addAILabel();}" />
+                    <button type="button" onclick="builder.addAILabel()" style="background: var(--dark-navy); border: 1px solid var(--green); color: var(--green); border-radius: 99px; padding: 3px 10px; cursor: pointer; font-size: 12px; font-family: var(--font-mono);">+ Add</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. CTA Button Option (Optional) -->
+              <div class="ai-lab-builder-card" style="background: var(--navy); border: 1px solid var(--lightest-navy); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <label class="switch" style="transform: scale(0.85); transform-origin: left center; margin: 0;">
+                      <input type="checkbox" id="ai-builder-cta-enable" onchange="builder.toggleAICTA(this.checked)">
+                      <span class="slider"></span>
+                    </label>
+                    <strong style="color: var(--white); font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.5px;">CTA Button</strong>
+                    <span style="font-size: 11px; color: var(--slate);">(Optional)</span>
+                  </div>
+                  <button type="button" class="btn-secondary-sm" onclick="builder.resetAICTADefaults()" style="font-size: 10px; padding: 3px 8px; cursor: pointer;">Reset Defaults</button>
+                </div>
+
+                <div id="ai-builder-cta-fields" style="display: none; flex-direction: column; gap: 12px; padding-top: 12px; border-top: 1px solid var(--lightest-navy);">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                      <label style="display: block; font-size: 10px; color: var(--light-slate); margin-bottom: 4px; font-family: var(--font-mono); font-weight: 600;">BUTTON TEXT</label>
+                      <input type="text" id="ai-cta-text" placeholder="e.g. Chrome Store" style="width: 100%; background: var(--dark-navy); border: 1px solid var(--border-color); color: var(--white); border-radius: 6px; padding: 7px 10px; font-size: 13px; box-sizing: border-box;" oninput="builder.renderAICTAPreview()">
+                    </div>
+                    <div>
+                      <label style="display: block; font-size: 10px; color: var(--light-slate); margin-bottom: 4px; font-family: var(--font-mono); font-weight: 600;">BUTTON LINK (URL)</label>
+                      <input type="url" id="ai-cta-url" placeholder="https://..." style="width: 100%; background: var(--dark-navy); border: 1px solid var(--border-color); color: var(--white); border-radius: 6px; padding: 7px 10px; font-size: 13px; box-sizing: border-box;" oninput="builder.renderAICTAPreview()">
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                      <label style="display: block; font-size: 10px; color: var(--slate); margin-bottom: 4px; font-weight: 600;">STYLE</label>
+                      <select id="ai-cta-style" style="width: 100%; background: var(--dark-navy); border: 1px solid var(--border-color); color: var(--white); border-radius: 4px; padding: 5px 8px; font-size: 12px;" onchange="builder.renderAICTAPreview()">
+                        <option value="outline">Outline (Default)</option>
+                        <option value="filled">Filled / Solid</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style="display: block; font-size: 10px; color: var(--slate); margin-bottom: 4px; font-weight: 600;">COLOR</label>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <input type="color" id="ai-cta-color" value="#64ffda" style="width: 28px; height: 26px; padding: 0; border: none; background: transparent; cursor: pointer;" onchange="builder.renderAICTAPreview()">
+                        <div style="display: flex; gap: 4px;">
+                          <span onclick="builder.setAICTAColor('#64ffda')" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:#64ffda; cursor:pointer;" title="#64ffda"></span>
+                          <span onclick="builder.setAICTAColor('#ffffff')" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:#ffffff; cursor:pointer;" title="#ffffff"></span>
+                          <span onclick="builder.setAICTAColor('#57cbff')" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:#57cbff; cursor:pointer;" title="#57cbff"></span>
+                          <span onclick="builder.setAICTAColor('#bd93f9')" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:#bd93f9; cursor:pointer;" title="#bd93f9"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Live CTA Button Preview inside AI Lab card -->
+                  <div style="margin-top: 4px; padding: 14px 16px; background: var(--dark-navy); border: 1px dashed var(--border-color); border-radius: 8px; text-align: left;">
+                    <span style="font-size: 10px; color: var(--slate); font-family: var(--font-mono); display: block; margin-bottom: 8px;">LIVE BUTTON PREVIEW</span>
+                    <div id="ai-builder-cta-preview-wrap"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. Hero Images / Media Block -->
+              <div class="ai-lab-builder-card" style="background: var(--navy); border: 1px solid var(--lightest-navy); border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;">
+                <label style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--slate); font-family: var(--font-mono); font-weight: 600; text-transform: uppercase; margin-bottom: 10px;">
+                  <span>Hero Image / Video</span>
+                  <span style="font-size: 10px; color: var(--slate); font-weight: normal; text-transform: none;">Click to upload or replace</span>
+                </label>
+                <div class="banner-upload-container" onclick="document.getElementById('ai-banner-upload').click()" style="min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--dark-navy); border: 2px dashed var(--border-color); border-radius: 8px; cursor: pointer; padding: 12px; position: relative;">
+                  <img id="ai-banner-preview" src="" style="display:none; width:100%; height:auto; max-height:420px; object-fit:cover; border-radius:8px;" />
+                  <video id="ai-banner-video-preview" autoplay loop muted playsinline style="display:none; width:100%; height:auto; max-height:420px; object-fit:cover; border-radius:8px;"></video>
+                  <div id="ai-banner-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--slate);">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span style="font-size: 13px;">Click to Upload / Change Hero Image</span>
+                  </div>
+                </div>
+                <input type="file" id="ai-banner-upload" accept="image/*,video/*" style="display:none" onchange="builder.handleAIBannerUpload(this.files)">
+              </div>
             </div>
 
           </div>

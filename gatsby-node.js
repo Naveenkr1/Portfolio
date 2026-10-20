@@ -80,6 +80,9 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest, getNo
         item.toc_enabled = item.tocEnabled;
         item.toc_items = item.tocItems;
         item.project_type = item.project_type || 'case-study';
+        item.ai_label = item.ai_label || (item.project_type === 'ai-lab' ? 'AI LAB' : '');
+        item.labels = Array.isArray(item.labels) ? item.labels : [];
+        item.cta_button = item.cta_button || null;
       }
 
       if (item.tech && typeof item.tech === 'string') {
@@ -335,6 +338,10 @@ exports.createSchemaCustomization = ({ actions }) => {
       external: String
       button: String
       cta: String
+      project_type: String
+      ai_label: String
+      labels: [String]
+      cta_button: CaseStudyCTAButton
     }
     type TOCItem {
       text: String
@@ -343,6 +350,13 @@ exports.createSchemaCustomization = ({ actions }) => {
     type CaseStudyDetailItem {
       label: String
       value: String
+    }
+    type CaseStudyCTAButton {
+      enabled: Boolean
+      text: String
+      url: String
+      styleVariant: String
+      color: String
     }
     type MongodbPortfolioCaseStudies implements Node @infer {
       title: String
@@ -358,6 +372,10 @@ exports.createSchemaCustomization = ({ actions }) => {
       toc_enabled: Boolean
       toc_items: [CaseStudyTOCItem]
       markdown: String
+      project_type: String
+      ai_label: String
+      labels: [String]
+      cta_button: CaseStudyCTAButton
     }
     type CaseStudyTOCItem {
       text: String

@@ -107,6 +107,7 @@ class CaseStudyBuilder {
 
     // Initialize Global Builder Drag and Drop
     window.bindFileDragAndDrop('banner-upload-container', 'banner-upload');
+    this.initDragAndDrop();
   }
 
 
@@ -178,6 +179,28 @@ class CaseStudyBuilder {
     if (labelCS) labelCS.classList.toggle('active', !isAILab);
     if (labelAI) labelAI.classList.toggle('active', isAILab);
 
+    const metaCS = document.getElementById('builder-meta-case-study');
+    const metaAI = document.getElementById('builder-meta-ai-lab');
+    if (metaCS) metaCS.style.display = isAILab ? 'none' : 'block';
+    if (metaAI) metaAI.style.display = isAILab ? 'block' : 'none';
+
+    // Synchronize values between Case Study and AI Lab inputs
+    const titleHeader = document.getElementById('builder-case-study-title');
+    const titleAI = document.getElementById('builder-ai-title');
+    if (isAILab) {
+      if (titleAI && titleHeader && !titleAI.value) titleAI.value = titleHeader.value;
+    } else {
+      if (titleHeader && titleAI && !titleHeader.value) titleHeader.value = titleAI.value;
+    }
+
+    const slugHeader = document.getElementById('builder-case-study-slug-header');
+    const slugMeta = document.getElementById('builder-meta-slug');
+    const slugAI = document.getElementById('builder-ai-slug');
+    const currentSlug = this.slug || slugHeader?.value || slugMeta?.value || slugAI?.value || '';
+    if (slugHeader) slugHeader.value = currentSlug;
+    if (slugMeta) slugMeta.value = currentSlug;
+    if (slugAI) slugAI.value = currentSlug;
+
     const headerPrefix = document.getElementById('builder-slug-prefix');
     if (headerPrefix) headerPrefix.textContent = `/${prefix}/`;
     const metaPrefix = document.getElementById('builder-meta-slug-prefix');
@@ -186,6 +209,12 @@ class CaseStudyBuilder {
     const previewBtn = document.getElementById('btn-builder-preview');
     if (previewBtn && this.slug) {
       previewBtn.href = `${window.location.origin}/${prefix}/${this.slug}/`;
+    }
+
+    if (isAILab) {
+      this.renderAILabels();
+      this.renderAICTAPreview();
+      this.updateBannerDisplay(this.banner);
     }
   }
 
@@ -196,6 +225,7 @@ class CaseStudyBuilder {
     this.slug = slug;
     this.title = study.title;
     this.published = study.published;
+    this.aiLabels = [];
     this.setProjectType(study.project_type || 'case-study');
     
     document.getElementById('builder-case-study-title').value = this.title;
@@ -218,6 +248,8 @@ class CaseStudyBuilder {
     this.title = '';
     this.published = false;
     this.blocks = [];
+    this.banner = '';
+    this.aiLabels = [];
     this.setProjectType('case-study');
     
     document.getElementById('builder-case-study-title').value = '';
@@ -229,6 +261,21 @@ class CaseStudyBuilder {
     document.getElementById('builder-meta-tagline').value = '';
     document.getElementById('builder-meta-subtagline').value = '';
     document.getElementById('builder-meta-details-list').innerHTML = '';
+
+    const aiLabel = document.getElementById('builder-ai-label');
+    if (aiLabel) aiLabel.value = 'AI LAB';
+    const aiTitle = document.getElementById('builder-ai-title');
+    if (aiTitle) aiTitle.value = '';
+    const aiSubtext = document.getElementById('builder-ai-subtext');
+    if (aiSubtext) aiSubtext.value = '';
+    const aiSlug = document.getElementById('builder-ai-slug');
+    if (aiSlug) aiSlug.value = '';
+    const ctaEnable = document.getElementById('ai-builder-cta-enable');
+    if (ctaEnable) ctaEnable.checked = false;
+    this.toggleAICTA(false);
+    this.renderAILabels();
+
+    this.updateBannerDisplay('');
 
     document.getElementById('builder-overlay').classList.add('active');
     this.render();
@@ -270,35 +317,54 @@ class CaseStudyBuilder {
       }
       
       this.banner = meta.banner || '';
-      const bannerPreview = document.getElementById('banner-preview');
-      const bannerVideoPreview = document.getElementById('banner-video-preview');
-      const bannerPlaceholder = document.getElementById('banner-placeholder');
-      
-      bannerPreview.style.display = 'none';
-      if (bannerVideoPreview) bannerVideoPreview.style.display = 'none';
-      bannerPlaceholder.style.display = 'flex';
+      this.updateBannerDisplay(this.banner);
 
-      if (this.banner) {
-        const fullUrl = this.banner.startsWith('/uploads') ? `${API}${this.banner}` : this.banner;
-        const isVideo = (url) => {
-          if (!url) return false;
-          if (url.startsWith('data:video/')) return true;
-          const videoExtensions = /\.(mp4|webm|ogg|mov|m4v|ogv)($|\?)/i;
-          return videoExtensions.test(url) || url.includes('/video/upload/');
+      // AI Lab specific metadata
+      this.aiLabels = Array.isArray(meta.labels) ? meta.labels : [];
+      const aiLabelInput = document.getElementById('builder-ai-label');
+      if (aiLabelInput) aiLabelInput.value = meta.ai_label || 'AI LAB';
+
+      const aiTitleInput = document.getElementById('builder-ai-title');
+      if (aiTitleInput) aiTitleInput.value = meta.title || this.title || '';
+
+      const aiSubtextInput = document.getElementById('builder-ai-subtext');
+      if (aiSubtextInput) aiSubtextInput.value = summaryParts[0] || meta.summary || '';
+
+      const aiSlugInput = document.getElementById('builder-ai-slug');
+      if (aiSlugInput) aiSlugInput.value = finalSlug;
+
+      // AI Lab CTA button
+      let btnData = meta.cta_button;
+      if (!btnData && this.blocks && this.blocks.length > 0 && this.blocks[0].type === 'button') {
+        btnData = {
+          enabled: true,
+          text: this.blocks[0].text || 'View Project',
+          url: this.blocks[0].url || '',
+          styleVariant: this.blocks[0].styleVariant || 'outline',
+          color: this.blocks[0].color || '#64ffda',
         };
-
-        if (isVideo(fullUrl)) {
-          if (bannerVideoPreview) {
-            bannerVideoPreview.src = fullUrl;
-            bannerVideoPreview.style.display = 'block';
-            bannerPlaceholder.style.display = 'none';
-          }
-        } else {
-          bannerPreview.src = fullUrl;
-          bannerPreview.style.display = 'block';
-          bannerPlaceholder.style.display = 'none';
-        }
       }
+
+      const ctaEnable = document.getElementById('ai-builder-cta-enable');
+      const ctaText = document.getElementById('ai-cta-text');
+      const ctaUrl = document.getElementById('ai-cta-url');
+      const ctaStyle = document.getElementById('ai-cta-style');
+      const ctaColor = document.getElementById('ai-cta-color');
+
+      if (btnData && btnData.enabled !== false && (btnData.text || btnData.url)) {
+        if (ctaEnable) ctaEnable.checked = true;
+        if (ctaText) ctaText.value = btnData.text || 'Chrome Store';
+        if (ctaUrl) ctaUrl.value = btnData.url || '';
+        if (ctaStyle) ctaStyle.value = btnData.styleVariant || 'outline';
+        if (ctaColor) ctaColor.value = btnData.color || '#64ffda';
+        this.toggleAICTA(true);
+      } else {
+        if (ctaEnable) ctaEnable.checked = false;
+        this.toggleAICTA(false);
+      }
+
+      this.renderAILabels();
+      this.renderAICTAPreview();
       
       this.render();
     } catch (err) {
@@ -321,8 +387,20 @@ class CaseStudyBuilder {
     container.appendChild(div);
   }
 
-  addBlock(type) {
-    const id = Date.now().toString();
+  getBlockBadgeLabel(type) {
+    const labels = {
+      text: 'Text Section',
+      image: 'Image Grid',
+      cards: 'Add Cards',
+      callout: 'Callout (Pro Tips)',
+      button: 'CTA Button',
+      toc: 'Table of Contents'
+    };
+    return labels[type] || 'Block Section';
+  }
+
+  createBlockObject(type) {
+    const id = Date.now().toString() + '-' + Math.floor(Math.random() * 1000);
     let block = { id, type };
 
     if (type === 'text') {
@@ -354,17 +432,112 @@ class CaseStudyBuilder {
       block.align = 'center';
       block.newTab = true;
     }
+    return block;
+  }
 
+  syncCurrentBlocksFromDOM() {
+    const container = document.getElementById('builder-blocks-list');
+    if (!container) return;
+
+    const wrappers = container.querySelectorAll('.builder-block-wrapper');
+    wrappers.forEach(wrapper => {
+      const id = wrapper.dataset.id;
+      const block = this.blocks.find(b => b.id === id);
+      if (!block) return;
+
+      if (block.type === 'text') {
+        const editor = wrapper.querySelector('.rte-editor');
+        if (editor) block.content = editor.innerHTML;
+        const tocCheck = wrapper.querySelector('.block-toc-config input[type="checkbox"]');
+        if (tocCheck) block.tocEntry = tocCheck.checked;
+        const tocInput = wrapper.querySelector('.block-toc-config input[type="text"]');
+        if (tocInput) block.tocName = tocInput.value;
+      } else if (block.type === 'callout') {
+        const titleInput = wrapper.querySelector('input[type="text"]');
+        if (titleInput) block.heading = titleInput.value;
+        const editor = wrapper.querySelector('.rte-editor');
+        if (editor) block.content = editor.innerHTML;
+      } else if (block.type === 'cards') {
+        const cardBoxes = wrapper.querySelectorAll('.cards-builder-grid > div');
+        cardBoxes.forEach((box, i) => {
+          if (block.cards[i]) {
+            const hInput = box.querySelector('input[type="text"]');
+            if (hInput) block.cards[i].heading = hInput.value;
+            const tArea = box.querySelector('textarea');
+            if (tArea) block.cards[i].text = tArea.value;
+          }
+        });
+      } else if (block.type === 'button') {
+        const textInput = wrapper.querySelector('input[placeholder*="Live App"], input[placeholder*="Project"]');
+        if (textInput) block.text = textInput.value;
+        const urlInput = wrapper.querySelector('input[type="url"], input[placeholder*="https://"]');
+        if (urlInput) block.url = urlInput.value;
+      }
+    });
+  }
+
+  addBlock(type) {
+    this.syncCurrentBlocksFromDOM();
+    const block = this.createBlockObject(type);
     this.blocks.push(block);
     this.render();
+
+    setTimeout(() => {
+      const el = document.querySelector(`.builder-block-wrapper[data-id="${block.id}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('block-just-inserted');
+        setTimeout(() => el.classList.remove('block-just-inserted'), 1200);
+      }
+    }, 60);
+  }
+
+  insertBlockAt(type, index) {
+    this.syncCurrentBlocksFromDOM();
+    const block = this.createBlockObject(type);
+    if (index === undefined || index === null || index >= this.blocks.length) {
+      this.blocks.push(block);
+    } else {
+      const safeIndex = Math.max(0, index);
+      this.blocks.splice(safeIndex, 0, block);
+    }
+    this.render();
+
+    setTimeout(() => {
+      const el = document.querySelector(`.builder-block-wrapper[data-id="${block.id}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('block-just-inserted');
+        setTimeout(() => el.classList.remove('block-just-inserted'), 1200);
+      }
+    }, 60);
+  }
+
+  reorderBlock(fromIndex, toIndex) {
+    if (fromIndex === toIndex || fromIndex < 0 || fromIndex >= this.blocks.length) return;
+    this.syncCurrentBlocksFromDOM();
+    const [moved] = this.blocks.splice(fromIndex, 1);
+    const safeToIndex = Math.max(0, Math.min(toIndex, this.blocks.length));
+    this.blocks.splice(safeToIndex, 0, moved);
+    this.render();
+
+    setTimeout(() => {
+      const el = document.querySelector(`.builder-block-wrapper[data-id="${moved.id}"]`);
+      if (el) {
+        el.classList.add('block-just-inserted');
+        setTimeout(() => el.classList.remove('block-just-inserted'), 1000);
+      }
+    }, 60);
   }
 
   removeBlock(id) {
+    this.syncCurrentBlocksFromDOM();
     this.blocks = this.blocks.filter(b => b.id !== id);
     this.render();
   }
 
   moveBlock(id, direction) {
+    this.syncCurrentBlocksFromDOM();
     const idx = this.blocks.findIndex(b => b.id === id);
     if (idx === -1) return;
     const newIdx = idx + direction;
@@ -374,6 +547,14 @@ class CaseStudyBuilder {
     this.blocks[idx] = this.blocks[newIdx];
     this.blocks[newIdx] = temp;
     this.render();
+
+    setTimeout(() => {
+      const el = document.querySelector(`.builder-block-wrapper[data-id="${id}"]`);
+      if (el) {
+        el.classList.add('block-just-inserted');
+        setTimeout(() => el.classList.remove('block-just-inserted'), 800);
+      }
+    }, 60);
   }
 
   applyTemplate(template) {
@@ -390,12 +571,225 @@ class CaseStudyBuilder {
     this.render();
   }
 
+  getDropTarget(e) {
+    const container = document.getElementById('builder-blocks-list');
+    const wrappers = Array.from(container.querySelectorAll('.builder-block-wrapper:not(.is-dragging)'));
+
+    if (wrappers.length === 0) {
+      return { index: 0, element: null, position: 'inside' };
+    }
+
+    const clientY = e.clientY;
+
+    for (let i = 0; i < wrappers.length; i++) {
+      const rect = wrappers[i].getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      if (clientY < midY) {
+        return {
+          index: i,
+          element: wrappers[i],
+          position: 'before'
+        };
+      }
+    }
+
+    return {
+      index: wrappers.length,
+      element: wrappers[wrappers.length - 1],
+      position: 'after'
+    };
+  }
+
+  showDropIndicator(target) {
+    if (!target) return;
+
+    let indicator = document.getElementById('builder-drop-indicator');
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.id = 'builder-drop-indicator';
+      indicator.className = 'builder-drop-indicator';
+    }
+
+    let label = 'Insert Block Here';
+    if (this.draggingType === 'new' && this.draggedToolType) {
+      label = `+ Insert ${this.getBlockBadgeLabel(this.draggedToolType)}`;
+    } else if (this.draggingType === 'reorder') {
+      label = '↕ Move Section Here';
+    }
+    indicator.setAttribute('data-label', label);
+
+    const container = document.getElementById('builder-blocks-list');
+    const empty = document.querySelector('.builder-empty');
+
+    if (target.position === 'inside' || !target.element) {
+      if (empty) empty.classList.add('drag-target-active');
+      if (indicator.parentNode !== container) {
+        container.appendChild(indicator);
+      }
+      return;
+    }
+
+    if (empty) empty.classList.remove('drag-target-active');
+
+    if (target.position === 'before') {
+      if (target.element.previousElementSibling !== indicator) {
+        container.insertBefore(indicator, target.element);
+      }
+    } else if (target.position === 'after') {
+      if (target.element.nextElementSibling !== indicator) {
+        if (target.element.nextSibling) {
+          container.insertBefore(indicator, target.element.nextSibling);
+        } else {
+          container.appendChild(indicator);
+        }
+      }
+    }
+  }
+
+  removeDropIndicator() {
+    const indicator = document.getElementById('builder-drop-indicator');
+    if (indicator && indicator.parentNode) {
+      indicator.parentNode.removeChild(indicator);
+    }
+    const empty = document.querySelector('.builder-empty');
+    if (empty) empty.classList.remove('drag-target-active');
+  }
+
+  initDragAndDrop() {
+    this.draggingType = null;
+    this.draggedToolType = null;
+    this.draggingBlockId = null;
+    this.currentDropTarget = null;
+
+    // Sidebar Tools: Drag to insert
+    const tools = document.querySelectorAll('.builder-sidebar .block-tool');
+    tools.forEach(tool => {
+      tool.setAttribute('draggable', 'true');
+
+      tool.addEventListener('dragstart', (e) => {
+        this.syncCurrentBlocksFromDOM();
+        const type = tool.dataset.type || tool.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+        if (!type) return;
+
+        this.draggingType = 'new';
+        this.draggedToolType = type;
+        tool.classList.add('is-dragging-tool');
+
+        e.dataTransfer.effectAllowed = 'copy';
+        e.dataTransfer.setData('text/plain', type);
+        e.dataTransfer.setData('application/x-builder-tool', type);
+
+        document.body.classList.add('builder-is-dragging');
+      });
+
+      tool.addEventListener('dragend', () => {
+        tool.classList.remove('is-dragging-tool');
+        document.body.classList.remove('builder-is-dragging');
+        this.draggingType = null;
+        this.draggedToolType = null;
+        this.removeDropIndicator();
+      });
+    });
+
+    // Canvas Drop Target & Auto-Scroll
+    const canvas = document.querySelector('.builder-canvas');
+    if (!canvas) return;
+
+    canvas.addEventListener('dragover', (e) => {
+      if (!this.draggingType) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = this.draggingType === 'new' ? 'copy' : 'move';
+
+      // Auto-scroll when near top or bottom edges
+      const rect = canvas.getBoundingClientRect();
+      const scrollZone = 70;
+      if (e.clientY < rect.top + scrollZone) {
+        canvas.scrollTop -= 14;
+      } else if (e.clientY > rect.bottom - scrollZone) {
+        canvas.scrollTop += 14;
+      }
+
+      const target = this.getDropTarget(e);
+      this.currentDropTarget = target;
+      this.showDropIndicator(target);
+    });
+
+    canvas.addEventListener('dragleave', (e) => {
+      if (!this.draggingType) return;
+      const rect = canvas.getBoundingClientRect();
+      if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+        this.removeDropIndicator();
+        this.currentDropTarget = null;
+      }
+    });
+
+    canvas.addEventListener('drop', (e) => {
+      if (!this.draggingType) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const target = this.currentDropTarget || this.getDropTarget(e);
+      const draggingType = this.draggingType;
+      const draggedToolType = this.draggedToolType;
+      const draggingBlockId = this.draggingBlockId;
+
+      this.removeDropIndicator();
+      this.draggingType = null;
+      this.draggedToolType = null;
+      this.draggingBlockId = null;
+      this.currentDropTarget = null;
+      document.body.classList.remove('builder-is-dragging');
+
+      if (draggingType === 'new' && draggedToolType) {
+        let insertIndex = this.blocks.length;
+        if (target && target.element && target.element.dataset.id) {
+          const idxInBlocks = this.blocks.findIndex(b => b.id === target.element.dataset.id);
+          if (idxInBlocks !== -1) {
+            insertIndex = target.position === 'before' ? idxInBlocks : idxInBlocks + 1;
+          }
+        } else if (target && target.position === 'inside') {
+          insertIndex = 0;
+        }
+        this.insertBlockAt(draggedToolType, insertIndex);
+      } else if (draggingType === 'reorder' && draggingBlockId) {
+        const fromIndex = this.blocks.findIndex(b => b.id === draggingBlockId);
+        if (fromIndex !== -1) {
+          let toIndex = fromIndex;
+          if (target && target.element && target.element.dataset.id) {
+            const targetBlockIndex = this.blocks.findIndex(b => b.id === target.element.dataset.id);
+            if (targetBlockIndex !== -1) {
+              toIndex = target.position === 'before' ? targetBlockIndex : targetBlockIndex + 1;
+              if (fromIndex < toIndex) {
+                toIndex = toIndex - 1;
+              }
+            }
+          } else if (target && target.position === 'after') {
+            toIndex = this.blocks.length - 1;
+          } else if (target && target.position === 'inside') {
+            toIndex = 0;
+          }
+          if (fromIndex !== toIndex) {
+            this.reorderBlock(fromIndex, toIndex);
+          }
+        }
+      }
+    });
+
+    // Global listener to cleanup draggable attribute if mouse released
+    document.addEventListener('mouseup', () => {
+      if (!this.draggingType) {
+        const draggables = document.querySelectorAll('.builder-block-wrapper[draggable="true"]');
+        draggables.forEach(d => d.removeAttribute('draggable'));
+      }
+    });
+  }
+
   render() {
     const container = document.getElementById('builder-blocks-list');
     container.innerHTML = '';
 
     if (this.blocks.length === 0) {
-      container.innerHTML = `<div class="builder-empty">Click an option in the sidebar to add a block</div>`;
+      container.innerHTML = `<div class="builder-empty">Click an option in the sidebar or drag blocks here to start building</div>`;
       return;
     }
 
@@ -419,8 +813,31 @@ class CaseStudyBuilder {
         blockHtml = this.renderButtonBlock(block);
       }
 
+      const blockLabel = this.getBlockBadgeLabel(block.type);
+
       el.innerHTML = `
+        <div class="block-header-bar">
+          <div class="block-drag-handle" title="Drag up or down to reorder" style="cursor: grab;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
+              <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+              <circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+            </svg>
+            <span class="block-badge">${blockLabel}</span>
+          </div>
+          <div class="block-header-meta">
+            <span class="block-order-badge">Section ${idx + 1}</span>
+          </div>
+        </div>
+
         <div class="block-controls">
+          <button class="ctrl-btn drag-handle" title="Drag to reorder" type="button" style="cursor: grab;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="8" cy="6" r="2"/><circle cx="16" cy="6" r="2"/>
+              <circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+              <circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/>
+            </svg>
+          </button>
           <button class="ctrl-btn" onclick="builder.moveBlock('${block.id}', -1)" title="Move Up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>
           <button class="ctrl-btn" onclick="builder.moveBlock('${block.id}', 1)" title="Move Down"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
           <button class="ctrl-btn delete" onclick="builder.removeBlock('${block.id}')" title="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
@@ -429,6 +846,37 @@ class CaseStudyBuilder {
           ${blockHtml}
         </div>
       `;
+
+      // Setup drag handles on this block wrapper
+      const handles = el.querySelectorAll('.block-drag-handle, .ctrl-btn.drag-handle');
+      handles.forEach(h => {
+        h.addEventListener('mousedown', () => {
+          el.setAttribute('draggable', 'true');
+        });
+        h.addEventListener('touchstart', () => {
+          el.setAttribute('draggable', 'true');
+        }, { passive: true });
+      });
+
+      el.addEventListener('dragstart', (e) => {
+        this.syncCurrentBlocksFromDOM();
+        this.draggingType = 'reorder';
+        this.draggingBlockId = block.id;
+        el.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', block.id);
+        e.dataTransfer.setData('application/x-builder-block', block.id);
+        document.body.classList.add('builder-is-dragging');
+      });
+
+      el.addEventListener('dragend', () => {
+        el.removeAttribute('draggable');
+        el.classList.remove('is-dragging');
+        document.body.classList.remove('builder-is-dragging');
+        this.draggingType = null;
+        this.draggingBlockId = null;
+        this.removeDropIndicator();
+      });
 
       container.appendChild(el);
       
@@ -736,9 +1184,9 @@ class CaseStudyBuilder {
             <span style="color:var(--light-slate); font-size:10px;">(Click to test link)</span>
           </label>
           <div style="background:var(--dark-navy); border:1px dashed var(--border-color); border-radius:8px; padding:28px 20px; text-align:${align};">
-            <a href="${url || 'javascript:void(0)'}" ${newTab ? 'target="_blank" rel="noopener noreferrer"' : ''} style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:1.15rem 2.2rem; font-family:var(--font-mono, monospace); font-size:${fontSize}; font-weight:500; line-height:1; text-decoration:none; color:${textProp}; background-color:${bgProp}; border:${borderProp}; border-radius:${borderRadius}; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
-              <span>${safeEsc(text)}</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <a href="${url || 'javascript:void(0)'}" ${newTab ? 'target="_blank" rel="noopener noreferrer"' : ''} style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:1.15rem 2.2rem; font-family:var(--font-mono, monospace); font-size:${fontSize}; font-weight:500; line-height:1; text-decoration:none; color:${textProp}; background-color:${bgProp}; border:${borderProp}; border-radius:${borderRadius}; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 15px rgba(0,0,0,0.2); white-space:nowrap; max-width:100%; box-sizing:border-box;">
+              <span style="white-space:nowrap; display:inline-block; line-height:1;">${safeEsc(text)}</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px; height:15px; min-width:15px; max-width:15px; flex-shrink:0; vertical-align:middle; display:inline-block;">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                 <polyline points="15 3 21 3 21 9"/>
                 <line x1="10" y1="14" x2="21" y2="3"/>
@@ -915,34 +1363,71 @@ class CaseStudyBuilder {
     status.textContent = 'Preparing files...';
 
     try {
-      this.title = document.getElementById('builder-case-study-title').value.trim() || 'Untitled';
-      
-      if (!this.slug) {
-        this.slug = this.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '');
-        document.getElementById('builder-case-study-slug').textContent = `/${this.slug}`;
+      const isAILab = this.projectType === 'ai-lab';
+      if (isAILab) {
+        const aiTitle = document.getElementById('builder-ai-title')?.value.trim();
+        if (aiTitle) this.title = aiTitle;
+        else this.title = document.getElementById('builder-case-study-title')?.value.trim() || 'Untitled';
+      } else {
+        this.title = document.getElementById('builder-case-study-title').value.trim() || 'Untitled';
       }
-
-      const tagline = document.getElementById('builder-meta-tagline').value;
-      const subtagline = document.getElementById('builder-meta-subtagline').value;
       
-      const slugInput = document.getElementById('builder-meta-slug');
+      const slugInput = isAILab ? (document.getElementById('builder-ai-slug') || document.getElementById('builder-meta-slug')) : document.getElementById('builder-meta-slug');
       const newSlug = slugInput ? slugInput.value.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '') : '';
 
-      const detailRows = document.querySelectorAll('#builder-meta-details-list .detail-row');
-      const details = Array.from(detailRows).map(row => ({
-        label: row.querySelector('.detail-label').value.trim(),
-        value: row.querySelector('.detail-value').value.trim()
-      })).filter(d => d.label || d.value);
+      if (!this.slug) {
+        this.slug = newSlug || this.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '');
+      }
+
+      let summary = '';
+      let details = [];
+      let aiLabel = 'AI LAB';
+      let labels = [];
+      let ctaButton = null;
+
+      if (isAILab) {
+        summary = document.getElementById('builder-ai-subtext')?.value.trim() || '';
+        aiLabel = document.getElementById('builder-ai-label')?.value.trim() || 'AI LAB';
+        labels = this.aiLabels || [];
+
+        const ctaEnabled = !!document.getElementById('ai-builder-cta-enable')?.checked;
+        if (ctaEnabled) {
+          ctaButton = {
+            enabled: true,
+            text: document.getElementById('ai-cta-text')?.value.trim() || 'View Project',
+            url: document.getElementById('ai-cta-url')?.value.trim() || '',
+            styleVariant: document.getElementById('ai-cta-style')?.value || 'outline',
+            color: document.getElementById('ai-cta-color')?.value || '#64ffda',
+          };
+          // If first block in blocks was a button block that duplicates this, remove it
+          if (this.blocks.length > 0 && this.blocks[0].type === 'button') {
+            this.blocks.shift();
+          }
+        }
+      } else {
+        const tagline = document.getElementById('builder-meta-tagline').value;
+        const subtagline = document.getElementById('builder-meta-subtagline').value;
+        summary = `${tagline} || ${subtagline}`;
+
+        const detailRows = document.querySelectorAll('#builder-meta-details-list .detail-row');
+        details = Array.from(detailRows).map(row => ({
+          label: row.querySelector('.detail-label').value.trim(),
+          value: row.querySelector('.detail-value').value.trim()
+        })).filter(d => d.label || d.value);
+      }
 
       const body = {
         title: this.title,
         blocks: this.blocks,
         published: document.getElementById('builder-publish-toggle').checked,
         project_type: this.projectType || 'case-study',
-        summary: `${tagline} || ${subtagline}`,
+        summary: summary,
         details: details,
         banner: this.banner,
-        newSlug: newSlug
+        newSlug: newSlug,
+        ai_label: aiLabel,
+        labels: labels,
+        cta_button: ctaButton,
       };
 
       const xhr = new XMLHttpRequest();
@@ -1058,30 +1543,139 @@ class CaseStudyBuilder {
     }
   }
 
+  renderAILabels() {
+    const container = document.getElementById('ai-builder-labels-list');
+    if (!container) return;
+    if (!this.aiLabels) this.aiLabels = [];
+    container.innerHTML = this.aiLabels.map((lbl, idx) => `
+      <span style="display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono, monospace); font-size:12px; color:var(--green); background:rgba(100,255,218,0.08); border:1px solid rgba(100,255,218,0.25); border-radius:99px; padding:3px 10px; line-height:1; user-select:none;">
+        ${window.esc ? window.esc(lbl) : lbl}
+        <button type="button" onclick="builder.removeAILabel(${idx})" style="background:transparent; border:none; color:var(--slate); cursor:pointer; font-size:13px; line-height:1; padding:0; display:inline-flex; align-items:center;" title="Remove label" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--slate)'">✕</button>
+      </span>
+    `).join('');
+  }
+
+  addAILabel() {
+    const input = document.getElementById('ai-builder-new-label-input');
+    if (!input) return;
+    const val = input.value.trim();
+    if (!val) return;
+    if (!this.aiLabels) this.aiLabels = [];
+    if (!this.aiLabels.includes(val)) {
+      this.aiLabels.push(val);
+      this.renderAILabels();
+    }
+    input.value = '';
+    input.focus();
+  }
+
+  removeAILabel(idx) {
+    if (!this.aiLabels) return;
+    this.aiLabels.splice(idx, 1);
+    this.renderAILabels();
+  }
+
+  toggleAICTA(checked) {
+    const fields = document.getElementById('ai-builder-cta-fields');
+    if (fields) fields.style.display = checked ? 'flex' : 'none';
+    this.renderAICTAPreview();
+  }
+
+  setAICTAColor(color) {
+    const colorInput = document.getElementById('ai-cta-color');
+    if (colorInput) colorInput.value = color;
+    this.renderAICTAPreview();
+  }
+
+  resetAICTADefaults() {
+    const textInput = document.getElementById('ai-cta-text');
+    const styleSelect = document.getElementById('ai-cta-style');
+    const colorInput = document.getElementById('ai-cta-color');
+    if (textInput) textInput.value = 'Chrome Store';
+    if (styleSelect) styleSelect.value = 'outline';
+    if (colorInput) colorInput.value = '#64ffda';
+    this.renderAICTAPreview();
+  }
+
+  renderAICTAPreview() {
+    const wrap = document.getElementById('ai-builder-cta-preview-wrap');
+    if (!wrap) return;
+    const enabled = document.getElementById('ai-builder-cta-enable')?.checked;
+    if (!enabled) {
+      wrap.innerHTML = `<span style="color:var(--slate); font-size:11px; font-style:italic;">CTA Button is currently disabled</span>`;
+      return;
+    }
+    const text = document.getElementById('ai-cta-text')?.value.trim() || 'Chrome Store';
+    const url = document.getElementById('ai-cta-url')?.value.trim() || '#';
+    const styleVariant = document.getElementById('ai-cta-style')?.value || 'outline';
+    const color = document.getElementById('ai-cta-color')?.value || '#64ffda';
+    const isFilled = styleVariant === 'filled';
+    const borderProp = `1px solid ${color}`;
+    const bgProp = isFilled ? color : 'transparent';
+    const textProp = isFilled ? '#0a192f' : color;
+    const safeEsc = (s) => (window.esc ? window.esc(s) : String(s || '').replace(/"/g, '&quot;'));
+
+    wrap.innerHTML = `
+      <a href="${url || 'javascript:void(0)'}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:1.15rem 2.2rem; font-family:var(--font-mono, monospace); font-size:14px; font-weight:500; line-height:1; text-decoration:none; color:${textProp}; background-color:${bgProp}; border:${borderProp}; border-radius:4px; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 15px rgba(0,0,0,0.2); white-space:nowrap; max-width:100%; box-sizing:border-box;">
+        <span style="white-space:nowrap; display:inline-block; line-height:1;">${safeEsc(text)}</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px; height:15px; min-width:15px; max-width:15px; flex-shrink:0; vertical-align:middle; display:inline-block;">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+    `;
+  }
+
+  updateBannerDisplay(url) {
+    const isVideo = (u) => {
+      if (!u) return false;
+      if (u.startsWith('data:video/')) return true;
+      const videoExtensions = /\.(mp4|webm|ogg|mov|m4v|ogv)($|\?)/i;
+      return videoExtensions.test(u) || u.includes('/video/upload/');
+    };
+
+    const bp = document.getElementById('banner-preview');
+    const bvp = document.getElementById('banner-video-preview');
+    const bph = document.getElementById('banner-placeholder');
+
+    const abp = document.getElementById('ai-banner-preview');
+    const abvp = document.getElementById('ai-banner-video-preview');
+    const abph = document.getElementById('ai-banner-placeholder');
+
+    if (bp) bp.style.display = 'none';
+    if (bvp) bvp.style.display = 'none';
+    if (bph) bph.style.display = url ? 'none' : 'flex';
+
+    if (abp) abp.style.display = 'none';
+    if (abvp) abvp.style.display = 'none';
+    if (abph) abph.style.display = url ? 'none' : 'flex';
+
+    if (!url) return;
+
+    const fullUrl = url.startsWith('/uploads') ? `${API}${url}` : url;
+    if (isVideo(fullUrl)) {
+      if (bvp) { bvp.src = fullUrl; bvp.style.display = 'block'; }
+      if (abvp) { abvp.src = fullUrl; abvp.style.display = 'block'; }
+    } else {
+      if (bp) { bp.src = fullUrl; bp.style.display = 'block'; }
+      if (abp) { abp.src = fullUrl; abp.style.display = 'block'; }
+    }
+  }
+
+  handleAIBannerUpload(files) {
+    if (files && files[0]) {
+      this.handleBannerUpload(files);
+    }
+  }
+
   handleBannerUpload(files) {
     if (files && files[0]) {
       const file = files[0];
-      const isVideoFile = file.type.startsWith('video/');
       const reader = new FileReader();
       reader.onload = (e) => {
         this.banner = e.target.result;
-        const bannerPreview = document.getElementById('banner-preview');
-        const bannerVideoPreview = document.getElementById('banner-video-preview');
-        const bannerPlaceholder = document.getElementById('banner-placeholder');
-        
-        bannerPreview.style.display = 'none';
-        if (bannerVideoPreview) bannerVideoPreview.style.display = 'none';
-        bannerPlaceholder.style.display = 'none';
-
-        if (isVideoFile) {
-          if (bannerVideoPreview) {
-            bannerVideoPreview.src = this.banner;
-            bannerVideoPreview.style.display = 'block';
-          }
-        } else {
-          bannerPreview.src = this.banner;
-          bannerPreview.style.display = 'block';
-        }
+        this.updateBannerDisplay(this.banner);
       };
       reader.readAsDataURL(file);
     }

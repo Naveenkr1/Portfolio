@@ -10,22 +10,22 @@ import { marked } from 'marked';
 
 const StyledCaseStudyContainer = styled.main`
   width: 100%;
-  max-width: 1200px;
+  max-width: ${props => (props.$isAILab ? '900px' : '1200px')};
   margin: 0 auto;
-  padding: ${props => (props.$hasBanner ? '40px 50px 80px' : '120px 50px 80px')};
-  display: grid;
+  padding: ${props => (props.$isAILab ? '120px 40px 80px' : (props.$hasBanner ? '40px 50px 80px' : '120px 50px 80px'))};
+  display: ${props => (props.$isAILab ? 'block' : 'grid')};
   grid-template-columns: 250px 1fr;
   gap: 60px;
   justify-content: center;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
-    padding: ${props => (props.$hasBanner ? '20px 25px 60px' : '100px 25px 60px')};
+    padding: ${props => (props.$isAILab ? '90px 24px 60px' : (props.$hasBanner ? '20px 25px 60px' : '100px 25px 60px'))};
     gap: 0;
   }
 
   @media (max-width: 480px) {
-    padding: ${props => (props.$hasBanner ? '15px 16px 40px' : '100px 16px 40px')};
+    padding: ${props => (props.$isAILab ? '80px 16px 40px' : (props.$hasBanner ? '15px 16px 40px' : '100px 16px 40px'))};
   }
 `;
 
@@ -628,33 +628,58 @@ const StyledContentArea = styled.div`
 
   /* CTA Button Block */
   .cta-button-container {
-    margin: 40px 0;
-    width: 100%;
+    margin: 40px 0 !important;
+    width: 100% !important;
 
     .case-study-cta-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      text-decoration: none;
-      font-family: var(--font-mono);
-      font-weight: 500;
-      line-height: 1;
-      padding: 1.15rem 2.2rem;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      text-decoration: none !important;
+      font-family: var(--font-mono, monospace) !important;
+      font-weight: 500 !important;
+      line-height: 1 !important;
+      padding: 1.15rem 2.2rem !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      transition: var(--transition) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+      box-sizing: border-box !important;
+      max-width: 100% !important;
+
+      &::before,
+      &::after {
+        display: none !important;
+        content: none !important;
+      }
+
+      span {
+        white-space: nowrap !important;
+        display: inline-block !important;
+        line-height: 1 !important;
+        flex-shrink: 0 !important;
+      }
 
       svg {
-        transition: transform 0.2s ease;
+        width: 15px !important;
+        height: 15px !important;
+        min-width: 15px !important;
+        max-width: 15px !important;
+        flex-shrink: 0 !important;
+        fill: none !important;
+        stroke: currentColor !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+        transition: transform 0.2s ease !important;
       }
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35) !important;
 
         svg {
-          transform: translate(2px, -2px);
+          transform: translate(2px, -2px) !important;
         }
       }
 
@@ -663,11 +688,11 @@ const StyledContentArea = styled.div`
       }
 
       &.btn-filled:hover {
-        filter: brightness(1.12);
+        filter: brightness(1.12) !important;
       }
 
       &:active {
-        transform: translateY(0);
+        transform: translateY(0) !important;
       }
     }
   }
@@ -901,6 +926,113 @@ const StyledContentArea = styled.div`
   }
 `;
 
+const StyledAILabHeader = styled.header`
+  margin-bottom: 50px;
+  text-align: left;
+  width: 100%;
+
+  .ai-lab-label {
+    display: inline-block;
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    letter-spacing: 0;
+    word-spacing: normal;
+    text-transform: uppercase;
+  }
+
+  .ai-lab-title {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--lightest-slate);
+    line-height: 1.15;
+    margin: 0 0 0px;
+    letter-spacing: -0.5px;
+  }
+
+  .ai-lab-subtext {
+    color: var(--slate);
+    font-size: 20px;
+    line-height: 1.6;
+    max-width: 760px;
+    margin: 12px 0 0 0;
+  }
+
+  .ai-lab-labels-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0 0;
+  }
+
+  .ai-lab-pill-label {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--green);
+    background: rgba(100, 255, 218, 0.08);
+    border: 1px solid rgba(100, 255, 218, 0.25);
+    border-radius: 99px;
+    padding: 4px 12px;
+    white-space: nowrap;
+    line-height: 1.4;
+    transition: var(--transition);
+
+    &:hover {
+      background: rgba(100, 255, 218, 0.15);
+      border-color: var(--green);
+    }
+  }
+
+  .ai-lab-cta-container {
+    margin: 24px 0 0;
+    text-align: left;
+  }
+
+  .ai-lab-hero-media {
+    margin: 36px 0 0;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    background: var(--dark-navy);
+    box-shadow: 0 10px 30px -15px var(--navy-shadow);
+
+    img, video {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      cursor: zoom-in;
+    }
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: 35px;
+
+    .ai-lab-title {
+      font-size: clamp(24px, 6vw, 36px);
+      margin-bottom: 0px;
+    }
+
+    .ai-lab-subtext {
+      font-size: clamp(16px, 4vw, 20px);
+      line-height: 1.55;
+      margin-top: 10px;
+    }
+
+    .ai-lab-hero-media {
+      margin-top: 24px;
+      border-radius: 8px;
+    }
+  }
+`;
+
 const StyledHero = styled.div`
   display: flex;
   flex-direction: column;
@@ -1020,6 +1152,10 @@ const CaseStudyTemplate = ({ data, location }) => {
     slug: frontSlug,
     toc_items,
     markdown,
+    project_type,
+    ai_label,
+    labels,
+    cta_button,
   } = caseStudy;
   const frontmatter = {
     title,
@@ -1033,8 +1169,22 @@ const CaseStudyTemplate = ({ data, location }) => {
     tocEnabled: toc_enabled,
     slug: frontSlug,
     tocItems: toc_items,
+    project_type,
+    ai_label,
+    labels,
+    cta_button,
   };
   const html = marked.parse(markdown || '');
+
+  const isAILab = frontmatter.project_type === 'ai-lab' ||
+    (location && (location.pathname.includes('/ai-lab') || location.pathname.includes('/ai.lab')));
+  const cleanSummary = (frontmatter.summary || '').split(' || ')[0] || frontmatter.summary || '';
+  const topCTA = frontmatter.cta_button;
+
+  let processedHtml = html;
+  if (isAILab && topCTA && topCTA.enabled) {
+    processedHtml = processedHtml.replace(/<div class="cta-button-container"[^>]*>[\s\S]*?<\/div>/i, '');
+  }
 
   const [activeSection, setActiveSection] = useState('');
   const [lightbox, setLightbox] = useState({ isOpen: false, currentIdx: 0, images: [] });
@@ -1261,7 +1411,7 @@ const CaseStudyTemplate = ({ data, location }) => {
   useEffect(() => {
     // Collect all images for the gallery
     const contentImgs = Array.from(document.querySelectorAll('#case-study-content img'));
-    const bannerImg = document.querySelector('.banner-img');
+    const bannerImg = document.querySelector('.banner-img, .ai-lab-hero-media img');
     const allGalleryImages = [];
 
     const isBannerImage = bannerImg && bannerImg.tagName.toLowerCase() === 'img';
@@ -1292,7 +1442,7 @@ const CaseStudyTemplate = ({ data, location }) => {
 
   return (
     <Layout location={location} hideSocialAndEmail={true}>
-      {frontmatter.banner && (
+      {!isAILab && frontmatter.banner && (
         <StyledBanner className="banner-reveal">
           {isVideoBanner ? (
             <video
@@ -1315,122 +1465,186 @@ const CaseStudyTemplate = ({ data, location }) => {
         </StyledBanner>
       )}
 
-      <StyledCaseStudyContainer $hasBanner={!!frontmatter.banner}>
-        <StyledSidebar className="toc-reveal">
-          {hasTOC && (
-            <StyledTOCInner>
-              <div className="toc-label">On this page</div>
-              <ul>
-                <li>
-                  <a href="#overview" className={activeSection === 'overview' ? 'active' : ''}>
-                    <span className="toc-number">01</span>
-                    Overview
-                  </a>
-                </li>
-                {frontmatter.tocItems
-                  .filter(item => item.anchor !== 'overview') // prevent duplicate
-                  .map((item, idx) => (
-                    <li key={idx}>
-                      <a
-                        href={`#${item.anchor}`}
-                        className={activeSection === item.anchor ? 'active' : ''}
-                      >
-                        <span className="toc-number">{(idx + 2).toString().padStart(2, '0')}</span>
-                        {item.text}
-                      </a>
-                    </li>
-                  ))}
-              </ul>
-            </StyledTOCInner>
-          )}
-
-          {/* <button className="back-to-top" onClick={scrollToTop}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M7.82843 10.9999H20V12.9999H7.82843L13.1924 18.3638L11.7782 19.778L4 11.9999L11.7782 4.22168L13.1924 5.63589L7.82843 10.9999Z"></path>
-            </svg>
-            Back to top
-          </button> */}
-        </StyledSidebar>
+      <StyledCaseStudyContainer $hasBanner={!isAILab && !!frontmatter.banner} $isAILab={isAILab}>
+        {!isAILab && (
+          <StyledSidebar className="toc-reveal">
+            {hasTOC && (
+              <StyledTOCInner>
+                <div className="toc-label">On this page</div>
+                <ul>
+                  <li>
+                    <a href="#overview" className={activeSection === 'overview' ? 'active' : ''}>
+                      <span className="toc-number">01</span>
+                      Overview
+                    </a>
+                  </li>
+                  {frontmatter.tocItems
+                    .filter(item => item.anchor !== 'overview') // prevent duplicate
+                    .map((item, idx) => (
+                      <li key={idx}>
+                        <a
+                          href={`#${item.anchor}`}
+                          className={activeSection === item.anchor ? 'active' : ''}
+                        >
+                          <span className="toc-number">{(idx + 2).toString().padStart(2, '0')}</span>
+                          {item.text}
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+              </StyledTOCInner>
+            )}
+          </StyledSidebar>
+        )}
 
         <StyledContentArea>
-          {(() => {
-            const roleParts = (frontmatter.role || '').split(' || ');
-            const myRole = roleParts[0] || '';
-            const timeline = roleParts[1] || '';
+          {isAILab ? (
+            <StyledAILabHeader className="ai-lab-header-reveal">
+              {/* 1. AI Label */}
+              <span className="ai-lab-label">{frontmatter.ai_label || 'AI LAB'}</span>
 
-            const summaryParts = (frontmatter.summary || '').split(' || ');
-            const tagline = summaryParts[0] || '';
-            const subtagline = summaryParts[1] || '';
+              {/* 2. Title */}
+              <h1 className="ai-lab-title">{frontmatter.title}</h1>
 
-            return (
-              <StyledHeaderDetails id="overview" className="header-details-reveal">
-                <StyledHero>
-                  {hasTOC && <div className="section-eyebrow">01. Overview</div>}
-                  {myRole && <span className="internship-tag">{myRole}</span>}
-                  <h1>{frontmatter.title}</h1>
-                  {tagline && <div className="tagline">{tagline}</div>}
-                  {subtagline && <div className="subtagline">{subtagline}</div>}
-                </StyledHero>
+              {/* 3. Subtext */}
+              {cleanSummary && <p className="ai-lab-subtext">{cleanSummary}</p>}
 
-                {frontmatter.details && frontmatter.details.length > 0 ? (
-                  <StyledMetadataRow>
-                    {frontmatter.details.map((detail, idx) => (
-                      <div className="meta-item" key={idx}>
-                        <h3>{detail.label}</h3>
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: detail.value.replace(/\\n/g, '<br/>'),
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </StyledMetadataRow>
-                ) : (
-                  (frontmatter.role || frontmatter.results || frontmatter.methods) && (
+              {/* 4. Labels in single line */}
+              {frontmatter.labels && frontmatter.labels.length > 0 && (
+                <div className="ai-lab-labels-row">
+                  {frontmatter.labels.map((lbl, idx) => (
+                    <span key={idx} className="ai-lab-pill-label">{lbl}</span>
+                  ))}
+                </div>
+              )}
+
+              {/* 5. Optional CTA Button */}
+              {topCTA && topCTA.enabled && topCTA.text && (
+                <div className="ai-lab-cta-container">
+                  <a
+                    href={topCTA.url || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`case-study-cta-btn ${topCTA.styleVariant === 'filled' ? 'btn-filled' : 'btn-outline'}`}
+                    style={{
+                      color: topCTA.styleVariant === 'filled' ? '#0a192f' : (topCTA.color || '#64ffda'),
+                      backgroundColor: topCTA.styleVariant === 'filled' ? (topCTA.color || '#64ffda') : 'transparent',
+                      borderColor: topCTA.color || '#64ffda',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <span>{topCTA.text}</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                  </a>
+                </div>
+              )}
+
+              {/* 6. Hero Image / Video */}
+              {frontmatter.banner && (
+                <div className="ai-lab-hero-media">
+                  {isVideoBanner ? (
+                    <video
+                      src={frontmatter.banner}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={`${frontmatter.banner}${
+                        frontmatter.banner.includes('?') ? '&' : '?'
+                      }t=${new Date().getTime()}`}
+                      alt={frontmatter.title}
+                    />
+                  )}
+                </div>
+              )}
+            </StyledAILabHeader>
+          ) : (
+            (() => {
+              const roleParts = (frontmatter.role || '').split(' || ');
+              const myRole = roleParts[0] || '';
+              const timeline = roleParts[1] || '';
+
+              const summaryParts = (frontmatter.summary || '').split(' || ');
+              const tagline = summaryParts[0] || '';
+              const subtagline = summaryParts[1] || '';
+
+              return (
+                <StyledHeaderDetails id="overview" className="header-details-reveal">
+                  <StyledHero>
+                    {hasTOC && <div className="section-eyebrow">01. Overview</div>}
+                    {myRole && <span className="internship-tag">{myRole}</span>}
+                    <h1>{frontmatter.title}</h1>
+                    {tagline && <div className="tagline">{tagline}</div>}
+                    {subtagline && <div className="subtagline">{subtagline}</div>}
+                  </StyledHero>
+
+                  {frontmatter.details && frontmatter.details.length > 0 ? (
                     <StyledMetadataRow>
-                      {frontmatter.results && frontmatter.results !== 'N/A' && (
-                        <div className="meta-item">
-                          <h3>Project Type</h3>
-                          <p>{frontmatter.results}</p>
-                        </div>
-                      )}
-                      {frontmatter.methods && frontmatter.methods !== 'N/A' && (
-                        <div className="meta-item">
-                          <h3>Team</h3>
+                      {frontmatter.details.map((detail, idx) => (
+                        <div className="meta-item" key={idx}>
+                          <h3>{detail.label}</h3>
                           <p
                             dangerouslySetInnerHTML={{
-                              __html: frontmatter.methods.replace(/\\n/g, '<br/>'),
+                              __html: detail.value.replace(/\\n/g, '<br/>'),
                             }}
                           />
                         </div>
-                      )}
-                      {myRole && myRole !== 'N/A' && (
-                        <div className="meta-item">
-                          <h3>My Role</h3>
-                          <p>{myRole}</p>
-                        </div>
-                      )}
-                      {timeline && timeline !== 'N/A' && (
-                        <div className="meta-item">
-                          <h3>Timeline</h3>
-                          <p
-                            dangerouslySetInnerHTML={{
-                              __html: timeline.replace(/\\n/g, '<br/>'),
-                            }}
-                          />
-                        </div>
-                      )}
+                      ))}
                     </StyledMetadataRow>
-                  )
-                )}
-              </StyledHeaderDetails>
-            );
-          })()}
+                  ) : (
+                    (frontmatter.role || frontmatter.results || frontmatter.methods) && (
+                      <StyledMetadataRow>
+                        {frontmatter.results && frontmatter.results !== 'N/A' && (
+                          <div className="meta-item">
+                            <h3>Project Type</h3>
+                            <p>{frontmatter.results}</p>
+                          </div>
+                        )}
+                        {frontmatter.methods && frontmatter.methods !== 'N/A' && (
+                          <div className="meta-item">
+                            <h3>Team</h3>
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: frontmatter.methods.replace(/\\n/g, '<br/>'),
+                              }}
+                            />
+                          </div>
+                        )}
+                        {myRole && myRole !== 'N/A' && (
+                          <div className="meta-item">
+                            <h3>My Role</h3>
+                            <p>{myRole}</p>
+                          </div>
+                        )}
+                        {timeline && timeline !== 'N/A' && (
+                          <div className="meta-item">
+                            <h3>Timeline</h3>
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: timeline.replace(/\\n/g, '<br/>'),
+                              }}
+                            />
+                          </div>
+                        )}
+                      </StyledMetadataRow>
+                    )
+                  )}
+                </StyledHeaderDetails>
+              );
+            })()
+          )}
 
           <div
             id="case-study-content"
             className="content"
-            dangerouslySetInnerHTML={{ __html: html }}
+            dangerouslySetInnerHTML={{ __html: processedHtml }}
           />
         </StyledContentArea>
       </StyledCaseStudyContainer>
@@ -1528,6 +1742,16 @@ export const pageQuery = graphql`
         anchor
       }
       markdown
+      project_type
+      ai_label
+      labels
+      cta_button {
+        enabled
+        text
+        url
+        styleVariant
+        color
+      }
     }
   }
 `;

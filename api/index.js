@@ -413,6 +413,9 @@ function parseCaseStudy(slug) {
     markdown: content.trim(),
     published: mdFile.published,
     project_type: frontmatter.project_type || 'case-study',
+    ai_label: frontmatter.ai_label || (frontmatter.project_type === 'ai-lab' ? 'AI LAB' : ''),
+    labels: Array.isArray(frontmatter.labels) ? frontmatter.labels : [],
+    cta_button: frontmatter.cta_button || null,
   };
 }
 
@@ -435,6 +438,16 @@ function writeCaseStudyMarkdown(dir, data) {
     detailsStr = 'details:\n' + data.details.map(item => `  - label: ${yq(item.label)}\n    value: ${yq(item.value)}`).join('\n');
   }
 
+  let labelsStr = '';
+  if (data.labels && Array.isArray(data.labels) && data.labels.length > 0) {
+    labelsStr = 'labels:\n' + data.labels.map(l => `  - ${yq(l)}`).join('\n');
+  }
+
+  let ctaButtonStr = '';
+  if (data.cta_button && data.cta_button.enabled) {
+    ctaButtonStr = `cta_button:\n  enabled: true\n  text: ${yq(data.cta_button.text || '')}\n  url: ${yq(data.cta_button.url || '')}\n  styleVariant: ${yq(data.cta_button.styleVariant || 'outline')}\n  color: ${yq(data.cta_button.color || '#64ffda')}`;
+  }
+
   const lines = [
     '---',
     `title: ${yq(data.title)}`,
@@ -442,8 +455,11 @@ function writeCaseStudyMarkdown(dir, data) {
     `date: ${yq(data.date || new Date().toISOString().split('T')[0])}`,
     `published: ${data.published !== false}`,
     `project_type: ${yq(data.project_type || 'case-study')}`,
+    data.project_type === 'ai-lab' ? `ai_label: ${yq(data.ai_label || 'AI LAB')}` : '',
     `summary: ${yq(data.summary || '')}`,
-    detailsStr,
+    data.project_type === 'case-study' ? detailsStr : '',
+    labelsStr,
+    ctaButtonStr,
     `banner: ${yq(data.banner || '')}`,
     `tocEnabled: ${!!data.toc_enabled}`,
     tocItemsStr,
@@ -451,7 +467,7 @@ function writeCaseStudyMarkdown(dir, data) {
     '',
     (data.markdown || '').trim(),
     '',
-  ];
+  ].filter(l => l !== undefined && l !== null && l !== '');
 
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(filePath, lines.join('\n'));
@@ -1094,7 +1110,7 @@ app.post('/api/case-studies/:slug', async (req, res) => {
     let dir = path.join(CASE_STUDIES_DIR, slug);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-    let { blocks, published, title, summary, details, banner, newSlug, project_type } = req.body;
+    let { blocks, published, title, summary, details, banner, newSlug, project_type, ai_label, labels, cta_button } = req.body;
 
     if (newSlug && newSlug !== slug) {
       const newDir = path.join(CASE_STUDIES_DIR, newSlug);
@@ -1232,11 +1248,14 @@ app.post('/api/case-studies/:slug', async (req, res) => {
           `color: ${textProp}`,
           `background-color: ${bgProp}`,
           `border: ${borderProp}`,
+          'white-space: nowrap',
+          'max-width: 100%',
+          'box-sizing: border-box',
           'transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1)',
           'cursor: pointer'
         ];
 
-        markdown += `\n<div class="cta-button-container" style="margin: 36px 0; ${alignStyle}">\n  <a href="${url}" class="case-study-cta-btn ${styleVariant === 'filled' ? 'btn-filled' : 'btn-outline'}"${target} style="${styles.join('; ')}">\n    <span>${text}</span>\n    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>\n  </a>\n</div>\n\n`;
+        markdown += `\n<div class="cta-button-container" style="margin: 36px 0; ${alignStyle}">\n  <a href="${url}" class="case-study-cta-btn ${styleVariant === 'filled' ? 'btn-filled' : 'btn-outline'}"${target} style="${styles.join('; ')}">\n    <span style="white-space: nowrap; display: inline-block; line-height: 1;">${text}</span>\n    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px !important; height: 15px !important; min-width: 15px !important; max-width: 15px !important; flex-shrink: 0 !important; fill: none !important; stroke: currentColor !important; display: inline-block !important; vertical-align: middle !important;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>\n  </a>\n</div>\n\n`;
       }
     }
 
@@ -1251,6 +1270,9 @@ app.post('/api/case-studies/:slug', async (req, res) => {
       markdown: markdown,
       published: published !== undefined ? published : study.published,
       project_type: project_type || study.project_type || 'case-study',
+      ai_label: ai_label !== undefined ? ai_label : (study.ai_label || 'AI LAB'),
+      labels: labels !== undefined ? labels : (study.labels || []),
+      cta_button: cta_button !== undefined ? cta_button : (study.cta_button || null),
     };
     
     writeCaseStudyMarkdown(dir, update);
