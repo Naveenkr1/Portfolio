@@ -463,8 +463,10 @@ const StyledContentArea = styled.div`
     height: auto !important;
     max-height: none !important;
     object-fit: contain !important;
-    display: block;
-    margin: 40px auto;
+    display: block !important;
+    margin: ${props => (props.$isAILab ? '0 auto !important' : '40px auto')};
+    margin-top: ${props => (props.$isAILab ? '0 !important' : '40px')};
+    margin-bottom: ${props => (props.$isAILab ? '0 !important' : '40px')};
     border-radius: 16px;
   }
 
@@ -1102,7 +1104,9 @@ const StyledAILabHeader = styled.header`
   }
 
   .ai-lab-hero-media {
-    margin: 36px 0 0;
+    margin: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
     width: 100%;
     border-radius: 12px;
     overflow: hidden;
@@ -1111,10 +1115,17 @@ const StyledAILabHeader = styled.header`
     box-shadow: 0 10px 30px -15px var(--navy-shadow);
 
     img, video {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: cover;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      min-height: auto !important;
+      display: block !important;
+      margin: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      object-fit: contain !important;
+      border-radius: 0 !important;
       cursor: zoom-in;
     }
   }
@@ -1134,7 +1145,9 @@ const StyledAILabHeader = styled.header`
     }
 
     .ai-lab-hero-media {
-      margin-top: 24px;
+      margin: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
       border-radius: 8px;
     }
   }
@@ -1604,7 +1617,7 @@ const CaseStudyTemplate = ({ data, location }) => {
           </StyledSidebar>
         )}
 
-        <StyledContentArea>
+        <StyledContentArea $isAILab={isAILab}>
           {isAILab ? (
             <StyledAILabHeader className="ai-lab-header-reveal">
               {/* 1. AI Label with Back Arrow */}
@@ -1642,7 +1655,7 @@ const CaseStudyTemplate = ({ data, location }) => {
 
               {/* 5. Optional CTA Button */}
               {topCTA && topCTA.enabled && topCTA.text && (
-                <div className="ai-lab-cta-container cta-button-container" style={{ margin: '24px 0 0', display: 'flex', alignItems: 'center' }}>
+                <div className="ai-lab-cta-container cta-button-container" style={{ margin: '24px 0 24px', display: 'flex', alignItems: 'center' }}>
                   <a
                     href={topCTA.url || '#'}
                     target="_blank"
@@ -1705,7 +1718,15 @@ const CaseStudyTemplate = ({ data, location }) => {
 
               {/* 6. Hero Image / Video */}
               {frontmatter.banner && (
-                <div className="ai-lab-hero-media">
+                <div
+                  className="ai-lab-hero-media"
+                  style={{
+                    margin: '0',
+                    marginTop: '0',
+                    marginBottom: '0',
+                    width: '100%',
+                  }}
+                >
                   {isVideoBanner ? (
                     <video
                       src={frontmatter.banner}
@@ -1713,6 +1734,17 @@ const CaseStudyTemplate = ({ data, location }) => {
                       loop
                       muted
                       playsInline
+                      style={{
+                        margin: '0',
+                        marginTop: '0',
+                        marginBottom: '0',
+                        padding: '0',
+                        width: '100%',
+                        height: 'auto',
+                        maxHeight: 'none',
+                        objectFit: 'contain',
+                        display: 'block',
+                      }}
                     />
                   ) : (
                     <img
@@ -1720,6 +1752,17 @@ const CaseStudyTemplate = ({ data, location }) => {
                         frontmatter.banner.includes('?') ? '&' : '?'
                       }t=${new Date().getTime()}`}
                       alt={frontmatter.title}
+                      style={{
+                        margin: '0',
+                        marginTop: '0',
+                        marginBottom: '0',
+                        padding: '0',
+                        width: '100%',
+                        height: 'auto',
+                        maxHeight: 'none',
+                        objectFit: 'contain',
+                        display: 'block',
+                      }}
                     />
                   )}
                 </div>
