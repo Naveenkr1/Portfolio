@@ -79,6 +79,7 @@ exports.sourceNodes = async ({ actions, createNodeId, createContentDigest, getNo
         item.markdown = content;
         item.toc_enabled = item.tocEnabled;
         item.toc_items = item.tocItems;
+        item.project_type = item.project_type || 'case-study';
       }
 
       if (item.tech && typeof item.tech === 'string') {
@@ -181,6 +182,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
           node {
             slug
             published
+            project_type
           }
         }
       }
@@ -224,13 +226,31 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
     if (process.env.NODE_ENV === 'production' && node.published === false) {
       return;
     }
-    createPage({
-      path: `/case-study/${node.slug}`,
-      component: caseStudyTemplate,
-      context: {
-        slug: node.slug,
-      },
-    });
+    const isAILab = node.project_type === 'ai-lab';
+    if (isAILab) {
+      createPage({
+        path: `/ai-lab/${node.slug}`,
+        component: caseStudyTemplate,
+        context: {
+          slug: node.slug,
+        },
+      });
+      createPage({
+        path: `/ai.lab/${node.slug}`,
+        component: caseStudyTemplate,
+        context: {
+          slug: node.slug,
+        },
+      });
+    } else {
+      createPage({
+        path: `/case-study/${node.slug}`,
+        component: caseStudyTemplate,
+        context: {
+          slug: node.slug,
+        },
+      });
+    }
   });
 };
 

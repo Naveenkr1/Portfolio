@@ -412,6 +412,7 @@ function parseCaseStudy(slug) {
     toc_items: frontmatter.tocItems || [],
     markdown: content.trim(),
     published: mdFile.published,
+    project_type: frontmatter.project_type || 'case-study',
   };
 }
 
@@ -440,6 +441,7 @@ function writeCaseStudyMarkdown(dir, data) {
     `slug: ${yq(data.slug)}`,
     `date: ${yq(data.date || new Date().toISOString().split('T')[0])}`,
     `published: ${data.published !== false}`,
+    `project_type: ${yq(data.project_type || 'case-study')}`,
     `summary: ${yq(data.summary || '')}`,
     detailsStr,
     `banner: ${yq(data.banner || '')}`,
@@ -1067,7 +1069,7 @@ app.put('/api/case-studies/reorder', async (req, res) => {
 
 app.post('/api/case-studies', async (req, res) => {
   try {
-    const { title, date } = req.body;
+    const { title, date, project_type } = req.body;
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const dir = path.join(CASE_STUDIES_DIR, slug);
     if (fs.existsSync(dir)) return res.status(400).json({ error: 'Already exists' });
@@ -1076,7 +1078,8 @@ app.post('/api/case-studies', async (req, res) => {
       title,
       slug,
       date: date || new Date().toISOString().split('T')[0],
-      published: true
+      published: true,
+      project_type: project_type || 'case-study'
     };
     writeCaseStudyMarkdown(dir, data);
     res.json({ success: true, caseStudy: data });
@@ -1091,7 +1094,7 @@ app.post('/api/case-studies/:slug', async (req, res) => {
     let dir = path.join(CASE_STUDIES_DIR, slug);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-    let { blocks, published, title, summary, details, banner, newSlug } = req.body;
+    let { blocks, published, title, summary, details, banner, newSlug, project_type } = req.body;
 
     if (newSlug && newSlug !== slug) {
       const newDir = path.join(CASE_STUDIES_DIR, newSlug);
@@ -1209,6 +1212,7 @@ app.post('/api/case-studies/:slug', async (req, res) => {
       toc_items: derivedTocItems,
       markdown: markdown,
       published: published !== undefined ? published : study.published,
+      project_type: project_type || study.project_type || 'case-study',
     };
     
     writeCaseStudyMarkdown(dir, update);

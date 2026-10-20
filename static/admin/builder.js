@@ -44,6 +44,7 @@ class CaseStudyBuilder {
     this.tocItems = [];
     this.viewMode = 'desktop'; // 'desktop' or 'mobile'
     this.banner = '';
+    this.projectType = 'case-study';
     this.init();
   }
 
@@ -69,6 +70,22 @@ class CaseStudyBuilder {
 
     // Dynamic details
     document.getElementById('btn-add-meta-detail').addEventListener('click', () => this.addDetailRow('', ''));
+
+    // Project Type Selector (Case Study vs AI Lab)
+    const typeRadios = document.querySelectorAll('input[name="builder-project-type"]');
+    typeRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.checked) this.setProjectType(e.target.value);
+      });
+    });
+    const labelCS = document.getElementById('label-type-case-study');
+    const labelAI = document.getElementById('label-type-ai-lab');
+    if (labelCS) {
+      labelCS.addEventListener('click', () => this.setProjectType('case-study'));
+    }
+    if (labelAI) {
+      labelAI.addEventListener('click', () => this.setProjectType('ai-lab'));
+    }
     
     // Link Modal
     const modalLinkClose = document.getElementById('modal-link-close');
@@ -146,6 +163,32 @@ class CaseStudyBuilder {
   }
 
 
+  setProjectType(type) {
+    this.projectType = (type === 'ai-lab') ? 'ai-lab' : 'case-study';
+    const isAILab = this.projectType === 'ai-lab';
+    const prefix = isAILab ? 'ai-lab' : 'case-study';
+
+    const radios = document.querySelectorAll('input[name="builder-project-type"]');
+    radios.forEach(r => {
+      r.checked = (r.value === this.projectType);
+    });
+
+    const labelCS = document.getElementById('label-type-case-study');
+    const labelAI = document.getElementById('label-type-ai-lab');
+    if (labelCS) labelCS.classList.toggle('active', !isAILab);
+    if (labelAI) labelAI.classList.toggle('active', isAILab);
+
+    const headerPrefix = document.getElementById('builder-slug-prefix');
+    if (headerPrefix) headerPrefix.textContent = `/${prefix}/`;
+    const metaPrefix = document.getElementById('builder-meta-slug-prefix');
+    if (metaPrefix) metaPrefix.textContent = `/${prefix}/`;
+
+    const previewBtn = document.getElementById('btn-builder-preview');
+    if (previewBtn && this.slug) {
+      previewBtn.href = `${window.location.origin}/${prefix}/${this.slug}/`;
+    }
+  }
+
   open(slug) {
     const study = caseStudies.find(s => s.slug === slug);
     if (!study) return;
@@ -153,6 +196,7 @@ class CaseStudyBuilder {
     this.slug = slug;
     this.title = study.title;
     this.published = study.published;
+    this.setProjectType(study.project_type || 'case-study');
     
     document.getElementById('builder-case-study-title').value = this.title;
     const slugHeader = document.getElementById('builder-case-study-slug-header');
@@ -161,7 +205,8 @@ class CaseStudyBuilder {
     
     const previewBtn = document.getElementById('btn-builder-preview');
     previewBtn.style.display = 'inline-flex';
-    previewBtn.href = `${window.location.origin}/case-study/${this.slug}/`;
+    const prefix = (this.projectType === 'ai-lab') ? 'ai-lab' : 'case-study';
+    previewBtn.href = `${window.location.origin}/${prefix}/${this.slug}/`;
     
     document.getElementById('builder-overlay').classList.add('active');
     
@@ -173,6 +218,7 @@ class CaseStudyBuilder {
     this.title = '';
     this.published = false;
     this.blocks = [];
+    this.setProjectType('case-study');
     
     document.getElementById('builder-case-study-title').value = '';
     const slugHeader = document.getElementById('builder-case-study-slug-header');
@@ -198,6 +244,9 @@ class CaseStudyBuilder {
       const data = await res.json();
       this.blocks = data.blocks || [];
       const meta = data.metadata || {};
+      if (meta.project_type) {
+        this.setProjectType(meta.project_type);
+      }
       
       const summaryParts = (meta.summary || '').split(' || ');
       const slugInput = document.getElementById('builder-meta-slug');
@@ -714,6 +763,7 @@ class CaseStudyBuilder {
         title: this.title,
         blocks: this.blocks,
         published: document.getElementById('builder-publish-toggle').checked,
+        project_type: this.projectType || 'case-study',
         summary: `${tagline} || ${subtagline}`,
         details: details,
         banner: this.banner,
@@ -757,7 +807,8 @@ class CaseStudyBuilder {
       const previewBtn = document.getElementById('builder-btn-preview') || document.getElementById('btn-builder-preview');
       if (previewBtn) {
         previewBtn.style.display = 'inline-flex';
-        previewBtn.href = `${window.location.origin}/case-study/${this.slug}/`;
+        const prefix = (this.projectType === 'ai-lab') ? 'ai-lab' : 'case-study';
+        previewBtn.href = `${window.location.origin}/${prefix}/${this.slug}/`;
       }
 
       showToast('Case study saved successfully');

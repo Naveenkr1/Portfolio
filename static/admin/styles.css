@@ -1684,6 +1684,58 @@ select option {
   letter-spacing: 1px;
 }
 
+/* ─── PROJECT TYPE SEGMENTED CONTROL ─── */
+.project-type-segmented {
+  display: inline-flex;
+  background: var(--dark-navy);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 4px;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.project-type-segmented label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  margin: 0;
+  border: 1px solid transparent;
+}
+
+.project-type-segmented label input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.project-type-segmented label:hover {
+  color: var(--light-slate);
+}
+
+.project-type-segmented label.active {
+  background: var(--lightest-navy);
+  color: var(--green);
+  border-color: rgba(100, 255, 218, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.project-type-segmented label.active svg {
+  stroke: var(--green);
+}
+
 /* Mobile Responsiveness for Builder */
 @media (max-width: 900px) {
   .builder-layout {

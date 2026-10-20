@@ -1,8 +1,8 @@
 ---
 date: '2023-12-01'
-title: 'ChatGPT Clone'
-coverUrl: 'https://res.cloudinary.com/duxol6zvd/image/upload/v1780292486/portfolio/featured/pwitnzvaerqkytbklbik.gif'
-external: 'https://chat.openai.com'
+title: 'Comment.Design'
+coverUrl: 'https://res.cloudinary.com/duxol6zvd/image/upload/v1792431779/portfolio/featured/ts96sycvhgo5zsh288jq.png'
+external: 'https://chromewebstore.google.com/detail/commentdesign/cnfigbkbhjmkeaggadgldpjnblhbegfa?authuser=0&hl=en'
 showInProjects: true
 tech:
   - OpenAI API
@@ -10,4 +10,4 @@ tech:
   - Node.js
 ---
 
-A full-stack clone of ChatGPT using the official OpenAI API. Features stream responses, markdown rendering, and chat history.
+Comment.design lets you annotate websites, leave feedback, and share comments via a single link.

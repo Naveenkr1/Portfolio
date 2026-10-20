@@ -700,11 +700,11 @@ function bindForms() {
     // External and Case Study URLs are optional
     const rawCta = (document.getElementById('feat-cta').value || '').trim();
     let ctaVal = rawCta;
-    const csMatch = ctaVal.match(/^(?:https?:\/\/[^\/]+)?(\/case-study\/[^\/\s]+(?:\/)?.*)$/i);
+    const csMatch = ctaVal.match(/^(?:https?:\/\/[^\/]+)?(\/(?:case-study|ai-lab)\/[^\/\s]+(?:\/)?.*)$/i);
     if (csMatch) {
       ctaVal = csMatch[1].startsWith('/') ? csMatch[1] : `/${csMatch[1]}`;
     } else if (ctaVal && !/^https?:\/\//i.test(ctaVal) && !ctaVal.startsWith('/') && !ctaVal.startsWith('#') && !ctaVal.startsWith('mailto:')) {
-      if (ctaVal.startsWith('case-study/')) {
+      if (ctaVal.startsWith('case-study/') || ctaVal.startsWith('ai-lab/')) {
         ctaVal = `/${ctaVal}`;
       } else {
         ctaVal = `https://${ctaVal}`;
@@ -867,13 +867,21 @@ function renderCaseStudies() {
   }
   empty.style.display = 'none';
 
-  list.innerHTML = caseStudies.map((s, i) => `
+  list.innerHTML = caseStudies.map((s, i) => {
+    const isAILab = s.project_type === 'ai-lab';
+    const prefix = isAILab ? 'ai-lab' : 'case-study';
+    const previewUrl = `${window.location.origin}/${prefix}/${s.slug}/`;
+
+    return `
     <div class="project-card" data-slug="${s.slug}">
       <div class="card-order">${i + 1}</div>
       <div class="card-info">
         <div class="card-title">${s.title}</div>
         <div class="card-meta">
-          <span class="card-meta-tag">Slug: /${s.slug}</span>
+          <span class="card-meta-tag" style="${isAILab ? 'color: var(--green); border: 1px solid rgba(100,255,218,0.3); background: rgba(100,255,218,0.08); font-weight: 600;' : ''}">
+            ${isAILab ? '🧪 AI Lab' : '📄 Case Study'}
+          </span>
+          <span class="card-meta-tag">/${prefix}/${s.slug}</span>
           <span class="card-meta-tag">Date: ${s.date}</span>
         </div>
       </div>
@@ -882,7 +890,7 @@ function renderCaseStudies() {
         ${s.published ? 'Published' : 'Draft'}
       </div>
       <div class="card-actions">
-        <a class="card-action-btn" title="Preview" href="${window.location.origin}/case-study/${s.slug}/" target="_blank" style="text-decoration:none;">
+        <a class="card-action-btn" title="Preview" href="${previewUrl}" target="_blank" style="text-decoration:none;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </a>
         <button class="card-action-btn" title="Copy Link" onclick="copyCaseStudyLink('${esc(s.slug)}')">
@@ -896,7 +904,8 @@ function renderCaseStudies() {
         </button>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 async function createCaseStudy(title, slug) {
@@ -926,7 +935,9 @@ function confirmDeleteCaseStudy(slug, title) {
 }
 
 function copyCaseStudyLink(slug) {
-  const url = `${window.location.origin}/case-study/${slug}/`;
+  const s = caseStudies.find(item => item.slug === slug);
+  const prefix = (s && s.project_type === 'ai-lab') ? 'ai-lab' : 'case-study';
+  const url = `${window.location.origin}/${prefix}/${slug}/`;
   navigator.clipboard.writeText(url);
   showToast('Link copied to clipboard');
 }
