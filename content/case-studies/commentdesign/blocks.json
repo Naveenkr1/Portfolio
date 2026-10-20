@@ -2,7 +2,7 @@
   {
     "id": "1792432546381",
     "type": "text",
-    "content": "\n        \n        <h2>Challenge</h2><p>The Internet Archive holds nearly every Grateful Dead show ever taped, 15 terabytes of free recordings that only experts can navigate. Existing apps compete on catalog access, but the real problem is choice paralysis. Casual fans open a database, get overwhelmed, and only know a select few shows. LiveVault started as a personal experiment that I truly built for the joy of learning. Could I ship a native app?<br><br></p>\n      \n      ",
+    "content": "\n        \n        \n        <h2>Challenge</h2><p>The Internet Archive holds nearly every Grateful Dead show ever taped, 15 terabytes of free recordings that only experts can navigate. Existing apps compete on catalog access, but the real problem is choice paralysis. Casual fans open a database, get overwhelmed, and only know a select few shows. LiveVault started as a personal experiment that I truly built for the joy of learning. Could I ship a native app?<br><br></p>\n      \n      \n      ",
     "tocEntry": false,
     "tocName": ""
   },
@@ -19,5 +19,19 @@
     "content": "\n        \n        <h2>Result</h2><p>Around 5,000 downloads, all organic, on $0 spend. A 5.0-star App Store rating, with reviews that call out what the design was going for. \"Simple and elegant UI.\" \"Faster and easier to navigate than the archives site.\" One reviewer named it the best app they'd found for the Dead's catalog. I have a full-time design leadership role and no bandwidth to maintain a live product, so in August 2026, I handed LiveVault to my partner to run. It shipped. It was fun. People love it. It's still streaming. And for an experiment built on nights and weekends, it was a success.<br><br></p>\n      \n      ",
     "tocEntry": false,
     "tocName": ""
+  },
+  {
+    "id": "1792474335250",
+    "type": "button",
+    "text": "Explore Now",
+    "url": "",
+    "styleVariant": "outline",
+    "color": "#64ffda",
+    "fontSize": "14px",
+    "borderRadius": "4px",
+    "borderWidth": "1px",
+    "borderStyle": "solid",
+    "align": "center",
+    "newTab": true
   }
 ]

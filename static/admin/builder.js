@@ -342,6 +342,17 @@ class CaseStudyBuilder {
     } else if (type === 'callout') {
       block.heading = 'Pro Tips';
       block.content = '<ul><li>Tip 1</li><li>Tip 2</li></ul>';
+    } else if (type === 'button') {
+      block.text = 'View Project';
+      block.url = '';
+      block.styleVariant = 'outline';
+      block.color = '#64ffda';
+      block.fontSize = '14px';
+      block.borderRadius = '4px';
+      block.borderWidth = '1px';
+      block.borderStyle = 'solid';
+      block.align = 'center';
+      block.newTab = true;
     }
 
     this.blocks.push(block);
@@ -404,6 +415,8 @@ class CaseStudyBuilder {
         blockHtml = this.renderCardsBlock(block);
       } else if (block.type === 'callout') {
         blockHtml = this.renderCalloutBlock(block);
+      } else if (block.type === 'button') {
+        blockHtml = this.renderButtonBlock(block);
       }
 
       el.innerHTML = `
@@ -594,6 +607,168 @@ class CaseStudyBuilder {
     if (field === 'color' || field === 'fontSize') {
       this.render();
     }
+  }
+
+  renderButtonBlock(block) {
+    const text = block.text !== undefined ? block.text : 'View Project';
+    const url = block.url || '';
+    const styleVariant = block.styleVariant || 'outline'; // 'outline' | 'filled'
+    const color = block.color || '#64ffda';
+    const fontSize = block.fontSize || '14px';
+    const borderRadius = block.borderRadius || '4px';
+    const borderWidth = block.borderWidth || '1px';
+    const borderStyle = block.borderStyle || 'solid';
+    const align = block.align || 'center';
+    const newTab = block.newTab !== false;
+
+    const isFilled = styleVariant === 'filled';
+    const borderProp = borderStyle === 'none' ? 'none' : `${borderWidth} ${borderStyle} ${color}`;
+    const bgProp = isFilled ? color : 'transparent';
+    const textProp = isFilled ? '#0a192f' : color;
+    const safeEsc = (s) => (window.esc ? window.esc(s) : String(s || '').replace(/"/g, '&quot;'));
+
+    const presetColors = ['#64ffda', '#ffffff', '#57cbff', '#bd93f9', '#ff79c6', '#ffb86c'];
+
+    return `
+      <div class="cta-block-editor" style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--lightest-navy); padding-bottom:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+              <rect x="2" y="6" width="20" height="12" rx="4" />
+              <path d="M7 12h10" />
+              <polyline points="13 8 17 12 13 16" />
+            </svg>
+            <strong style="color:var(--white); font-size:13px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.5px;">CTA Button</strong>
+          </div>
+          <button type="button" class="btn-secondary-sm" onclick="builder.resetButtonDefaults('${block.id}')" style="font-size:11px; padding:4px 10px; cursor:pointer;" title="Reset to default portfolio CTA button">
+            Reset to Default
+          </button>
+        </div>
+
+        <!-- Inputs Row: Text & Link -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+          <div>
+            <label style="display:block; font-size:11px; color:var(--light-slate); margin-bottom:5px; font-family:var(--font-mono); font-weight:600;">BUTTON TEXT</label>
+            <input type="text" value="${safeEsc(text)}" oninput="builder.updateButtonBlock('${block.id}', 'text', this.value)" placeholder="e.g. View Live App" style="width:100%; background:var(--dark-navy); border:1px solid var(--border-color); color:var(--white); border-radius:6px; padding:8px 12px; font-size:13px; box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block; font-size:11px; color:var(--light-slate); margin-bottom:5px; font-family:var(--font-mono); font-weight:600;">BUTTON LINK (URL)</label>
+            <input type="url" value="${safeEsc(url)}" oninput="builder.updateButtonBlock('${block.id}', 'url', this.value)" placeholder="https://..." style="width:100%; background:var(--dark-navy); border:1px solid var(--border-color); color:var(--white); border-radius:6px; padding:8px 12px; font-size:13px; box-sizing:border-box;">
+          </div>
+        </div>
+
+        <!-- Properties Grid -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; background:var(--navy); padding:14px; border-radius:8px; border:1px solid var(--lightest-navy);">
+          <!-- Style Variant -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--slate); margin-bottom:5px; font-weight:600;">STYLE</label>
+            <select onchange="builder.updateButtonBlock('${block.id}', 'styleVariant', this.value)" style="width:100%; background:var(--dark-navy); border:1px solid var(--border-color); color:var(--white); border-radius:4px; padding:6px 8px; font-size:12px; cursor:pointer;">
+              <option value="outline" ${styleVariant === 'outline' ? 'selected' : ''}>Outline (Default)</option>
+              <option value="filled" ${styleVariant === 'filled' ? 'selected' : ''}>Filled / Solid</option>
+            </select>
+          </div>
+
+          <!-- Color -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--slate); margin-bottom:5px; font-weight:600;">COLOR</label>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <input type="color" value="${color}" onchange="builder.updateButtonBlock('${block.id}', 'color', this.value)" style="width:32px; height:28px; padding:0; border:none; background:transparent; cursor:pointer; border-radius:4px;">
+              <div style="display:flex; gap:3px;">
+                ${presetColors.map(c => `
+                  <span onclick="builder.updateButtonBlock('${block.id}', 'color', '${c}')" style="display:inline-block; width:14px; height:14px; border-radius:50%; background:${c}; cursor:pointer; border:1px solid ${c === color ? 'var(--white)' : 'transparent'}; box-sizing:border-box;" title="${c}"></span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Font Size -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--slate); margin-bottom:5px; font-weight:600;">FONT SIZE</label>
+            <select onchange="builder.updateButtonBlock('${block.id}', 'fontSize', this.value)" style="width:100%; background:var(--dark-navy); border:1px solid var(--border-color); color:var(--white); border-radius:4px; padding:6px 8px; font-size:12px; cursor:pointer;">
+              <option value="12px" ${fontSize === '12px' ? 'selected' : ''}>12px (Small)</option>
+              <option value="13px" ${fontSize === '13px' ? 'selected' : ''}>13px</option>
+              <option value="14px" ${fontSize === '14px' ? 'selected' : ''}>14px (Default)</option>
+              <option value="16px" ${fontSize === '16px' ? 'selected' : ''}>16px (Medium)</option>
+              <option value="18px" ${fontSize === '18px' ? 'selected' : ''}>18px (Large)</option>
+              <option value="20px" ${fontSize === '20px' ? 'selected' : ''}>20px</option>
+            </select>
+          </div>
+
+          <!-- Border Radius -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--slate); margin-bottom:5px; font-weight:600;">BORDER RADIUS</label>
+            <select onchange="builder.updateButtonBlock('${block.id}', 'borderRadius', this.value)" style="width:100%; background:var(--dark-navy); border:1px solid var(--border-color); color:var(--white); border-radius:4px; padding:6px 8px; font-size:12px; cursor:pointer;">
+              <option value="0px" ${borderRadius === '0px' ? 'selected' : ''}>0px (Square)</option>
+              <option value="4px" ${borderRadius === '4px' ? 'selected' : ''}>4px (Default)</option>
+              <option value="8px" ${borderRadius === '8px' ? 'selected' : ''}>8px (Rounded)</option>
+              <option value="12px" ${borderRadius === '12px' ? 'selected' : ''}>12px (Smooth)</option>
+              <option value="24px" ${borderRadius === '24px' ? 'selected' : ''}>24px (Soft Pill)</option>
+              <option value="99px" ${borderRadius === '99px' ? 'selected' : ''}>99px (Full Pill)</option>
+            </select>
+          </div>
+
+          <!-- Border Style -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--slate); margin-bottom:5px; font-weight:600;">BORDER STYLE</label>
+            <select onchange="builder.updateButtonBlock('${block.id}', 'borderStyle', this.value)" style="width:100%; background:var(--dark-navy); border:1px solid var(--border-color); color:var(--white); border-radius:4px; padding:6px 8px; font-size:12px; cursor:pointer;">
+              <option value="solid" ${borderStyle === 'solid' ? 'selected' : ''}>Solid (Default)</option>
+              <option value="dashed" ${borderStyle === 'dashed' ? 'selected' : ''}>Dashed</option>
+              <option value="dotted" ${borderStyle === 'dotted' ? 'selected' : ''}>Dotted</option>
+              <option value="none" ${borderStyle === 'none' ? 'selected' : ''}>None</option>
+            </select>
+          </div>
+
+          <!-- Alignment -->
+          <div>
+            <label style="display:block; font-size:11px; color:var(--slate); margin-bottom:5px; font-weight:600;">ALIGNMENT</label>
+            <div style="display:flex; gap:4px;">
+              <button type="button" class="ctrl-btn ${align === 'left' ? 'active' : ''}" onclick="builder.updateButtonBlock('${block.id}', 'align', 'left')" title="Left" style="flex:1; height:30px; ${align === 'left' ? 'color:var(--green); border-color:var(--green); background:var(--lightest-navy);' : ''}">Left</button>
+              <button type="button" class="ctrl-btn ${align === 'center' ? 'active' : ''}" onclick="builder.updateButtonBlock('${block.id}', 'align', 'center')" title="Center" style="flex:1; height:30px; ${align === 'center' ? 'color:var(--green); border-color:var(--green); background:var(--lightest-navy);' : ''}">Center</button>
+              <button type="button" class="ctrl-btn ${align === 'right' ? 'active' : ''}" onclick="builder.updateButtonBlock('${block.id}', 'align', 'right')" title="Right" style="flex:1; height:30px; ${align === 'right' ? 'color:var(--green); border-color:var(--green); background:var(--lightest-navy);' : ''}">Right</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Preview Area -->
+        <div>
+          <label style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--slate); margin-bottom:8px; font-family:var(--font-mono);">
+            <span>LIVE BUTTON PREVIEW</span>
+            <span style="color:var(--light-slate); font-size:10px;">(Click to test link)</span>
+          </label>
+          <div style="background:var(--dark-navy); border:1px dashed var(--border-color); border-radius:8px; padding:28px 20px; text-align:${align};">
+            <a href="${url || 'javascript:void(0)'}" ${newTab ? 'target="_blank" rel="noopener noreferrer"' : ''} style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:1.15rem 2.2rem; font-family:var(--font-mono, monospace); font-size:${fontSize}; font-weight:500; line-height:1; text-decoration:none; color:${textProp}; background-color:${bgProp}; border:${borderProp}; border-radius:${borderRadius}; cursor:pointer; transition:all 0.2s ease; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+              <span>${safeEsc(text)}</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  updateButtonBlock(id, field, value) {
+    const block = this.blocks.find(b => b.id === id);
+    if (!block) return;
+    block[field] = value;
+    this.render();
+  }
+
+  resetButtonDefaults(id) {
+    const block = this.blocks.find(b => b.id === id);
+    if (!block) return;
+    block.styleVariant = 'outline';
+    block.color = '#64ffda';
+    block.fontSize = '14px';
+    block.borderRadius = '4px';
+    block.borderWidth = '1px';
+    block.borderStyle = 'solid';
+    block.align = 'center';
+    block.newTab = true;
+    this.render();
   }
 
 

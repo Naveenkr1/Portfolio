@@ -626,6 +626,52 @@ const StyledContentArea = styled.div`
     }
   }
 
+  /* CTA Button Block */
+  .cta-button-container {
+    margin: 40px 0;
+    width: 100%;
+
+    .case-study-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      line-height: 1;
+      padding: 1.15rem 2.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+      svg {
+        transition: transform 0.2s ease;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+
+        svg {
+          transform: translate(2px, -2px);
+        }
+      }
+
+      &.btn-outline:hover {
+        background-color: var(--green-tint) !important;
+      }
+
+      &.btn-filled:hover {
+        filter: brightness(1.12);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
   /* Callout Block (Pro Tips) */
   .callout-block {
     background: var(--light-navy);

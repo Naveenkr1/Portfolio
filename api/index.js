@@ -1199,6 +1199,44 @@ app.post('/api/case-studies/:slug', async (req, res) => {
         markdown += `</div>\n\n`;
       } else if (block.type === 'callout') {
         markdown += `\n<div class="callout-block">\n  <h3>${block.heading}</h3>\n  <div class="callout-content">\n${block.content.trim()}\n  </div>\n</div>\n\n`;
+      } else if (block.type === 'button') {
+        const text = (block.text || 'View Project').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const url = block.url || '#';
+        const align = block.align || 'center';
+        const styleVariant = block.styleVariant || 'outline';
+        const fontSize = block.fontSize || '14px';
+        const borderRadius = block.borderRadius || '4px';
+        const borderWidth = block.borderWidth || '1px';
+        const borderStyle = block.borderStyle || 'solid';
+        const color = block.color || '#64ffda';
+        const target = block.newTab !== false ? ' target="_blank" rel="noopener noreferrer"' : '';
+
+        const isFilled = styleVariant === 'filled';
+        const borderProp = borderStyle === 'none' ? 'none' : `${borderWidth} ${borderStyle} ${color}`;
+        const bgProp = isFilled ? color : 'transparent';
+        const textProp = isFilled ? '#0a192f' : color;
+        const alignStyle = align === 'left' ? 'text-align: left;' : align === 'right' ? 'text-align: right;' : 'text-align: center;';
+
+        const styles = [
+          'display: inline-flex',
+          'align-items: center',
+          'justify-content: center',
+          'gap: 8px',
+          'text-decoration: none',
+          'font-family: var(--font-mono, monospace)',
+          `font-size: ${fontSize}`,
+          'font-weight: 500',
+          'line-height: 1',
+          'padding: 1.15rem 2.2rem',
+          `border-radius: ${borderRadius}`,
+          `color: ${textProp}`,
+          `background-color: ${bgProp}`,
+          `border: ${borderProp}`,
+          'transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1)',
+          'cursor: pointer'
+        ];
+
+        markdown += `\n<div class="cta-button-container" style="margin: 36px 0; ${alignStyle}">\n  <a href="${url}" class="case-study-cta-btn ${styleVariant === 'filled' ? 'btn-filled' : 'btn-outline'}"${target} style="${styles.join('; ')}">\n    <span>${text}</span>\n    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>\n  </a>\n</div>\n\n`;
       }
     }
 
