@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { graphql } from 'gatsby';
+import { Link, graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { Layout } from '@components';
@@ -939,16 +939,44 @@ const StyledAILabHeader = styled.header`
   text-align: left;
   width: 100%;
 
+  .ai-lab-back-link,
   .ai-lab-label {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     color: var(--green);
     font-family: var(--font-mono);
     font-size: 14px;
     font-weight: 400;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     letter-spacing: 0;
     word-spacing: normal;
     text-transform: uppercase;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+    width: fit-content;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+      max-width: 14px;
+      fill: none !important;
+      stroke: currentColor !important;
+      stroke-width: 2 !important;
+      display: inline-block;
+      vertical-align: middle;
+      transition: transform 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
+    &:hover {
+      color: var(--green);
+
+      svg {
+        transform: translateX(-4px);
+      }
+    }
   }
 
   .ai-lab-title {
@@ -1579,8 +1607,23 @@ const CaseStudyTemplate = ({ data, location }) => {
         <StyledContentArea>
           {isAILab ? (
             <StyledAILabHeader className="ai-lab-header-reveal">
-              {/* 1. AI Label */}
-              <span className="ai-lab-label">{frontmatter.ai_label || 'AI LAB'}</span>
+              {/* 1. AI Label with Back Arrow */}
+              <Link to="/ai-lab" className="ai-lab-back-link" title="Back to AI Lab">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span>{frontmatter.ai_label || 'AI LAB'}</span>
+              </Link>
 
               {/* 2. Title */}
               <h1 className="ai-lab-title">{frontmatter.title}</h1>
