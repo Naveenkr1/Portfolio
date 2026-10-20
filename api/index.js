@@ -135,15 +135,36 @@ app.post('/api/settings/ai-play', async (req, res) => {
   }
 });
 
-// Public Resume Endpoint
+// Resume Endpoints
 app.get('/api/resume', (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     const filePath = path.join(RESUME_DIR, 'resume.json');
     if (!fs.existsSync(filePath)) {
       return res.json({ type: 'url', value: '' });
     }
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/resume', async (req, res) => {
+  try {
+    let { type, value } = req.body;
+    if (!value || typeof value !== 'string') {
+      return res.status(400).json({ error: 'Value is required' });
+    }
+    value = value.trim();
+    if (!value.startsWith('http://') && !value.startsWith('https://') && !value.startsWith('/') && !value.startsWith('#')) {
+      value = `https://${value}`;
+    }
+    const filePath = path.join(RESUME_DIR, 'resume.json');
+    if (!fs.existsSync(RESUME_DIR)) fs.mkdirSync(RESUME_DIR, { recursive: true });
+    fs.writeFileSync(filePath, JSON.stringify({ type: type || 'url', value }, null, 2));
+    await triggerLocalGatsbyRefresh();
+    res.json({ success: true, value });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -654,7 +675,7 @@ app.post('/api/deploy', async (req, res) => {
     await triggerLocalGatsbyRefresh();
     
     // Commit and push changes to git
-    exec('git add -A && (git commit -m "Content update from CMS" || true) && git push', (error, stdout, stderr) => {
+    exec('git add -A && (git commit -m "Content update from CMS" || true) && git push origin main && (git push vercel-repo main || true)', (error, stdout, stderr) => {
       console.log("Git deploy output:", stdout, stderr);
       if (error) {
         console.warn("Git push warning:", error.message);
@@ -980,18 +1001,7 @@ app.post('/api/jobs/:slug/toggle-publish', async (req, res) => {
 // RESUME API
 // ─────────────────────────────────────────────
 
-app.post('/api/resume', async (req, res) => {
-  try {
-    const { type, value } = req.body;
-    const filePath = path.join(RESUME_DIR, 'resume.json');
-    if (!fs.existsSync(RESUME_DIR)) fs.mkdirSync(RESUME_DIR, { recursive: true });
-    fs.writeFileSync(filePath, JSON.stringify({ type, value }, null, 2));
-    await triggerLocalGatsbyRefresh();
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+
 
 app.post('/api/resume/upload', uploadResume.single('resume'), async (req, res) => {
   try {

@@ -144,6 +144,7 @@ function switchSection(section) {
   } else if (section === 'resume') {
     document.getElementById('page-title').textContent = 'Resume Management';
     document.getElementById('page-subtitle').textContent = 'Update your external resume link or upload a PDF';
+    loadResume();
   } else if (section === 'ai-projects') {
     document.getElementById('page-title').textContent = 'AI Lab';
     document.getElementById('page-subtitle').textContent = 'Manage your AI Lab projects';
@@ -793,36 +794,63 @@ function bindForms() {
   });
 
   // Resume Save
-  document.getElementById('btn-resume-save').addEventListener('click', async () => {
+  const saveResumeHandler = async () => {
     const btn = document.getElementById('btn-resume-save');
-    const originalText = btn.innerHTML;
-    const value = document.getElementById('resume-url-input').value;
+    const input = document.getElementById('resume-url-input');
+    let value = (input?.value || '').trim();
 
     if (!value) {
       showToast('Please enter a valid URL', 'error');
       return;
     }
 
+    if (!value.startsWith('http://') && !value.startsWith('https://') && !value.startsWith('/') && !value.startsWith('#')) {
+      value = `https://${value}`;
+      if (input) input.value = value;
+    }
+
+    const originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = 'Saving...';
 
     try {
-      await fetch(`${API}/api/resume`, {
+      const res = await fetch(`${API}/api/resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ type: 'url', value }),
       });
-      showToast('Resume settings saved');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server responded with ${res.status}`);
+      }
+      const data = await res.json();
+      if (data && data.value && input) {
+        input.value = data.value;
+      }
+      showToast('Resume link saved successfully ✅');
     } catch (err) {
-      showToast('Failed to save resume', 'error');
+      showToast('Failed to save resume: ' + err.message, 'error');
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalText;
     }
-  });
+  };
 
-  // Resume File Input change
-  // Removed file input listener for URL-only mode
+  const resumeSaveBtn = document.getElementById('btn-resume-save');
+  if (resumeSaveBtn) {
+    resumeSaveBtn.addEventListener('click', saveResumeHandler);
+  }
+
+  const resumeUrlInput = document.getElementById('resume-url-input');
+  if (resumeUrlInput) {
+    resumeUrlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveResumeHandler();
+      }
+    });
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -831,10 +859,15 @@ function bindForms() {
 
 async function loadResume() {
   try {
-    const res = await fetch(`${API}/api/resume`);
+    const res = await fetch(`${API}/api/resume?t=${Date.now()}`, {
+      credentials: 'include',
+      cache: 'no-store'
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    if (data.value) {
-      document.getElementById('resume-url-input').value = data.value;
+    if (data && data.value) {
+      const input = document.getElementById('resume-url-input');
+      if (input) input.value = data.value;
     }
   } catch (err) {
     console.error('Failed to load resume', err);

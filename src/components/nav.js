@@ -217,7 +217,7 @@ const Nav = ({ isHome, isCaseStudy }) => {
   const [resumeUrl, setResumeUrl] = useState(initialResumeUrl);
 
   useEffect(() => {
-    fetch('/api/resume')
+    fetch(`/api/resume?t=${Date.now()}`)
       .then(res => res.json())
       .then(d => {
         if (d && d.value) {
