@@ -47,7 +47,6 @@
 .ear-l{transform-origin:55% 95%}.ear-r{transform-origin:45% 95%}
 .foot{transform-origin:50% 100%;transition:transform .2s}
 .tail{transform-origin:0% 82%;animation:tailsway 3.4s ease-in-out infinite alternate;cursor:pointer;pointer-events:all}
-.tail:hover{filter:drop-shadow(0 0 6px rgba(255,59,105,0.75))}
 .wl{transform-origin:100% 50%}.wr{transform-origin:0% 50%}
 .wh{transition:transform .2s}
 .nose{transform-origin:center}
@@ -79,8 +78,6 @@
 .pet[data-state=annoyed] .eye.eye-l{transform:scaleY(.42) rotate(16deg)}
 .pet[data-state=annoyed] .eye.eye-r{transform:scaleY(.42) rotate(-16deg)}
 .pet:is([data-state=held],[data-state=dizzy],[data-state=startle],[data-state=annoyed]) .m-o{display:inline}
-.pet[data-state=annoyed] .bubble{border-color:#FF3B69;color:#FF3B69;background:#FFF0F3}
-.pet[data-state=annoyed] .bubble::after{border-right-color:#FF3B69;border-bottom-color:#FF3B69;background:#FFF0F3}
 
 /* ---- idle / sit / loaf ---- */
 .pet[data-state=idle] .torso{animation:breathe 3.4s ease-in-out infinite}
