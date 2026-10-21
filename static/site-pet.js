@@ -197,12 +197,14 @@
   background:#fff;color:#092A3B;border:2px solid #092A3B;border-radius:12px;padding:3px 10px;font-size:13px;font-weight:600;white-space:nowrap;pointer-events:none}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-6px;width:8px;height:8px;background:#fff;border-right:2px solid #092A3B;border-bottom:2px solid #092A3B;transform:translateX(-50%) rotate(45deg)}
 .bubble.show{opacity:1;transform:translate(-50%,0) scale(1)}
-.pet[data-parked="left"] .bubble{left:0;transform:translate(0,6px) scale(.8)}
-.pet[data-parked="left"] .bubble.show{transform:translate(0,0) scale(1)}
-.pet[data-parked="left"] .bubble::after{left:28px}
-.pet[data-parked="right"] .bubble{left:auto;right:0;transform:translate(0,6px) scale(.8)}
-.pet[data-parked="right"] .bubble.show{transform:translate(0,0) scale(1)}
-.pet[data-parked="right"] .bubble::after{left:auto;right:28px}
+.pet[data-parked="left"] .bubble,.pet[data-bubble-edge="left"] .bubble{left:0;transform:translate(0,6px) scale(.8)}
+.pet[data-parked="left"] .bubble.show,.pet[data-bubble-edge="left"] .bubble.show{transform:translate(0,0) scale(1)}
+.pet[data-parked="left"] .bubble::after,.pet[data-bubble-edge="left"] .bubble::after{left:24px}
+.pet[data-parked="right"] .bubble,.pet[data-bubble-edge="right"] .bubble{left:auto;right:0;transform:translate(0,6px) scale(.8)}
+.pet[data-parked="right"] .bubble.show,.pet[data-bubble-edge="right"] .bubble.show{transform:translate(0,0) scale(1)}
+.pet[data-parked="right"] .bubble::after,.pet[data-bubble-edge="right"] .bubble::after{left:auto;right:24px}
+.pet[data-bubble-top="1"] .bubble{bottom:auto;top:calc(100% + 4px)}
+.pet[data-bubble-top="1"] .bubble::after{bottom:auto;top:-6px;border-right:none;border-bottom:none;border-left:2px solid #092A3B;border-top:2px solid #092A3B}
 .fx{position:fixed;pointer-events:none;z-index:9998;font-size:16px;line-height:1;color:var(--c);animation:floatup .9s ease-out forwards;will-change:transform,opacity}
 .berry{position:fixed;z-index:9990;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF8FA3,#E8335A 70%);box-shadow:0 2px 0 rgba(0,0,0,.2);animation:pop .3s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
 .berry::before{content:"";position:absolute;left:6px;top:-5px;width:6px;height:6px;border-radius:0 100% 0 100%;background:#22D2B6}
@@ -357,7 +359,7 @@
     const M = { x: W * 0.5, y: H * 0.4 };
 
     let state = '', asleep = false, held = false, away = false, hidden = false, walkFlag = false, runFlag = false;
-    let isParked = false, parkedSide = null;
+    let isParked = false, parkedSide = null, parkedAt = 0, justDropped = false;
     let hoverEl = null, hoverTimer = 0, bubbleTimer = 0, hoverSince = 0, hoverBig = false;
     let dizzyUntil = 0, happyUntil = 0, eatUntil = 0, startleUntil = 0, annoyedUntil = 0, swatUntil = 0, aloofUntil = 0;
     let pounce = null, roam = null, forced = null, zoomies = null;
@@ -368,9 +370,20 @@
     /* ---------- helpers ---------- */
     function say(text, ms = 1500) {
       bubble.textContent = text;
+      if (P.x < 110) pet.dataset.bubbleEdge = 'left';
+      else if (P.x > W - 110) pet.dataset.bubbleEdge = 'right';
+      else delete pet.dataset.bubbleEdge;
+
+      if (P.y < 70) pet.dataset.bubbleTop = '1';
+      else delete pet.dataset.bubbleTop;
+
       bubble.classList.add('show');
       clearTimeout(bubbleTimer);
-      bubbleTimer = setTimeout(() => bubble.classList.remove('show'), ms);
+      bubbleTimer = setTimeout(() => {
+        bubble.classList.remove('show');
+        delete pet.dataset.bubbleEdge;
+        delete pet.dataset.bubbleTop;
+      }, ms);
     }
     function play(cls) {
       anim.classList.remove('hop', 'squish');
@@ -518,17 +531,18 @@
     addEventListener('resize', () => {
       W = innerWidth; H = innerHeight;
       if (isParked) {
-        P.y = H - BOTTOM;
-        if (parkedSide === 'right') P.x = W - HX - 16;
-        else if (parkedSide === 'left') P.x = HX + 16;
+        P.x = clamp(P.x, HX + 8, W - HX - 8);
+        P.y = clamp(P.y, HY + 4, H - BOTTOM);
       }
     }, { signal });
 
-    /* ---------- drag / pat / tail touch / corner parking ---------- */
+    /* ---------- drag / pat / hover / tail touch / parking ---------- */
     function wakeUpAndFollow() {
+      if (!isParked && !asleep) return;
       isParked = false;
       parkedSide = null;
       delete pet.dataset.parked;
+      justDropped = false;
       asleep = false;
       forced = null;
       roam = null;
@@ -543,10 +557,30 @@
       say(pick(['mrrp! 🐾', "let's go!", '*stretch*', 'purrr']), 1500);
     }
 
+    function checkHoverWake() {
+      if (isParked && !held && !drag) {
+        if (!justDropped || now() - parkedAt > 600) {
+          wakeUpAndFollow();
+        }
+      }
+    }
+    pet.addEventListener('pointerenter', e => {
+      if (e.pointerType === 'touch') return;
+      checkHoverWake();
+    });
+    pet.addEventListener('pointerover', e => {
+      if (e.pointerType === 'touch') return;
+      checkHoverWake();
+    });
+    pet.addEventListener('pointerleave', () => {
+      justDropped = false;
+    });
+
     function angryTailReaction() {
       isParked = false;
       parkedSide = null;
       delete pet.dataset.parked;
+      justDropped = false;
       activity(false);
       asleep = false;
       forced = null;
@@ -596,13 +630,17 @@
       drag = { sx: e.clientX, sy: e.clientY, ox: P.x - e.clientX, oy: P.y - e.clientY, moved: false, vx: 0, vy: 0, lx: e.clientX, ly: e.clientY, lt: now() };
     });
     pet.addEventListener('pointermove', e => {
-      if (!drag) return;
+      if (!drag) {
+        if (e.pointerType !== 'touch') checkHoverWake();
+        return;
+      }
       if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 6) {
         drag.moved = true; held = true; pet.classList.add('held'); pounce = null; roam = null; forced = null; zoomies = null;
         if (isParked) {
           isParked = false;
           parkedSide = null;
           delete pet.dataset.parked;
+          justDropped = false;
           asleep = false;
         }
         activity();
@@ -622,40 +660,24 @@
       const d = drag; drag = null;
       if (d.moved) {
         held = false; pet.classList.remove('held');
-
-        // Check if dropped in bottom-left or bottom-right corner
-        const CORNER_W = Math.max(160, W * 0.22);
-        const CORNER_H = Math.max(160, H * 0.25);
-        const inBottomLeft = P.x <= CORNER_W && P.y >= H - CORNER_H;
-        const inBottomRight = P.x >= W - CORNER_W && P.y >= H - CORNER_H;
-
-        if (inBottomLeft || inBottomRight) {
-          isParked = true;
-          parkedSide = inBottomLeft ? 'left' : 'right';
-          pet.dataset.parked = parkedSide;
-          P.x = inBottomLeft ? HX + 16 : W - HX - 16;
-          P.y = H - BOTTOM;
-          P.vx = 0;
-          P.vy = 0;
-          asleep = false;
-          forced = { s: 'sit', until: now() + 700, auto: true, then: 'sleep' };
-          play('squish');
-          say(pick(['*curls up*', 'zzz', '*naps in corner*', 'nap time...']), 1600);
-          setTimeout(() => {
-            if (isParked) {
-              asleep = true;
-              burst(P.x, P.y - 25 * S, ['✨'], 2);
-            }
-          }, 700);
-          return;
-        }
-
-        isParked = false;
-        parkedSide = null;
-        delete pet.dataset.parked;
-        P.vx = clamp(d.vx, -MAXV, MAXV); P.vy = clamp(d.vy, -MAXV, MAXV);
-        annoyedUntil = now() + 1500; aloofUntil = now() + 4000; play('hop');
-        say(pick(['mrrp.', 'excuse me.', 'rude.']), 1500);
+        isParked = true;
+        parkedAt = now();
+        justDropped = true;
+        P.x = clamp(P.x, HX + 8, W - HX - 8);
+        P.y = clamp(P.y, HY + 4, H - BOTTOM);
+        P.vx = 0;
+        P.vy = 0;
+        asleep = false;
+        forced = { s: 'sit', until: now() + 600, auto: true, then: 'sleep' };
+        play('squish');
+        say(pick(['*curls up*', 'zzz', '*naps*', 'staying here~', 'chill spot...']), 1600);
+        setTimeout(() => {
+          if (isParked) {
+            asleep = true;
+            burst(P.x, P.y - 25 * S, ['✨'], 2);
+          }
+        }, 600);
+        return;
       } else if (!cancel) {
         if (isParked) {
           wakeUpAndFollow();
@@ -902,12 +924,25 @@
                                      // 'rub' 'startle' 'stalk' 'swat' 'purr' 'eat' 'annoyed' 'dizzy' 'held'
       angry: angryTailReaction,
       wake: wakeUpAndFollow,
-      park: (corner = 'right') => {
+      park: (x = 'right', y) => {
         isParked = true;
-        parkedSide = corner === 'left' ? 'left' : 'right';
-        pet.dataset.parked = parkedSide;
-        P.x = parkedSide === 'left' ? HX + 16 : W - HX - 16;
-        P.y = H - BOTTOM;
+        parkedAt = now();
+        justDropped = true;
+        if (typeof x === 'number') {
+          P.x = clamp(x, HX + 8, W - HX - 8);
+          P.y = typeof y === 'number' ? clamp(y, HY + 4, H - BOTTOM) : H - BOTTOM;
+          delete pet.dataset.parked;
+        } else if (x === 'left') {
+          parkedSide = 'left';
+          pet.dataset.parked = 'left';
+          P.x = HX + 16;
+          P.y = H - BOTTOM;
+        } else {
+          parkedSide = 'right';
+          pet.dataset.parked = 'right';
+          P.x = W - HX - 16;
+          P.y = H - BOTTOM;
+        }
         P.vx = 0; P.vy = 0;
         asleep = true;
         forced = null;
