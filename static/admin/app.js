@@ -1335,3 +1335,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 });
+
+// ─── SITE PET TOGGLE ───
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch(`${API}/api/settings/site-pet?t=${Date.now()}`);
+    if (res.ok) {
+      const data = await res.json();
+      const toggle = document.getElementById('global-site-pet-toggle');
+      if (toggle) toggle.checked = data.enabled !== false;
+    }
+  } catch (err) {
+    console.error('Failed to load Site Pet toggle status', err);
+  }
+
+  const petToggleBtn = document.getElementById('global-site-pet-toggle');
+  if (petToggleBtn) {
+    petToggleBtn.addEventListener('change', async (e) => {
+      const isEnabled = e.target.checked;
+      try {
+        const res = await fetch(`${API}/api/settings/site-pet`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ enabled: isEnabled })
+        });
+        if (res.ok) {
+          showToast(isEnabled ? 'Site Pet enabled 🐾' : 'Site Pet disabled');
+        } else {
+          e.target.checked = !isEnabled; // revert
+          showToast('Failed to update Site Pet setting', 'error');
+        }
+      } catch (err) {
+        e.target.checked = !isEnabled; // revert
+        showToast('Network error', 'error');
+      }
+    });
+  }
+});
+

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled, { ThemeProvider } from 'styled-components';
-import { Head, Loader, Nav, Social, Email, Footer, ThemeToggle } from '@components';
+import { Head, Loader, Nav, Social, Email, Footer, ThemeToggle, SitePet } from '@components';
 import { GlobalStyle, theme } from '@styles';
 
 const StyledContent = styled.div`
@@ -77,6 +77,7 @@ const Layout = ({ children, location, hideSocialAndEmail, hideNav }) => {
       <div id="root">
         <ThemeProvider theme={theme}>
           <GlobalStyle />
+          <SitePet />
 
           <a className="skip-to-content" href="#content">
             Skip to Content

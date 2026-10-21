@@ -14,6 +14,4 @@ export { default as Featured } from './sections/featured';
 export { default as Projects } from './sections/projects';
 export { default as Contact } from './sections/contact';
 export { default as ThemeToggle } from './theme-toggle';
-
-
-
+export { default as SitePet } from './sitePet';

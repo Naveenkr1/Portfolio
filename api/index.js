@@ -135,6 +135,41 @@ app.post('/api/settings/ai-play', async (req, res) => {
   }
 });
 
+// Site Pet Settings (Public & Admin)
+app.get('/api/settings/site-pet', (req, res) => {
+  try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    const filePath = path.join(SETTINGS_DIR, 'sitePet.json');
+    if (!fs.existsSync(filePath)) {
+      return res.json({ enabled: true });
+    }
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    res.json({ enabled: data.enabled !== false });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/settings/site-pet', async (req, res) => {
+  try {
+    if (!fs.existsSync(SETTINGS_DIR)) fs.mkdirSync(SETTINGS_DIR, { recursive: true });
+    const { enabled } = req.body;
+    const isEnabled = enabled !== false;
+    const filePath = path.join(SETTINGS_DIR, 'sitePet.json');
+    fs.writeFileSync(filePath, JSON.stringify({ enabled: isEnabled }, null, 2));
+
+    try {
+      const staticSettingsPath = path.join(STATIC_DIR, 'site-pet-settings.json');
+      fs.writeFileSync(staticSettingsPath, JSON.stringify({ enabled: isEnabled }, null, 2));
+    } catch (e) {}
+
+    await triggerLocalGatsbyRefresh();
+    res.json({ success: true, enabled: isEnabled });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Resume Endpoints
 app.get('/api/resume', (req, res) => {
   try {
