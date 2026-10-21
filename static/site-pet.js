@@ -197,6 +197,12 @@
   background:#fff;color:#092A3B;border:2px solid #092A3B;border-radius:12px;padding:3px 10px;font-size:13px;font-weight:600;white-space:nowrap;pointer-events:none}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-6px;width:8px;height:8px;background:#fff;border-right:2px solid #092A3B;border-bottom:2px solid #092A3B;transform:translateX(-50%) rotate(45deg)}
 .bubble.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.pet[data-parked="left"] .bubble{left:0;transform:translate(0,6px) scale(.8)}
+.pet[data-parked="left"] .bubble.show{transform:translate(0,0) scale(1)}
+.pet[data-parked="left"] .bubble::after{left:28px}
+.pet[data-parked="right"] .bubble{left:auto;right:0;transform:translate(0,6px) scale(.8)}
+.pet[data-parked="right"] .bubble.show{transform:translate(0,0) scale(1)}
+.pet[data-parked="right"] .bubble::after{left:auto;right:28px}
 .fx{position:fixed;pointer-events:none;z-index:9998;font-size:16px;line-height:1;color:var(--c);animation:floatup .9s ease-out forwards;will-change:transform,opacity}
 .berry{position:fixed;z-index:9990;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF8FA3,#E8335A 70%);box-shadow:0 2px 0 rgba(0,0,0,.2);animation:pop .3s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
 .berry::before{content:"";position:absolute;left:6px;top:-5px;width:6px;height:6px;border-radius:0 100% 0 100%;background:#22D2B6}
@@ -351,6 +357,7 @@
     const M = { x: W * 0.5, y: H * 0.4 };
 
     let state = '', asleep = false, held = false, away = false, hidden = false, walkFlag = false, runFlag = false;
+    let isParked = false, parkedSide = null;
     let hoverEl = null, hoverTimer = 0, bubbleTimer = 0, hoverSince = 0, hoverBig = false;
     let dizzyUntil = 0, happyUntil = 0, eatUntil = 0, startleUntil = 0, annoyedUntil = 0, swatUntil = 0, aloofUntil = 0;
     let pounce = null, roam = null, forced = null, zoomies = null;
@@ -395,12 +402,13 @@
     }
 
     function wake() {
+      if (isParked) return;
       asleep = false; wakeAcc = 0;
       startleUntil = now() + 700; play('hop'); say(pick(['!', 'hm?', 'mrrp?']), 900);
     }
     function activity(canWake = true) {
       lastActive = now();
-      if (canWake && asleep) wake();
+      if (canWake && asleep && !isParked) wake();
     }
     const happy = ms => { happyUntil = now() + ms; };
     function startSwat(side) {
@@ -424,17 +432,17 @@
     /* ---------- hover ---------- */
     const HOVER_SEL = CONFIG.hoverSelector;
     function setHover(el) {
-      if (el === hoverEl) return;
+      if (isParked || el === hoverEl) return;
       hoverEl = el; hoverSince = now();
       clearTimeout(hoverTimer);
       hoverTimer = setTimeout(() => {
-        if (hoverEl !== el) return;
+        if (isParked || hoverEl !== el) return;
         say(el.dataset.pet || (el.tagName === 'A' ? 'ooh, a link' : el.tagName === 'BUTTON' ? 'press it!' : 'hm?'), 1700);
       }, 220);
     }
     function clearHover() { hoverEl = null; clearTimeout(hoverTimer); }
     document.addEventListener('pointerover', e => {
-      if (e.pointerType === 'touch' || hidden) return;
+      if (e.pointerType === 'touch' || hidden || isParked) return;
       const el = e.target.closest && e.target.closest(HOVER_SEL);
       if (el && !host.contains(el)) setHover(el);
     }, { signal });
@@ -453,13 +461,18 @@
       curSpeed = curSpeed * 0.7 + v * 0.3; prevX = e.clientX; prevY = e.clientY; prevT = t;
 
       const moved = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-      if (moved > 4) { lastX = e.clientX; lastY = e.clientY; wakeAcc = asleep ? wakeAcc + moved : 0; activity(wakeAcc > 140); }
+      if (moved > 4) {
+        lastX = e.clientX;
+        lastY = e.clientY;
+        wakeAcc = (asleep && !isParked) ? wakeAcc + moved : 0;
+        if (!isParked) activity(wakeAcc > 140);
+      }
 
       // a cat on a routine stops what it is doing when the cursor darts around
-      if (forced && forced.auto && curSpeed > 1.0) forced = null;
+      if (forced && forced.auto && !isParked && curSpeed > 1.0) forced = null;
 
       // stalking: a fast cursor close by looks like a toy
-      if (curSpeed > 1.6 && t > huntCool && !pounce && !held && !asleep && !hidden &&
+      if (!isParked && curSpeed > 1.6 && t > huntCool && !pounce && !held && !asleep && !hidden &&
           Math.hypot(M.x - P.x, M.y - P.y) < 380 && ['idle', 'sit', 'walk', 'curious'].includes(state) && Math.random() < 0.5) {
         huntCool = t + 5000; forced = null;
         pounce = { live: true, start: t + 650, until: t + 2600 };
@@ -467,9 +480,9 @@
 
       // shake detection
       const dx = e.movementX || 0;
-      if (Math.abs(dx) > 10) { const s = Math.sign(dx); if (lastSign && s !== lastSign) reversals.push(t); lastSign = s; }
+      if (!isParked && Math.abs(dx) > 10) { const s = Math.sign(dx); if (lastSign && s !== lastSign) reversals.push(t); lastSign = s; }
       reversals = reversals.filter(r => t - r < 1000);
-      if (reversals.length >= 6 && t > dizzyUntil) {
+      if (!isParked && reversals.length >= 6 && t > dizzyUntil) {
         reversals = []; dizzyUntil = t + 2600; pounce = null; roam = null; zoomies = null; say('whoa…', 1800);
       }
     }, { signal });
@@ -480,7 +493,7 @@
     document.documentElement.addEventListener('mouseenter', () => { away = false; }, { signal });
 
     document.addEventListener('click', e => {
-      if (hidden || isPet(e)) return;
+      if (hidden || isPet(e) || isParked) return;
       activity();
       const interactive = e.target.closest && e.target.closest('a,button,input,textarea,select,label,summary,[role=button]');
       burst(e.clientX, e.clientY, ['✦'], 3);
@@ -499,13 +512,41 @@
 
     addEventListener('scroll', () => {
       const ds = scrollY - lastScroll; lastScroll = scrollY;
-      if (!hidden && !held) P.vy -= clamp(ds * 0.05, -9, 9);
-      activity();
+      if (!hidden && !held && !isParked) P.vy -= clamp(ds * 0.05, -9, 9);
+      if (!isParked) activity();
     }, { passive: true, signal });
-    addEventListener('resize', () => { W = innerWidth; H = innerHeight; }, { signal });
+    addEventListener('resize', () => {
+      W = innerWidth; H = innerHeight;
+      if (isParked) {
+        P.y = H - BOTTOM;
+        if (parkedSide === 'right') P.x = W - HX - 16;
+        else if (parkedSide === 'left') P.x = HX + 16;
+      }
+    }, { signal });
 
-    /* ---------- drag / pat / tail touch ---------- */
+    /* ---------- drag / pat / tail touch / corner parking ---------- */
+    function wakeUpAndFollow() {
+      isParked = false;
+      parkedSide = null;
+      delete pet.dataset.parked;
+      asleep = false;
+      forced = null;
+      roam = null;
+      pounce = null;
+      zoomies = null;
+      wakeAcc = 0;
+      aloofUntil = 0;
+      lastActive = now();
+      play('hop');
+      burst(P.x, P.y - 36 * S, ['♥', '✦'], 4);
+      happy(2000);
+      say(pick(['mrrp! 🐾', "let's go!", '*stretch*', 'purrr']), 1500);
+    }
+
     function angryTailReaction() {
+      isParked = false;
+      parkedSide = null;
+      delete pet.dataset.parked;
       activity(false);
       asleep = false;
       forced = null;
@@ -557,7 +598,14 @@
     pet.addEventListener('pointermove', e => {
       if (!drag) return;
       if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 6) {
-        drag.moved = true; held = true; pet.classList.add('held'); pounce = null; roam = null; forced = null; zoomies = null; activity();
+        drag.moved = true; held = true; pet.classList.add('held'); pounce = null; roam = null; forced = null; zoomies = null;
+        if (isParked) {
+          isParked = false;
+          parkedSide = null;
+          delete pet.dataset.parked;
+          asleep = false;
+        }
+        activity();
       }
       if (drag.moved) {
         const t = now(), dt = Math.max(1, t - drag.lt) / 16.67;
@@ -574,10 +622,47 @@
       const d = drag; drag = null;
       if (d.moved) {
         held = false; pet.classList.remove('held');
+
+        // Check if dropped in bottom-left or bottom-right corner
+        const CORNER_W = Math.max(160, W * 0.22);
+        const CORNER_H = Math.max(160, H * 0.25);
+        const inBottomLeft = P.x <= CORNER_W && P.y >= H - CORNER_H;
+        const inBottomRight = P.x >= W - CORNER_W && P.y >= H - CORNER_H;
+
+        if (inBottomLeft || inBottomRight) {
+          isParked = true;
+          parkedSide = inBottomLeft ? 'left' : 'right';
+          pet.dataset.parked = parkedSide;
+          P.x = inBottomLeft ? HX + 16 : W - HX - 16;
+          P.y = H - BOTTOM;
+          P.vx = 0;
+          P.vy = 0;
+          asleep = false;
+          forced = { s: 'sit', until: now() + 700, auto: true, then: 'sleep' };
+          play('squish');
+          say(pick(['*curls up*', 'zzz', '*naps in corner*', 'nap time...']), 1600);
+          setTimeout(() => {
+            if (isParked) {
+              asleep = true;
+              burst(P.x, P.y - 25 * S, ['✨'], 2);
+            }
+          }, 700);
+          return;
+        }
+
+        isParked = false;
+        parkedSide = null;
+        delete pet.dataset.parked;
         P.vx = clamp(d.vx, -MAXV, MAXV); P.vy = clamp(d.vy, -MAXV, MAXV);
         annoyedUntil = now() + 1500; aloofUntil = now() + 4000; play('hop');
         say(pick(['mrrp.', 'excuse me.', 'rude.']), 1500);
-      } else if (!cancel) pat();
+      } else if (!cancel) {
+        if (isParked) {
+          wakeUpAndFollow();
+        } else {
+          pat();
+        }
+      }
     }
     pet.addEventListener('pointerup', () => release(false));
     pet.addEventListener('pointercancel', () => release(true));
@@ -674,53 +759,58 @@
         if (t < forced.until) f = forced.s;
         else { const th = forced.then; forced = null; if (th === 'sleep') { asleep = true; say('zzz', 1200); } }
       }
-      const frozen = asleep || t < dizzyUntil || t < eatUntil || t < swatUntil ||
+      const frozen = isParked || asleep || t < dizzyUntil || t < eatUntil || t < swatUntil ||
         (pounce && t < pounce.start) || (f && STILL.has(f));
 
       // 1. choose a target, lowest to highest priority
       let tx = P.x, ty = P.y, k = 0.0065, lookAt = M;
-      const dx = P.x - M.x, dy = P.y - M.y, d = Math.hypot(dx, dy);
-      if (d > FOLLOW && t > aloofUntil) { tx = M.x + dx / d * FOLLOW; ty = M.y + dy / d * FOLLOW; }
-      if (hoverEl) {
-        const r = hoverEl.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > H) clearHover();
-        else {
-          hoverBig = r.width > 260;
-          if (hoverBig) { tx = r.left + 60; ty = r.top - 4; }
-          else if (r.left > 90) { tx = r.left - 36 * S; ty = r.top + r.height / 2; }
-          else { tx = r.right + 36 * S; ty = r.top + r.height / 2; }
-          k = 0.008; lookAt = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-        }
-      }
-      if (away) { tx = W - 60; ty = H - 50; k = 0.008; lookAt = { x: P.x + Math.sin(t * 0.002) * 100, y: P.y }; }
-      if (zoomies) {
-        if (t > zoomies.until) { zoomies = null; aloofUntil = t + 3000; say('*pant*', 1200); }
-        else if (!roam) roam = { x: rand(70, W - 70), y: rand(90, H - 70), k: 0.015, until: t + 1500 };
-      }
-      if (roam) {
-        if (t > roam.until || Math.hypot(roam.x - P.x, roam.y - P.y) < 24) roam = null;
-        else { tx = roam.x; ty = roam.y; k = roam.k; lookAt = roam; }
-      }
-      const tr = treats[0];
-      if (tr) {
-        tx = tr.x; ty = tr.y; k = 0.012; lookAt = tr;
-        if (Math.hypot(tr.x - P.x, tr.y - P.y) < 28 && t >= eatUntil) eat(tr);
-      }
-      if (pounce) {
-        if (t > pounce.until) pounce = null;
-        else if (t >= pounce.start) {
-          if (pounce.live && !pounce.set) { pounce.x = M.x; pounce.y = M.y - 16; pounce.set = true; }
-          if (!pounce.jumped) { pounce.jumped = true; play('hop'); }
-          tx = pounce.x; ty = pounce.y; k = 0.014; lookAt = pounce;
-          if (Math.hypot(pounce.x - P.x, pounce.y - P.y) < 28) {
-            startSwat(pounce.x < P.x ? 'l' : 'r'); burst(P.x, P.y - 28, ['✦'], 3); pounce = null;
+      if (!isParked) {
+        const dx = P.x - M.x, dy = P.y - M.y, d = Math.hypot(dx, dy);
+        if (d > FOLLOW && t > aloofUntil) { tx = M.x + dx / d * FOLLOW; ty = M.y + dy / d * FOLLOW; }
+        if (hoverEl) {
+          const r = hoverEl.getBoundingClientRect();
+          if (r.bottom < 0 || r.top > H) clearHover();
+          else {
+            hoverBig = r.width > 260;
+            if (hoverBig) { tx = r.left + 60; ty = r.top - 4; }
+            else if (r.left > 90) { tx = r.left - 36 * S; ty = r.top + r.height / 2; }
+            else { tx = r.right + 36 * S; ty = r.top + r.height / 2; }
+            k = 0.008; lookAt = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
           }
-        } else lookAt = pounce.live ? M : pounce;
+        }
+        if (away) { tx = W - 60; ty = H - 50; k = 0.008; lookAt = { x: P.x + Math.sin(t * 0.002) * 100, y: P.y }; }
+        if (zoomies) {
+          if (t > zoomies.until) { zoomies = null; aloofUntil = t + 3000; say('*pant*', 1200); }
+          else if (!roam) roam = { x: rand(70, W - 70), y: rand(90, H - 70), k: 0.015, until: t + 1500 };
+        }
+        if (roam) {
+          if (t > roam.until || Math.hypot(roam.x - P.x, roam.y - P.y) < 24) roam = null;
+          else { tx = roam.x; ty = roam.y; k = roam.k; lookAt = roam; }
+        }
+        const tr = treats[0];
+        if (tr) {
+          tx = tr.x; ty = tr.y; k = 0.012; lookAt = tr;
+          if (Math.hypot(tr.x - P.x, tr.y - P.y) < 28 && t >= eatUntil) eat(tr);
+        }
+        if (pounce) {
+          if (t > pounce.until) pounce = null;
+          else if (t >= pounce.start) {
+            if (pounce.live && !pounce.set) { pounce.x = M.x; pounce.y = M.y - 16; pounce.set = true; }
+            if (!pounce.jumped) { pounce.jumped = true; play('hop'); }
+            tx = pounce.x; ty = pounce.y; k = 0.014; lookAt = pounce;
+            if (Math.hypot(pounce.x - P.x, pounce.y - P.y) < 28) {
+              startSwat(pounce.x < P.x ? 'l' : 'r'); burst(P.x, P.y - 28, ['✦'], 3); pounce = null;
+            }
+          } else lookAt = pounce.live ? M : pounce;
+        }
       }
       if (frozen) { tx = P.x; ty = P.y; }
 
       // 2. spring physics
       if (held) { P.vx *= 0.9; }
+      else if (isParked) {
+        P.vx = 0; P.vy = 0;
+      }
       else {
         P.vx += (tx - P.x) * k * dt; P.vy += (ty - P.y) * k * dt;
         const damp = Math.pow(0.84, dt);
@@ -811,6 +901,19 @@
       trigger,                       // 'walk' 'run' 'zoomies' 'sit' 'groom' 'stretch' 'yawn' 'sleep' 'curious'
                                      // 'rub' 'startle' 'stalk' 'swat' 'purr' 'eat' 'annoyed' 'dizzy' 'held'
       angry: angryTailReaction,
+      wake: wakeUpAndFollow,
+      park: (corner = 'right') => {
+        isParked = true;
+        parkedSide = corner === 'left' ? 'left' : 'right';
+        pet.dataset.parked = parkedSide;
+        P.x = parkedSide === 'left' ? HX + 16 : W - HX - 16;
+        P.y = H - BOTTOM;
+        P.vx = 0; P.vy = 0;
+        asleep = true;
+        forced = null;
+        play('squish');
+        say(pick(['*curls up*', 'zzz']), 1500);
+      },
       berry: throwBerry,             // drops a berry for the cat to chase and eat
       say: (text, ms) => say(String(text), ms),
       hide: () => setHidden(true),
