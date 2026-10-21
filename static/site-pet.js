@@ -46,7 +46,8 @@
 .ear{transition:transform .2s}
 .ear-l{transform-origin:55% 95%}.ear-r{transform-origin:45% 95%}
 .foot{transform-origin:50% 100%;transition:transform .2s}
-.tail{transform-origin:0% 82%;animation:tailsway 3.4s ease-in-out infinite alternate}
+.tail{transform-origin:0% 82%;animation:tailsway 3.4s ease-in-out infinite alternate;cursor:pointer;pointer-events:all}
+.tail:hover{filter:drop-shadow(0 0 6px rgba(255,59,105,0.75))}
 .wl{transform-origin:100% 50%}.wr{transform-origin:0% 50%}
 .wh{transition:transform .2s}
 .nose{transform-origin:center}
@@ -74,7 +75,12 @@
 .pet:is([data-state=happy],[data-state=rub],[data-state=groom]) .m-smile,
 .pet:is([data-state=idle],[data-state=sit],[data-state=walk]):hover .m-smile{display:inline}
 .pet:is([data-state=curious],[data-state=startle],[data-state=held],[data-state=crouch]) .eye{transform:scale(1.18)}
-.pet[data-state=annoyed] .eye{transform:scaleY(.5)}
+.pet[data-state=annoyed] .eye{transform:scaleY(.45)}
+.pet[data-state=annoyed] .eye.eye-l{transform:scaleY(.42) rotate(16deg)}
+.pet[data-state=annoyed] .eye.eye-r{transform:scaleY(.42) rotate(-16deg)}
+.pet:is([data-state=held],[data-state=dizzy],[data-state=startle],[data-state=annoyed]) .m-o{display:inline}
+.pet[data-state=annoyed] .bubble{border-color:#FF3B69;color:#FF3B69;background:#FFF0F3}
+.pet[data-state=annoyed] .bubble::after{border-right-color:#FF3B69;border-bottom-color:#FF3B69;background:#FFF0F3}
 
 /* ---- idle / sit / loaf ---- */
 .pet[data-state=idle] .torso{animation:breathe 3.4s ease-in-out infinite}
@@ -155,7 +161,7 @@
 .pet[data-state=annoyed] .ear-r{transform:rotate(24deg) translateY(6px)}
 .pet[data-state=annoyed] .wl{transform:rotate(-14deg)}
 .pet[data-state=annoyed] .wr{transform:rotate(14deg)}
-.pet[data-state=annoyed] .tail{animation-duration:.16s;--tw1:-28;--tw2:28}
+.pet[data-state=annoyed] .tail{animation-duration:.12s;--tw1:-34;--tw2:34}
 .pet[data-state=held] .torso{animation:heldsway .7s ease-in-out infinite alternate}
 .pet[data-state=held] .foot{transform-origin:50% 0%}
 .pet[data-state=held] .foot-l{animation:dangle .45s ease-in-out infinite alternate}
@@ -251,7 +257,10 @@
   <svg class="shadow-svg" viewBox="-8 -14 466 480" fill="none"><path d="M185 454.368C287.173 454.368 370 441.832 370 426.368C370 410.904 287.173 398.368 185 398.368C82.8273 398.368 0 410.904 0 426.368C0 441.832 82.8273 454.368 185 454.368Z" fill="#000" fill-opacity="0.1"/></svg>
   <div class="tilt" id="tilt"><div class="anim" id="anim">
     <svg class="sprite" viewBox="-8 -14 466 480" fill="none">
-      <g class="tail"><path d="M289 343.283C354 353.283 391 313.283 390 275.283C389 247.283 417 240.283 430 258.283C450 286.283 421 340.283 383 367.283C351 389.283 311 385.283 289 375.283V343.283Z" fill="#43DFC7"/></g>
+      <g class="tail" id="tail">
+        <path d="M289 343.283C354 353.283 391 313.283 390 275.283C389 247.283 417 240.283 430 258.283C450 286.283 421 340.283 383 367.283C351 389.283 311 385.283 289 375.283V343.283Z" fill="#43DFC7"/>
+        <path d="M289 343.283C354 353.283 391 313.283 390 275.283C389 247.283 417 240.283 430 258.283C450 286.283 421 340.283 383 367.283C351 389.283 311 385.283 289 375.283V343.283Z" stroke="transparent" stroke-width="45" stroke-linecap="round" fill="none" pointer-events="all"/>
+      </g>
       <g class="foot foot-l"><path d="M160 337.368H89C81.8203 337.368 76 344.274 76 352.794V410.941C76 419.461 81.8203 426.368 89 426.368H160C167.18 426.368 173 419.461 173 410.941V352.794C173 344.274 167.18 337.368 160 337.368Z" fill="#22D2B6"/></g>
       <g class="foot foot-r"><path d="M282 337.368H211C203.82 337.368 198 344.274 198 352.794V410.941C198 419.461 203.82 426.368 211 426.368H282C289.18 426.368 295 419.461 295 410.941V352.794C295 344.274 289.18 337.368 282 337.368Z" fill="#22D2B6"/></g>
       <g class="torso">
@@ -268,8 +277,8 @@
         <g class="face">
           <g class="eyes" id="eyes">
             <g class="eyes-open" id="eyesOpen">
-              <rect class="eye" x="108" y="183.368" width="34" height="35" rx="5" fill="#092A3B"/>
-              <rect class="eye" x="250" y="183.368" width="34" height="35" rx="5" fill="#092A3B"/>
+              <rect class="eye eye-l" x="108" y="183.368" width="34" height="35" rx="5" fill="#092A3B"/>
+              <rect class="eye eye-r" x="250" y="183.368" width="34" height="35" rx="5" fill="#092A3B"/>
             </g>
             <g class="eyes-closed">
               <path class="ink" stroke-width="9" d="M104 202 Q125 218 146 202"/><path class="ink" stroke-width="9" d="M246 202 Q267 218 288 202"/>
@@ -378,7 +387,7 @@
         el.textContent = c;
         el.style.left = (x - 8) + 'px';
         el.style.top = (y - 8) + 'px';
-        el.style.setProperty('--c', c === '♥' ? '#FF6B8B' : '#F5B83D');
+        el.style.setProperty('--c', c === '♥' ? '#FF6B8B' : (c === '💢' || c === '⚡' || c === '!' || c === '😾' ? '#FF3B69' : '#F5B83D'));
         el.style.setProperty('--dx', rand(-40, 40) + 'px');
         el.style.setProperty('--dy', rand(-72, -26) + 'px');
         el.style.setProperty('--r', rand(-30, 30) + 'deg');
@@ -498,8 +507,52 @@
     }, { passive: true, signal });
     addEventListener('resize', () => { W = innerWidth; H = innerHeight; }, { signal });
 
-    /* ---------- drag / pat ---------- */
+    /* ---------- drag / pat / tail touch ---------- */
+    function angryTailReaction() {
+      activity(false);
+      asleep = false;
+      forced = null;
+      zoomies = null;
+      pounce = null;
+      roam = null;
+      held = false;
+      pet.classList.remove('held');
+
+      swatUntil = now() + 520;
+      annoyedUntil = now() + 3000;
+      aloofUntil = now() + 5500;
+
+      pet.dataset.side = 'r';
+      play('hop');
+
+      const angrySayings = [
+        'HISSS! 😾',
+        "DON'T TOUCH MY TAIL!",
+        'HISSS! 💢',
+        '*angry hiss* 😾',
+        'HEY! NOT THE TAIL!',
+        'GRRR! 😾',
+        'RUDE! 💢'
+      ];
+      say(pick(angrySayings), 1800);
+
+      burst(P.x + 18 * S, P.y - 20 * S, ['💢', '⚡', '😾', '!'], 5);
+
+      // Flinch & recoil away to the left (away from tail)
+      P.vx = -10;
+      P.vy = -7;
+    }
+
     pet.addEventListener('pointerdown', e => {
+      const path = e.composedPath ? e.composedPath() : [];
+      const isTail = path.some(el => el.classList && el.classList.contains('tail')) ||
+                     (e.target && e.target.closest && e.target.closest('.tail'));
+      if (isTail) {
+        e.preventDefault();
+        e.stopPropagation();
+        angryTailReaction();
+        return;
+      }
       e.preventDefault();
       pet.setPointerCapture(e.pointerId);
       drag = { sx: e.clientX, sy: e.clientY, ox: P.x - e.clientX, oy: P.y - e.clientY, moved: false, vx: 0, vy: 0, lx: e.clientX, ly: e.clientY, lt: now() };
@@ -712,8 +765,8 @@
         f ? f :
         t < dizzyUntil ? 'dizzy' :
         t < eatUntil ? 'eat' :
-        t < annoyedUntil ? 'annoyed' :
         t < swatUntil ? 'swat' :
+        t < annoyedUntil ? 'annoyed' :
         t < startleUntil ? 'startle' :
         t < happyUntil ? 'happy' :
         (pounce && t < pounce.start) ? 'crouch' :
@@ -760,6 +813,7 @@
     window.SitePet = {
       trigger,                       // 'walk' 'run' 'zoomies' 'sit' 'groom' 'stretch' 'yawn' 'sleep' 'curious'
                                      // 'rub' 'startle' 'stalk' 'swat' 'purr' 'eat' 'annoyed' 'dizzy' 'held'
+      angry: angryTailReaction,
       berry: throwBerry,             // drops a berry for the cat to chase and eat
       say: (text, ms) => say(String(text), ms),
       hide: () => setHidden(true),
