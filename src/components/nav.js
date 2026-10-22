@@ -121,6 +121,8 @@ const StyledLinks = styled.div`
         padding: 10px;
         display: inline-flex;
         align-items: center;
+        color: var(--lightest-slate);
+        transition: var(--transition);
 
         &:before {
           content: '0' counter(item) '.';
@@ -129,6 +131,17 @@ const StyledLinks = styled.div`
           font-size: var(--fz-xxs);
           text-align: right;
         }
+
+        &:hover,
+        &:focus,
+        &.active {
+          color: var(--green);
+        }
+      }
+
+      &.active a,
+      a.active {
+        color: var(--green) !important;
       }
     }
 
@@ -192,7 +205,7 @@ const StyledBackLink = styled(Link)`
   }
 `;
 
-const Nav = ({ isHome, isCaseStudy }) => {
+const Nav = ({ isHome, isCaseStudy, location }) => {
   const data = useStaticQuery(graphql`
     query {
       allResumeJson {
@@ -215,6 +228,21 @@ const Nav = ({ isHome, isCaseStudy }) => {
 
   const initialResumeUrl = data.allResumeJson.edges[0]?.node?.value || '#';
   const [resumeUrl, setResumeUrl] = useState(initialResumeUrl);
+
+  const currentPath =
+    (location && location.pathname) ||
+    (typeof window !== 'undefined' ? window.location.pathname : '');
+  const isAiLabPage =
+    currentPath.includes('/ai-lab') ||
+    currentPath.includes('/ai.lab') ||
+    currentPath.includes('/ai-play');
+
+  const isLinkActive = (url, name) => {
+    if (url === '/ai-lab' || name === 'AI Lab') {
+      return isAiLabPage;
+    }
+    return currentPath === url || currentPath === `${url}/`;
+  };
 
   useEffect(() => {
     fetch(`/api/resume?t=${Date.now()}`)
@@ -306,16 +334,26 @@ const Nav = ({ isHome, isCaseStudy }) => {
             <StyledLinks>
               <ol>
                 {visibleNavLinks &&
-                  visibleNavLinks.map(({ url, name }, i) => (
-                    <li key={i}>
-                      <Link to={url}>{name}</Link>
-                    </li>
-                  ))}
+                  visibleNavLinks.map(({ url, name }, i) => {
+                    const isActive = isLinkActive(url, name);
+                    return (
+                      <li key={i} className={isActive ? 'active' : ''}>
+                        <Link
+                          to={url}
+                          activeClassName="active"
+                          partiallyActive={url === '/ai-lab'}
+                          className={isActive ? 'active' : ''}
+                        >
+                          {name}
+                        </Link>
+                      </li>
+                    );
+                  })}
               </ol>
               <div>{ResumeLink}</div>
             </StyledLinks>
 
-            <Menu />
+            <Menu resumeUrl={resumeUrl} location={location} />
           </>
         ) : (
           <>
@@ -340,13 +378,27 @@ const Nav = ({ isHome, isCaseStudy }) => {
                 <TransitionGroup component={null}>
                   {isMounted &&
                     visibleNavLinks &&
-                    visibleNavLinks.map(({ url, name }, i) => (
-                      <CSSTransition key={i} classNames={fadeDownClass} timeout={timeout}>
-                        <li key={i} style={{ transitionDelay: `${isHome ? i * 100 : 0}ms` }}>
-                          <Link to={url}>{name}</Link>
-                        </li>
-                      </CSSTransition>
-                    ))}
+                    visibleNavLinks.map(({ url, name }, i) => {
+                      const isActive = isLinkActive(url, name);
+                      return (
+                        <CSSTransition key={i} classNames={fadeDownClass} timeout={timeout}>
+                          <li
+                            key={i}
+                            className={isActive ? 'active' : ''}
+                            style={{ transitionDelay: `${isHome ? i * 100 : 0}ms` }}
+                          >
+                            <Link
+                              to={url}
+                              activeClassName="active"
+                              partiallyActive={url === '/ai-lab'}
+                              className={isActive ? 'active' : ''}
+                            >
+                              {name}
+                            </Link>
+                          </li>
+                        </CSSTransition>
+                      );
+                    })}
                 </TransitionGroup>
               </ol>
 
@@ -364,7 +416,7 @@ const Nav = ({ isHome, isCaseStudy }) => {
             <TransitionGroup component={null}>
               {isMounted && (
                 <CSSTransition classNames={fadeClass} timeout={timeout}>
-                  <Menu resumeUrl={resumeUrl} />
+                  <Menu resumeUrl={resumeUrl} location={location} />
                 </CSSTransition>
               )}
             </TransitionGroup>
@@ -378,6 +430,7 @@ const Nav = ({ isHome, isCaseStudy }) => {
 Nav.propTypes = {
   isHome: PropTypes.bool,
   isCaseStudy: PropTypes.bool,
+  location: PropTypes.object,
 };
 
 export default Nav;

@@ -87,7 +87,7 @@ const Layout = ({ children, location, hideSocialAndEmail, hideNav }) => {
             <Loader finishLoading={() => setIsLoading(false)} />
           ) : (
             <StyledContent>
-              {!hideNav && <Nav isHome={isHome} isCaseStudy={isCaseStudy} />}
+              {!hideNav && <Nav isHome={isHome} isCaseStudy={isCaseStudy} location={location} />}
               {!hideSocialAndEmail && (
                 <>
                   <Social isHome={isHome} />

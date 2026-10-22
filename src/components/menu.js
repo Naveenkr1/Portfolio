@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useStaticQuery, graphql, Link } from 'gatsby';
 import styled from 'styled-components';
@@ -149,6 +150,10 @@ const StyledSidebar = styled.aside`
         color: var(--green);
         font-size: var(--fz-sm);
       }
+
+      &.active a {
+        color: var(--green) !important;
+      }
     }
 
     .highlight-link {
@@ -187,6 +192,17 @@ const StyledSidebar = styled.aside`
       display: inline-flex;
       align-items: center;
       justify-content: center;
+
+      &:hover,
+      &:focus,
+      &.active {
+        color: var(--green);
+      }
+    }
+
+    li.active a,
+    a.active {
+      color: var(--green) !important;
     }
   }
 
@@ -198,7 +214,7 @@ const StyledSidebar = styled.aside`
   }
 `;
 
-const Menu = ({ resumeUrl }) => {
+const Menu = ({ resumeUrl, location }) => {
   const data = useStaticQuery(graphql`
     query {
       allSettingsJson {
@@ -210,6 +226,21 @@ const Menu = ({ resumeUrl }) => {
       }
     }
   `);
+
+  const currentPath =
+    (location && location.pathname) ||
+    (typeof window !== 'undefined' ? window.location.pathname : '');
+  const isAiLabPage =
+    currentPath.includes('/ai-lab') ||
+    currentPath.includes('/ai.lab') ||
+    currentPath.includes('/ai-play');
+
+  const isLinkActive = (url, name) => {
+    if (url === '/ai-lab' || name === 'AI Lab') {
+      return isAiLabPage;
+    }
+    return currentPath === url || currentPath === `${url}/`;
+  };
 
   const showAiPlay = !data.allSettingsJson?.edges?.some(edge => edge.node?.showTab === false);
 
@@ -319,13 +350,22 @@ const Menu = ({ resumeUrl }) => {
           <nav ref={navRef}>
             {visibleNavLinks && (
               <ol>
-                {visibleNavLinks.map(({ url, name }, i) => (
-                  <li key={i}>
-                    <Link to={url} onClick={() => setMenuOpen(false)}>
-                      {name}
-                    </Link>
-                  </li>
-                ))}
+                {visibleNavLinks.map(({ url, name }, i) => {
+                  const isActive = isLinkActive(url, name);
+                  return (
+                    <li key={i} className={isActive ? 'active' : ''}>
+                      <Link
+                        to={url}
+                        onClick={() => setMenuOpen(false)}
+                        activeClassName="active"
+                        partiallyActive={url === '/ai-lab'}
+                        className={isActive ? 'active' : ''}
+                      >
+                        {name}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ol>
             )}
 
@@ -342,6 +382,11 @@ const Menu = ({ resumeUrl }) => {
       </div>
     </StyledMenu>
   );
+};
+
+Menu.propTypes = {
+  resumeUrl: PropTypes.string,
+  location: PropTypes.object,
 };
 
 export default Menu;
