@@ -365,12 +365,30 @@
       return !!document.querySelector('[class*="StyledCaseStudyContainer"], [class*="StyledAILabHeader"]');
     }
 
+    function getTOCBounds() {
+      W = innerWidth;
+      const tocEl = document.querySelector('aside, [class*="StyledSidebar"], [class*="StyledTOC"], [class*="StyledTOCInner"], .toc-reveal');
+      if (tocEl) {
+        const r = tocEl.getBoundingClientRect();
+        if (r.width > 0 && r.right > 100) {
+          const minX = clamp(Math.min(r.left, HX + 24), HX + 16, r.right - HX - 30);
+          const maxX = clamp(r.right - HX - 8, minX + 60, W - HX - 20);
+          return { minX, maxX };
+        }
+      }
+      // Fallback if TOC element is not yet rendered or on AI lab single column
+      const fallbackEnd = Math.min(360, W * 0.35);
+      const minX = HX + 24;
+      const maxX = clamp(fallbackEnd - HX - 8, minX + 60, W - HX - 20);
+      return { minX, maxX };
+    }
+
     function getLeftParkPosition() {
       W = innerWidth;
       H = innerHeight;
-      const leftOffset = (W <= 768) ? 16 : 24;
+      const { minX } = getTOCBounds();
       return {
-        x: clamp(HX + leftOffset, HX + 8, W - HX - 8),
+        x: minX,
         y: H - BOTTOM
       };
     }
@@ -681,10 +699,10 @@
     addEventListener('resize', () => {
       W = innerWidth; H = innerHeight;
       if (isParked) {
-        if (parkedSide === 'left') {
-          const pos = getLeftParkPosition();
-          P.x = pos.x;
-          P.y = pos.y;
+        if (isCaseStudyPage()) {
+          const { minX, maxX } = getTOCBounds();
+          P.x = clamp(P.x, minX, maxX);
+          P.y = H - BOTTOM;
         } else if (parkedAtEmail) {
           const pos = getEmailPosition();
           P.x = pos.x;
@@ -1014,8 +1032,7 @@
       else if (inCaseStudyPatrol) {
         P.y = H - BOTTOM;
         P.vy = 0;
-        const minX = HX + 24;
-        const maxX = W - HX - 24;
+        const { minX, maxX } = getTOCBounds();
 
         if (t < patrolPauseUntil) {
           P.vx = 0;
