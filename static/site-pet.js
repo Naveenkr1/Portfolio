@@ -444,6 +444,7 @@
         parkedAtEmail = !initPark.isLeft,
         parkedAt = now(),
         justDropped = false;
+    let patrolDir = 1, patrolPauseUntil = initPark.isLeft ? now() + 600 : 0;
     let lastScrollReaction = 0, parkSleepTimer = null;
     if (initPark.isLeft) {
       pet.dataset.parked = 'left';
@@ -459,7 +460,9 @@
       P.x = pos.x;
       P.y = pos.y;
       P.vx = 0; P.vy = 0;
-      scheduleParkSleep(2600, true);
+      asleep = false;
+      patrolDir = 1;
+      patrolPauseUntil = now() + 600;
     }
 
     function parkAtEmail() {
@@ -664,15 +667,15 @@
       const ds = scrollY - lastScroll; lastScroll = scrollY;
       const t = now();
       if (isParked && !held && !drag) {
-        if (Math.abs(ds) > 1.5 && t - lastScrollReaction > 700) {
-          lastScrollReaction = t;
-          asleep = false;
-          play(Math.random() < 0.5 ? 'hop' : 'squish');
-          scheduleParkSleep(2400, true);
+        if (!isCaseStudyPage()) {
+          if (Math.abs(ds) > 1.5 && t - lastScrollReaction > 700) {
+            lastScrollReaction = t;
+            asleep = false;
+            scheduleParkSleep(2400, true);
+          }
         }
         return;
       }
-      if (!hidden && !held) P.vy -= clamp(ds * 0.05, -9, 9);
       activity();
     }, { passive: true, signal });
     addEventListener('resize', () => {
@@ -735,7 +738,12 @@
     function checkHoverWake() {
       if (isParked && !held && !drag) {
         if (!justDropped || now() - parkedAt > 600) {
-          wakeUpAndFollow();
+          if (!isCaseStudyPage()) {
+            wakeUpAndFollow();
+          } else {
+            happy(1500);
+            patrolPauseUntil = Math.max(patrolPauseUntil, now() + 1400);
+          }
         }
       }
     }
@@ -997,10 +1005,40 @@
           } else lookAt = pounce.live ? M : pounce;
         }
       }
-      if (frozen) { tx = P.x; ty = P.y; }
+      const inCaseStudyPatrol = isCaseStudyPage() && isParked && !held && !drag && t > dizzyUntil && t > eatUntil && t > swatUntil;
+
+      if (frozen && !inCaseStudyPatrol) { tx = P.x; ty = P.y; }
 
       // 2. spring physics
       if (held) { P.vx *= 0.9; }
+      else if (inCaseStudyPatrol) {
+        P.y = H - BOTTOM;
+        P.vy = 0;
+        const minX = HX + 24;
+        const maxX = W - HX - 24;
+
+        if (t < patrolPauseUntil) {
+          P.vx = 0;
+          lookAt = { x: P.x + patrolDir * 80, y: P.y };
+        } else {
+          const walkSpeed = 1.9;
+          P.vx = patrolDir * walkSpeed;
+          P.x += P.vx * dt;
+          lookAt = { x: P.x + patrolDir * 120, y: P.y };
+
+          if (patrolDir === 1 && P.x >= maxX) {
+            P.x = maxX;
+            P.vx = 0;
+            patrolDir = -1;
+            patrolPauseUntil = t + rand(1500, 2400);
+          } else if (patrolDir === -1 && P.x <= minX) {
+            P.x = minX;
+            P.vx = 0;
+            patrolDir = 1;
+            patrolPauseUntil = t + rand(1500, 2400);
+          }
+        }
+      }
       else if (isParked) {
         P.vx = 0; P.vy = 0;
       }
@@ -1050,7 +1088,8 @@
         t < startleUntil ? 'startle' :
         t < happyUntil ? 'happy' :
         (pounce && t < pounce.start) ? 'crouch' :
-        asleep ? 'sleep' :
+        (asleep && !inCaseStudyPatrol) ? 'sleep' :
+        inCaseStudyPatrol ? (walkFlag ? 'walk' : (t - stillSince > 2200 ? 'sit' : 'idle')) :
         isParked ? 'sit' :
         hv ? (hoverBig ? 'sit' : (t - hoverSince > 1100 ? 'rub' : 'curious')) :
         runFlag ? 'run' :
@@ -1081,7 +1120,9 @@
     if (CONFIG.greeting) setTimeout(() => say(CONFIG.greeting, 1800), 700);
 
     // Initial parked sleep: after 3.5 seconds starting by email, curls up and sleeps
-    scheduleParkSleep(3500);
+    if (!isCaseStudyPage()) {
+      scheduleParkSleep(3500);
+    }
 
     // If email element renders slightly after load (due to loaderDelay), keep polling until found
     if (parkedAtEmail && isParked) {
