@@ -6,14 +6,14 @@ import { Layout } from '@components';
 import { Icon } from '@components/icons';
 
 const StyledAILabContainer = styled.main`
-  padding: 120px 40px 80px;
+  padding: 150px 40px 80px;
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 
   @media (max-width: 1080px) {
-    padding: 120px 30px 70px;
+    padding: 150px 30px 70px;
   }
   @media (max-width: 768px) {
     padding: 100px 24px 60px;
