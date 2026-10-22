@@ -356,6 +356,25 @@
 
     let W = innerWidth, H = innerHeight;
 
+    function isCaseStudyPage() {
+      if (typeof window === 'undefined') return false;
+      const path = (window.location && window.location.pathname) || '';
+      if (path.includes('/case-study') || path.includes('/ai-lab') || path.includes('/ai.lab') || path.includes('preview')) {
+        return true;
+      }
+      return !!document.querySelector('[class*="StyledCaseStudyContainer"], [class*="StyledAILabHeader"]');
+    }
+
+    function getLeftParkPosition() {
+      W = innerWidth;
+      H = innerHeight;
+      const leftOffset = (W <= 768) ? 16 : 24;
+      return {
+        x: clamp(HX + leftOffset, HX + 8, W - HX - 8),
+        y: H - BOTTOM
+      };
+    }
+
     function getEmailPosition() {
       W = innerWidth;
       H = innerHeight;
@@ -398,26 +417,80 @@
       };
     }
 
-    const initPos = getEmailPosition();
-    const P = { x: initPos.x, y: initPos.y, vx: 0, vy: 0 };
+    function getInitialParkPosition() {
+      if (isCaseStudyPage()) {
+        const pos = getLeftParkPosition();
+        return {
+          x: pos.x,
+          y: pos.y,
+          isLeft: true
+        };
+      }
+      const pos = getEmailPosition();
+      return {
+        x: pos.x,
+        y: pos.y,
+        isLeft: false
+      };
+    }
+
+    const initPark = getInitialParkPosition();
+    const P = { x: initPark.x, y: initPark.y, vx: 0, vy: 0 };
     const M = { x: W * 0.5, y: H * 0.4 };
 
     let state = 'sit', asleep = false, held = false, away = false, hidden = false, walkFlag = false, runFlag = false;
-    let isParked = true, parkedSide = null, parkedAtEmail = true, parkedAt = now(), justDropped = false;
+    let isParked = true,
+        parkedSide = initPark.isLeft ? 'left' : null,
+        parkedAtEmail = !initPark.isLeft,
+        parkedAt = now(),
+        justDropped = false;
     let lastScrollReaction = 0, parkSleepTimer = null;
+    if (initPark.isLeft) {
+      pet.dataset.parked = 'left';
+    }
 
-    function scheduleParkSleep(delay = 3200) {
+    function parkAtLeft() {
+      W = innerWidth; H = innerHeight;
+      isParked = true;
+      parkedSide = 'left';
+      parkedAtEmail = false;
+      pet.dataset.parked = 'left';
+      const pos = getLeftParkPosition();
+      P.x = pos.x;
+      P.y = pos.y;
+      P.vx = 0; P.vy = 0;
+      scheduleParkSleep(2600, true);
+    }
+
+    function parkAtEmail() {
+      W = innerWidth; H = innerHeight;
+      isParked = true;
+      parkedSide = null;
+      parkedAtEmail = true;
+      delete pet.dataset.parked;
+      const pos = getEmailPosition();
+      P.x = pos.x;
+      P.y = pos.y;
+      P.vx = 0; P.vy = 0;
+      scheduleParkSleep(2600, true);
+    }
+
+    function scheduleParkSleep(delay = 3200, silent = false) {
       if (!isParked) return;
       clearTimeout(parkSleepTimer);
       parkSleepTimer = setTimeout(() => {
         if (isParked && !held && !drag) {
           forced = { s: 'sit', until: now() + 600, auto: true, then: 'sleep' };
           play('squish');
-          say(pick(['*curls up*', 'zzz', 'nap time...']), 1400);
+          if (!silent) {
+            say(pick(['*curls up*', 'zzz', 'nap time...']), 1400);
+          }
           setTimeout(() => {
             if (isParked && !held && !drag) {
               asleep = true;
-              burst(P.x, P.y - 25 * S, ['✨'], 2);
+              if (!silent) {
+                burst(P.x, P.y - 25 * S, ['✨'], 2);
+              }
             }
           }, 600);
         }
@@ -591,13 +664,11 @@
       const ds = scrollY - lastScroll; lastScroll = scrollY;
       const t = now();
       if (isParked && !held && !drag) {
-        if (Math.abs(ds) > 1.5 && t - lastScrollReaction > 800) {
+        if (Math.abs(ds) > 1.5 && t - lastScrollReaction > 700) {
           lastScrollReaction = t;
           asleep = false;
           play(Math.random() < 0.5 ? 'hop' : 'squish');
-          burst(P.x, P.y - 20 * S, ['✦', '✨'], 2);
-          say(pick(['whoa!', 'weee~', 'zoom~', '👀', '*perk*', 'mrrp!', 'sliding~']), 1200);
-          scheduleParkSleep(2800);
+          scheduleParkSleep(2400, true);
         }
         return;
       }
@@ -607,7 +678,11 @@
     addEventListener('resize', () => {
       W = innerWidth; H = innerHeight;
       if (isParked) {
-        if (parkedAtEmail) {
+        if (parkedSide === 'left') {
+          const pos = getLeftParkPosition();
+          P.x = pos.x;
+          P.y = pos.y;
+        } else if (parkedAtEmail) {
           const pos = getEmailPosition();
           P.x = pos.x;
           P.y = pos.y;
@@ -617,6 +692,22 @@
         }
       }
     }, { signal });
+
+    let lastKnownPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    function checkRouteChange() {
+      const cur = window.location.pathname;
+      if (cur !== lastKnownPath) {
+        lastKnownPath = cur;
+        if (isParked) {
+          if (isCaseStudyPage()) {
+            parkAtLeft();
+          } else {
+            parkAtEmail();
+          }
+        }
+      }
+    }
+    window.addEventListener('popstate', checkRouteChange, { signal });
 
     /* ---------- drag / pat / hover / tail touch / parking ---------- */
     function wakeUpAndFollow() {
@@ -1035,18 +1126,14 @@
           P.y = typeof y === 'number' ? clamp(y, HY + 4, H - BOTTOM) : H - BOTTOM;
           delete pet.dataset.parked;
         } else if (x === 'left') {
-          parkedSide = 'left';
-          pet.dataset.parked = 'left';
-          P.x = HX + 16;
-          P.y = H - BOTTOM;
+          parkAtLeft();
+          return;
         } else if (x === 'email') {
-          parkedAtEmail = true;
-          const pos = getEmailPosition();
-          P.x = pos.x;
-          P.y = pos.y;
-          delete pet.dataset.parked;
+          parkAtEmail();
+          return;
         } else {
           parkedSide = 'right';
+          parkedAtEmail = false;
           pet.dataset.parked = 'right';
           P.x = W - HX - 16;
           P.y = H - BOTTOM;

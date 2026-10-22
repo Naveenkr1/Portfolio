@@ -77,7 +77,7 @@ const Layout = ({ children, location, hideSocialAndEmail, hideNav }) => {
       <div id="root">
         <ThemeProvider theme={theme}>
           <GlobalStyle />
-          <SitePet />
+          <SitePet location={location} />
 
           <a className="skip-to-content" href="#content">
             Skip to Content

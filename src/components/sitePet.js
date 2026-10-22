@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const SitePet = () => {
+const SitePet = ({ location }) => {
   useEffect(() => {
     let isMounted = true;
 
@@ -82,6 +82,23 @@ const SitePet = () => {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.SitePet && typeof window.SitePet.park === 'function') {
+      const pathname = (location && location.pathname) || (window.location && window.location.pathname) || '';
+      const isCaseStudy =
+        pathname.includes('/case-study') ||
+        pathname.includes('/ai-lab') ||
+        pathname.includes('/ai.lab') ||
+        pathname.includes('preview');
+
+      if (isCaseStudy) {
+        window.SitePet.park('left');
+      } else {
+        window.SitePet.park('email');
+      }
+    }
+  }, [location && location.pathname]);
 
   return null;
 };
