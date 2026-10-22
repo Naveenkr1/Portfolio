@@ -355,11 +355,75 @@
     const now = () => performance.now();
 
     let W = innerWidth, H = innerHeight;
-    const P = { x: W * 0.5, y: H * 0.62, vx: 0, vy: 0 };
+
+    function getEmailPosition() {
+      W = innerWidth;
+      H = innerHeight;
+
+      // 1. Specifically look for the email side element:
+      // Either by email__StyledLinkWrapper or email__Styled
+      const sideEmail = document.querySelector('[class*="email__StyledLinkWrapper"], [class*="email__Styled"]');
+      if (sideEmail) {
+        const sideParent = sideEmail.closest('[class*="StyledSideElement"]') || sideEmail;
+        const r = sideParent.getBoundingClientRect();
+        if (r.width > 0 && r.left > 0) {
+          return {
+            x: clamp(r.left - HX - 14, HX + 8, W - HX - 8),
+            y: H - BOTTOM,
+            found: true
+          };
+        }
+      }
+
+      // 2. Look for the right-hand StyledSideElement (the fixed side container for email)
+      const sides = document.querySelectorAll('[class*="StyledSideElement"]');
+      for (const s of sides) {
+        const r = s.getBoundingClientRect();
+        if (r.width > 0 && r.left > W * 0.5) {
+          return {
+            x: clamp(r.left - HX - 14, HX + 8, W - HX - 8),
+            y: H - BOTTOM,
+            found: true
+          };
+        }
+      }
+
+      // 3. Fallback: calculate using standard side email layout (40px or 20px margin + 40px width)
+      const rightMargin = (W <= 1080) ? 20 : 40;
+      const emailLeft = W - rightMargin - 40;
+      return {
+        x: clamp(emailLeft - HX - 14, HX + 8, W - HX - 8),
+        y: H - BOTTOM,
+        found: false
+      };
+    }
+
+    const initPos = getEmailPosition();
+    const P = { x: initPos.x, y: initPos.y, vx: 0, vy: 0 };
     const M = { x: W * 0.5, y: H * 0.4 };
 
-    let state = '', asleep = false, held = false, away = false, hidden = false, walkFlag = false, runFlag = false;
-    let isParked = false, parkedSide = null, parkedAt = 0, justDropped = false;
+    let state = 'sit', asleep = false, held = false, away = false, hidden = false, walkFlag = false, runFlag = false;
+    let isParked = true, parkedSide = null, parkedAtEmail = true, parkedAt = now(), justDropped = false;
+    let lastScrollReaction = 0, parkSleepTimer = null;
+
+    function scheduleParkSleep(delay = 3200) {
+      if (!isParked) return;
+      clearTimeout(parkSleepTimer);
+      parkSleepTimer = setTimeout(() => {
+        if (isParked && !held && !drag) {
+          forced = { s: 'sit', until: now() + 600, auto: true, then: 'sleep' };
+          play('squish');
+          say(pick(['*curls up*', 'zzz', 'nap time...']), 1400);
+          setTimeout(() => {
+            if (isParked && !held && !drag) {
+              asleep = true;
+              burst(P.x, P.y - 25 * S, ['✨'], 2);
+            }
+          }, 600);
+        }
+      }, delay);
+    }
+
     let hoverEl = null, hoverTimer = 0, bubbleTimer = 0, hoverSince = 0, hoverBig = false;
     let dizzyUntil = 0, happyUntil = 0, eatUntil = 0, startleUntil = 0, annoyedUntil = 0, swatUntil = 0, aloofUntil = 0;
     let pounce = null, roam = null, forced = null, zoomies = null;
@@ -525,22 +589,42 @@
 
     addEventListener('scroll', () => {
       const ds = scrollY - lastScroll; lastScroll = scrollY;
-      if (!hidden && !held && !isParked) P.vy -= clamp(ds * 0.05, -9, 9);
-      if (!isParked) activity();
+      const t = now();
+      if (isParked && !held && !drag) {
+        if (Math.abs(ds) > 1.5 && t - lastScrollReaction > 800) {
+          lastScrollReaction = t;
+          asleep = false;
+          play(Math.random() < 0.5 ? 'hop' : 'squish');
+          burst(P.x, P.y - 20 * S, ['✦', '✨'], 2);
+          say(pick(['whoa!', 'weee~', 'zoom~', '👀', '*perk*', 'mrrp!', 'sliding~']), 1200);
+          scheduleParkSleep(2800);
+        }
+        return;
+      }
+      if (!hidden && !held) P.vy -= clamp(ds * 0.05, -9, 9);
+      activity();
     }, { passive: true, signal });
     addEventListener('resize', () => {
       W = innerWidth; H = innerHeight;
       if (isParked) {
-        P.x = clamp(P.x, HX + 8, W - HX - 8);
-        P.y = clamp(P.y, HY + 4, H - BOTTOM);
+        if (parkedAtEmail) {
+          const pos = getEmailPosition();
+          P.x = pos.x;
+          P.y = pos.y;
+        } else {
+          P.x = clamp(P.x, HX + 8, W - HX - 8);
+          P.y = clamp(P.y, HY + 4, H - BOTTOM);
+        }
       }
     }, { signal });
 
     /* ---------- drag / pat / hover / tail touch / parking ---------- */
     function wakeUpAndFollow() {
       if (!isParked && !asleep) return;
+      clearTimeout(parkSleepTimer);
       isParked = false;
       parkedSide = null;
+      parkedAtEmail = false;
       delete pet.dataset.parked;
       justDropped = false;
       asleep = false;
@@ -661,6 +745,7 @@
       if (d.moved) {
         held = false; pet.classList.remove('held');
         isParked = true;
+        parkedAtEmail = false;
         parkedAt = now();
         justDropped = true;
         P.x = clamp(P.x, HX + 8, W - HX - 8);
@@ -671,12 +756,7 @@
         forced = { s: 'sit', until: now() + 600, auto: true, then: 'sleep' };
         play('squish');
         say(pick(['*curls up*', 'zzz', '*naps*', 'staying here~', 'chill spot...']), 1600);
-        setTimeout(() => {
-          if (isParked) {
-            asleep = true;
-            burst(P.x, P.y - 25 * S, ['✨'], 2);
-          }
-        }, 600);
+        scheduleParkSleep(2600);
         return;
       } else if (!cancel) {
         if (isParked) {
@@ -852,7 +932,7 @@
       if (runFlag ? sp < 5.5 : sp > 7) runFlag = !runFlag;
       if (!walkFlag) runFlag = false;
       if (sp > 0.5) stillSince = t;
-      const free = !f && !held && !asleep && !hoverEl && !treats.length && !pounce && !roam && !zoomies &&
+      const free = !isParked && !f && !held && !asleep && !hoverEl && !treats.length && !pounce && !roam && !zoomies &&
         t > happyUntil && t > eatUntil && t > swatUntil && t > annoyedUntil && t > dizzyUntil && t > startleUntil && sp < 0.5;
       if (free && t - lastActive > SLEEP_AFTER) {
         forced = { s: 'yawn', until: t + 1400, auto: true, then: 'sleep' }; say('*yawn*', 1300);
@@ -880,6 +960,7 @@
         t < happyUntil ? 'happy' :
         (pounce && t < pounce.start) ? 'crouch' :
         asleep ? 'sleep' :
+        isParked ? 'sit' :
         hv ? (hoverBig ? 'sit' : (t - hoverSince > 1100 ? 'rub' : 'curious')) :
         runFlag ? 'run' :
         walkFlag ? 'walk' :
@@ -907,6 +988,27 @@
     }
     rafId = requestAnimationFrame(tick);
     if (CONFIG.greeting) setTimeout(() => say(CONFIG.greeting, 1800), 700);
+
+    // Initial parked sleep: after 3.5 seconds starting by email, curls up and sleeps
+    scheduleParkSleep(3500);
+
+    // If email element renders slightly after load (due to loaderDelay), keep polling until found
+    if (parkedAtEmail && isParked) {
+      let emailPollCount = 0;
+      const emailPoll = setInterval(() => {
+        emailPollCount++;
+        if (!isParked || !parkedAtEmail || emailPollCount > 35) {
+          clearInterval(emailPoll);
+          return;
+        }
+        const pos = getEmailPosition();
+        P.x = pos.x;
+        P.y = pos.y;
+        if (pos.found) {
+          clearInterval(emailPoll);
+        }
+      }, 150);
+    }
 
     function destroy() {
       destroyed = true;
@@ -937,6 +1039,12 @@
           pet.dataset.parked = 'left';
           P.x = HX + 16;
           P.y = H - BOTTOM;
+        } else if (x === 'email') {
+          parkedAtEmail = true;
+          const pos = getEmailPosition();
+          P.x = pos.x;
+          P.y = pos.y;
+          delete pet.dataset.parked;
         } else {
           parkedSide = 'right';
           pet.dataset.parked = 'right';

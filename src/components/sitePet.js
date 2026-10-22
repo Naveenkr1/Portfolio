@@ -37,26 +37,24 @@ const SitePet = () => {
 
       if (isEnabled) {
         if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-          if (window.SitePet) {
-            if (typeof window.SitePet.show === 'function') {
-              window.SitePet.show();
-            }
-          } else {
-            let script = document.getElementById('site-pet-script');
-            if (!script) {
-              window.SitePetConfig = {
-                scale: 0.9,
-                follow: 130,
-                greeting: 'mrrp.',
-                hoverSelector: 'a,button,[data-pet]',
-              };
-              script = document.createElement('script');
-              script.id = 'site-pet-script';
-              script.src = '/site-pet.js';
-              script.async = true;
-              document.body.appendChild(script);
-            }
+          if (window.SitePet && typeof window.SitePet.destroy === 'function') {
+            window.SitePet.destroy();
           }
+          let script = document.getElementById('site-pet-script');
+          if (script) {
+            script.remove();
+          }
+          window.SitePetConfig = {
+            scale: 0.9,
+            follow: 130,
+            greeting: 'mrrp.',
+            hoverSelector: 'a,button,[data-pet]',
+          };
+          script = document.createElement('script');
+          script.id = 'site-pet-script';
+          script.src = `/site-pet.js?v=${Date.now()}`;
+          script.async = true;
+          document.body.appendChild(script);
         }
       } else {
         if (typeof window !== 'undefined' && typeof document !== 'undefined') {
